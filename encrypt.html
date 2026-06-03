@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>introvert — Trình quản lý bài viết mã hóa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #fbfaf8;
+            --bg-accent: #f1efeb;
+            --surface-color: #ffffff;
+            --text-primary: #24211e;
+            --text-muted: #6f6a62;
+            --border-color: #ded8cf;
+            --accent: #7a654b;
+            --accent-hover: #5f4d38;
+            --font-heading: 'EB Garamond', Georgia, serif;
+            --font-body: 'Lora', Georgia, serif;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #101112;
+                --bg-accent: #1d2023;
+                --surface-color: #151719;
+                --text-primary: #ede8df;
+                --text-muted: #aaa195;
+                --border-color: #303337;
+                --accent: #c5a775;
+                --accent-hover: #dcc38f;
+                color-scheme: dark;
+            }
+        }
+
+        *,
+        *::before,
+        *::after {
+            transition-duration: 0.16s !important;
+            animation: none !important;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--surface-color);
+            padding: 2.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: none;
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-bottom: 2.5rem;
+        }
+
+        .section {
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section:last-child {
+            border: none;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        input[type="text"], input[type="password"], textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 1.2rem;
+        }
+
+        input:focus, textarea:focus {
+            outline: 1px solid var(--accent);
+            background-color: var(--surface-color);
+        }
+
+        .btn {
+            background-color: var(--accent);
+            color: var(--surface-color);
+            border: none;
+            padding: 0.8rem 1.8rem;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: color 0.16s ease, background-color 0.16s ease, border-color 0.16s ease;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-accent);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+        }
+
+        .btn-danger {
+            background-color: #8C533C;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #723E2A;
+        }
+
+        .flex-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .article-card {
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-accent);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .article-card h3 {
+            margin-top: 0;
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .article-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+        }
+
+        .article-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .status-box {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        .status-success {
+            background-color: #E2ECE9;
+            color: #2E5A44;
+            border: 1px solid #C4DAD2;
+        }
+
+        .status-error {
+            background-color: #F5EAE6;
+            color: #8C533C;
+            border: 1px solid #E6D4CD;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .btn {
+                color: #101112;
+            }
+
+            .btn-secondary {
+                color: var(--text-primary);
+            }
+
+            .btn-danger {
+                color: #fff;
+            }
+
+            .status-success {
+                background-color: #1d2a23;
+                color: #b8d8c3;
+                border-color: #2c4b38;
+            }
+
+            .status-error {
+                background-color: #2b1d19;
+                color: #e0b4a6;
+                border-color: #57352b;
+            }
+        }
+
+        /* Minimal border pass */
+        .container,
+        .section,
+        .article-card,
+        .btn,
+        .btn-secondary {
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            border: 0 !important;
+            background-color: var(--bg-accent);
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: 1px solid color-mix(in srgb, var(--border-color) 55%, transparent);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>introvert writer</h1>
+        <p class="subtitle">Công cụ mã hóa bài viết ngoại tuyến bảo mật tuyệt đối</p>
+
+        <!-- 1. Cấu hình bảo mật & Tải file cũ -->
+        <div class="section">
+            <label for="lock-password">Nhập mật mã để Mã hóa / Giải mã:</label>
+            <input type="password" id="lock-password" placeholder="Nhập mật khẩu giống hệt trên website (ví dụ: 241099)...">
+            
+            <div class="flex-buttons">
+                <div class="file-input-wrapper">
+                    <button class="btn btn-secondary">Nhập file writings.enc hiện có</button>
+                    <input type="file" id="import-file" accept=".enc">
+                </div>
+                <button class="btn" id="decrypt-btn">Giải mã & Chỉnh sửa</button>
+            </div>
+            
+            <div id="status-message" class="status-box"></div>
+        </div>
+
+        <!-- 2. Thêm bài viết mới -->
+        <div class="section">
+            <h2>Viết bài mới</h2>
+            
+            <label for="post-date">Ngày viết (Ví dụ: 03.2026):</label>
+            <input type="text" id="post-date" placeholder="03.2026">
+
+            <label for="post-title">Tiêu đề bài viết:</label>
+            <input type="text" id="post-title" placeholder="Về sự im lặng...">
+
+            <label for="post-preview">Đoạn trích ngắn (Hiện ở trang chủ):</label>
+            <textarea id="post-preview" rows="2" placeholder="Có những ngày tôi không muốn nói gì cả..."></textarea>
+
+            <label for="post-content">Nội dung chi tiết (Dùng phím Enter để xuống dòng đoạn văn):</label>
+            <textarea id="post-content" rows="8" placeholder="Viết toàn bộ bài viết của bạn ở đây..."></textarea>
+
+            <button class="btn" id="save-post-btn">Thêm vào danh sách</button>
+        </div>
+
+        <!-- 3. Danh sách bài viết đang quản lý -->
+        <div class="section">
+            <h2>Danh sách bài viết hiện tại (<span id="count">0</span>)</h2>
+            <div id="articles-list">
+                <p style="color: var(--text-muted); font-style: italic;">Chưa có bài viết nào. Hãy nhập file writings.enc cũ hoặc viết bài mới.</p>
+            </div>
+        </div>
+
+        <!-- 4. Xuất file mã hóa -->
+        <div class="section" style="text-align: center;">
+            <button class="btn" id="export-btn" style="font-size: 1.1rem; padding: 1rem 2.5rem;">Xuất bản file writings.enc</button>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.8rem;">
+                Tải file này về, chép đè vào thư mục dự án và đẩy lên GitHub/Vercel. Nội dung sẽ được bảo mật tuyệt đối!
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let currentArticles = [];
+        let editingIndex = -1;
+
+        // --- CÁC HÀM MÃ HÓA / GIẢI MÃ WEB CRYPTO API ---
+        async function deriveKey(password, salt) {
+            const encoder = new TextEncoder();
+            const passwordKey = await crypto.subtle.importKey(
+                'raw',
+                encoder.encode(password),
+                'PBKDF2',
+                false,
+                ['deriveKey']
+            );
+            return crypto.subtle.deriveKey(
+                {
+                    name: 'PBKDF2',
+                    salt: salt,
+                    iterations: 100000,
+                    hash: 'SHA-256'
+                },
+                passwordKey,
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['encrypt', 'decrypt']
+            );
+        }
+
+        async function encryptData(plaintext, password) {
+            const encoder = new TextEncoder();
+            const salt = crypto.getRandomValues(new Uint8Array(16));
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const key = await deriveKey(password, salt);
+            
+            const encrypted = await crypto.subtle.encrypt(
+                { name: 'AES-GCM', iv: iv },
+                key,
+                encoder.encode(plaintext)
+            );
+            
+            const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+            combined.set(salt, 0);
+            combined.set(iv, salt.length);
+            combined.set(new Uint8Array(encrypted), salt.length + iv.length);
+            
+            // Chuyển sang Base64 an toàn
+            let binary = '';
+            const len = combined.byteLength;
+            for (let i = 0; i < len; i++) {
+                binary += String.fromCharCode(combined[i]);
+            }
+            return btoa(binary);
+        }
+
+        async function decryptData(ciphertextBase64, password) {
+            const decoder = new TextDecoder();
+            const binaryString = atob(ciphertextBase64);
+            const combined = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                combined[i] = binaryString.charCodeAt(i);
+            }
+            
+            const salt = combined.slice(0, 16);
+            const iv = combined.slice(16, 28);
+            const ciphertext = combined.slice(28);
+            
+            const key = await deriveKey(password, salt);
+            const decrypted = await crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv: iv },
+                key,
+                ciphertext
+            );
+            return decoder.decode(decrypted);
+        }
+
+        // --- GIAO DIỆN & TƯƠNG TÁC ---
+        const statusMsg = document.getElementById('status-message');
+        const passwordInput = document.getElementById('lock-password');
+        const fileInput = document.getElementById('import-file');
+        
+        function showStatus(text, isError = false) {
+            statusMsg.textContent = text;
+            statusMsg.className = `status-box ${isError ? 'status-error' : 'status-success'}`;
+            statusMsg.style.display = 'block';
+        }
+
+        let importedFileContent = "";
+
+        // Nhập file từ máy tính
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                importedFileContent = evt.target.result;
+                showStatus(`Đã chọn file: ${file.name}. Hãy nhập mật mã và bấm nút "Giải mã & Chỉnh sửa".`);
+            };
+            reader.readAsText(file);
+        });
+
+        // Bấm giải mã file
+        document.getElementById('decrypt-btn').addEventListener('click', async () => {
+            const password = passwordInput.value;
+            if (!password) {
+                showStatus("Vui lòng nhập mật mã để giải mã!", true);
+                return;
+            }
+            if (!importedFileContent) {
+                showStatus("Vui lòng chọn file writings.enc trước!", true);
+                return;
+            }
+
+            try {
+                const decryptedText = await decryptData(importedFileContent, password);
+                currentArticles = JSON.parse(decryptedText);
+                updateArticlesList();
+                showStatus(`Giải mã thành công! Đã tải lên ${currentArticles.length} bài viết.`);
+            } catch (err) {
+                console.error(err);
+                showStatus("Giải mã thất bại! Mật khẩu chưa đúng hoặc file bị lỗi.", true);
+            }
+        });
+
+        // Thêm bài viết mới vào bộ nhớ tạm
+        document.getElementById('save-post-btn').addEventListener('click', () => {
+            const date = document.getElementById('post-date').value.trim();
+            const title = document.getElementById('post-title').value.trim();
+            const preview = document.getElementById('post-preview').value.trim();
+            const content = document.getElementById('post-content').value.trim();
+
+            if (!title || !content) {
+                alert("Vui lòng nhập Tiêu đề và Nội dung bài viết!");
+                return;
+            }
+
+            const article = { date, title, preview, content };
+
+            if (editingIndex > -1) {
+                currentArticles[editingIndex] = article;
+                editingIndex = -1;
+                document.getElementById('save-post-btn').textContent = "Thêm vào danh sách";
+            } else {
+                currentArticles.push(article);
+            }
+
+            // Clear inputs
+            document.getElementById('post-date').value = "";
+            document.getElementById('post-title').value = "";
+            document.getElementById('post-preview').value = "";
+            document.getElementById('post-content').value = "";
+
+            updateArticlesList();
+        });
+
+        function updateArticlesList() {
+            const listDiv = document.getElementById('articles-list');
+            document.getElementById('count').textContent = currentArticles.length;
+
+            if (currentArticles.length === 0) {
+                listDiv.innerHTML = '<p style="color: var(--text-muted); font-style: italic;">Chưa có bài viết nào.</p>';
+                return;
+            }
+
+            listDiv.innerHTML = '';
+            currentArticles.forEach((art, index) => {
+                const card = document.createElement('div');
+                card.className = 'article-card';
+                card.innerHTML = `
+                    <h3>${art.title}</h3>
+                    <div class="article-meta">Ngày: ${art.date || 'Không rõ'}</div>
+                    <div style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.4;">${art.preview}</div>
+                    <div class="article-actions">
+                        <button class="btn btn-secondary" onclick="editArticle(${index})">Sửa</button>
+                        <button class="btn btn-secondary btn-danger" onclick="deleteArticle(${index})">Xóa</button>
+                    </div>
+                `;
+                listDiv.appendChild(card);
+            });
+        }
+
+        window.editArticle = function(index) {
+            const art = currentArticles[index];
+            document.getElementById('post-date').value = art.date;
+            document.getElementById('post-title').value = art.title;
+            document.getElementById('post-preview').value = art.preview;
+            document.getElementById('post-content').value = art.content;
+            
+            editingIndex = index;
+            document.getElementById('save-post-btn').textContent = "Cập nhật bài viết";
+            window.scrollTo({ top: 350, behavior: 'smooth' });
+        }
+
+        window.deleteArticle = function(index) {
+            if (confirm("Bạn có chắc chắn muốn xóa bài viết này không?")) {
+                currentArticles.splice(index, 1);
+                updateArticlesList();
+            }
+        }
+
+        // Bấm xuất file mã hóa
+        document.getElementById('export-btn').addEventListener('click', async () => {
+            const password = passwordInput.value;
+            if (!password) {
+                alert("Vui lòng nhập mật khẩu ở phần thiết lập bảo mật để tiến hành mã hóa!");
+                return;
+            }
+            if (currentArticles.length === 0) {
+                alert("Danh sách bài viết trống! Hãy viết bài trước.");
+                return;
+            }
+
+            try {
+                const jsonText = JSON.stringify(currentArticles);
+                const encryptedText = await encryptData(jsonText, password);
+                
+                // Kích hoạt download file writings.enc
+                const blob = new Blob([encryptedText], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'writings.enc';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showStatus("Mã hóa thành công! Đã tải file writings.enc về máy.");
+            } catch (err) {
+                console.error(err);
+                alert("Mã hóa thất bại: " + err.message);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>introvert — thoughts, slowly</title>
+    <meta name="description" content="Một không gian tĩnh lặng để chia sẻ những suy nghĩ chậm rãi và góc nhìn cá nhân.">
+    <!-- Open Graph for sharing -->
+    <meta property="og:title" content="introvert — thoughts, slowly">
+    <meta property="og:description" content="Một không gian tĩnh lặng để chia sẻ những suy nghĩ chậm rãi.">
+    <meta property="og:type" content="website">
+    
+    <!-- Google Fonts - EB Garamond (Classic headings) & Lora (Soft readable body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css?v=20260603-ambient-stable">
+</head>
+<body class="private-locked">
+
+    <!-- Header Navigation -->
+    <header class="main-header">
+        <nav class="nav-container">
+            <a href="#hero" class="header-brand" aria-label="Về đầu trang">
+                <img src="assets/introvert.png" alt="introvert" class="header-logo">
+            </a>
+            <div class="nav-links">
+                <a href="#writings" class="nav-link">writings</a>
+                <span class="nav-separator">/</span>
+                <button id="nav-sanctuary-btn" class="nav-btn" aria-label="Mở góc bình yên">sanctuary</button>
+                <span class="nav-separator">/</span>
+                <a href="#contact" class="nav-link">contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="fade-in-section">
+        <div class="hero-container">
+            <img src="assets/introvert.png" alt="introvert logo" class="hero-logo" id="logo-img">
+            <p class="hero-tagline" id="hero-tagline"></p>
+            <div class="public-message hero-message">
+                    <label for="public-message-input" class="passcode-message-label">gửi lời nhắn tới introvert</label>
+                    <textarea id="public-message-input" class="passcode-message-input" rows="3" placeholder="để lại vài dòng trước khi rời đi..."></textarea>
+                    <div class="passcode-message-row">
+                        <button type="button" id="public-message-send" class="passcode-message-send">gửi</button>
+                        <span id="public-message-status" class="passcode-message-status" aria-live="polite"></span>
+                    </div>
+            </div>
+            <button id="hero-sanctuary-trigger" class="hero-cta" aria-label="Mở góc bình yên">[ bước vào góc bình yên ]</button>
+        </div>
+        <a href="#writings" class="scroll-indicator" aria-label="Cuộn xuống để xem bài viết">
+            <span class="scroll-arrow">·</span>
+        </a>
+    </section>
+
+    <!-- Main Content Container -->
+    <main class="content-container">
+        
+        <!-- Writings Section -->
+        <section id="writings" class="fade-in-section">
+            <h2 class="section-title">Writings</h2>
+            <div class="writings-list">
+                <p class="writings-loading" style="color: var(--text-muted); font-style: italic;">cần mở khóa để đọc những dòng này.</p>
+            </div>
+        </section>
+
+        <!-- Introvert Messages Section -->
+        <section id="introvert-messages" class="introvert-messages fade-in-section" hidden>
+            <h2 class="section-title">Messages</h2>
+            <div id="introvert-messages-list" class="introvert-messages-list"></div>
+            <p id="introvert-messages-status" class="introvert-messages-status"></p>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="fade-in-section">
+            <div class="contact-wrapper">
+                <p class="contact-lead">nếu muốn, bạn có thể ghé qua một góc nhỏ khác của tôi.</p>
+                <div class="contact-links">
+                    <a href="https://www.instagram.com/introvert.2810" target="_blank" rel="noopener noreferrer" class="contact-link">
+                        <span class="contact-link-label">instagram</span>
+                        <span class="contact-link-value">@introvert.2810</span>
+                    </a>
+                    <a href="https://www.facebook.com/powder.2810" target="_blank" rel="noopener noreferrer" class="contact-link">
+                        <span class="contact-link-label">facebook</span>
+                        <span class="contact-link-value">powder.2810</span>
+                    </a>
+                </div>
+                
+                <footer class="footer-minimal">
+                    <p class="copyright">
+                        <a href="write.html" class="secret-link">©</a> 2026 introvert. Tĩnh lặng giữa ồn ào. 
+                        <button id="mood-trigger-btn" class="mood-trigger" aria-label="Mở nhật ký cảm xúc">·</button>
+                        <span class="ambient-player" id="ambient-player">
+                            <span class="ambient-separator">/</span>
+                            <button id="ambient-toggle" class="ambient-btn" aria-label="Âm thanh không gian">♪</button>
+                            <span class="ambient-options" id="ambient-options">
+                                <button class="ambient-track-btn active" data-track="none">tắt</button>
+                                <button class="ambient-track-btn" data-track="rain">mưa</button>
+                                <button class="ambient-track-btn" data-track="sea">sóng</button>
+                                <button class="ambient-track-btn" data-track="lofi">lofi</button>
+                            </span>
+                            <span class="ambient-track-title" id="ambient-track-title"></span>
+                        </span>
+                        <span class="theme-toggle-container">
+                            <span class="ambient-separator">/</span>
+                            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Đổi giao diện">tối</button>
+                        </span>
+                    </p>
+                </footer>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Password Lock Overlay -->
+    <div id="password-overlay" class="password-overlay is-unlocked">
+        <div class="password-box">
+            <img src="assets/introvert.png" alt="introvert" class="password-logo-img">
+            <p class="password-hint">Không gian riêng tư. Vui lòng nhập mật mã 6 số để mở khóa.</p>
+            <form id="password-form">
+                <div class="passcode-inputs">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit" aria-label="Số thứ 1">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit" aria-label="Số thứ 2">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit" aria-label="Số thứ 3">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit" aria-label="Số thứ 4">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit" aria-label="Số thứ 5">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit" aria-label="Số thứ 6">
+                </div>
+                <button type="button" id="passcode-unlock-btn" class="passcode-unlock-btn">mở khóa</button>
+                <p id="error-message" class="error-msg"></p>
+            </form>
+            <div class="passcode-message">
+                <label for="passcode-message-input" class="passcode-message-label">gửi lời nhắn tới introvert</label>
+                <textarea id="passcode-message-input" class="passcode-message-input" rows="3" placeholder="để lại vài dòng trước khi rời đi..."></textarea>
+                <div class="passcode-message-row">
+                    <button type="button" id="passcode-message-send" class="passcode-message-send">gửi</button>
+                    <span id="passcode-message-status" class="passcode-message-status" aria-live="polite"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mood Journal Backdrop and Drawer (Now a multi-functional space) -->
+    <div id="mood-backdrop" class="mood-backdrop"></div>
+    <div id="mood-drawer" class="mood-drawer" aria-live="polite">
+        <div class="mood-drawer-header">
+            <div class="mood-tabs">
+                <button class="mood-tab-btn active" data-tab="journal">nhật ký</button>
+                <button class="mood-tab-btn" data-tab="mixer">hòa âm</button>
+                <button class="mood-tab-btn" data-tab="capsule">tương lai</button>
+                <button class="mood-tab-btn" data-tab="games">trò chơi</button>
+                <button class="mood-tab-btn" data-tab="reflect">phản chiếu</button>
+            </div>
+            <button id="mood-close-btn" class="mood-close-btn" aria-label="Đóng nhật ký">đóng</button>
+        </div>
+        
+        <!-- Tab 1: Nhật ký (Mood Journal) -->
+        <div class="mood-tab-content active" id="tab-journal">
+            <div class="mood-state-select">
+                <button class="mood-state-btn" data-state="tĩnh" aria-label="Tĩnh lặng">tĩnh</button>
+                <button class="mood-state-btn" data-state="mơ" aria-label="Thơ thẩn">mơ</button>
+                <button class="mood-state-btn" data-state="lặng" aria-label="Trầm ngâm">lặng</button>
+                <button class="mood-state-btn" data-state="trầm" aria-label="Buồn bã">trầm</button>
+                <button class="mood-state-btn" data-state="loạn" aria-label="Bất an">loạn</button>
+            </div>
+            
+            <div class="mood-note-container">
+                <textarea id="mood-note-input" class="mood-note-input" placeholder="hôm nay thế nào? dệt những suy nghĩ vào đây..."></textarea>
+                <div class="journal-save-row">
+                    <button id="mood-save-btn" class="capsule-btn btn-small">ghi lại</button>
+                </div>
+            </div>
+            
+            <div class="mood-calendar-section">
+                <div id="mood-calendar-strip" class="mood-calendar-strip">
+                    <!-- Sẽ render động qua Javascript -->
+                </div>
+            </div>
+
+            <!-- Advanced Journal: Lịch sử, Bộ lọc & Tìm kiếm -->
+            <div class="journal-history-section">
+                <h4 class="journal-history-title">ký ức những ngày qua</h4>
+                
+                <div class="journal-history-controls">
+                    <input type="text" id="journal-search" class="journal-search-input" placeholder="tìm kiếm ký ức...">
+                    <div class="journal-filter-btns" id="journal-filter-btns">
+                        <button class="journal-filter-btn active" data-filter="all">tất cả</button>
+                        <button class="journal-filter-btn" data-filter="tĩnh">tĩnh</button>
+                        <button class="journal-filter-btn" data-filter="mơ">mơ</button>
+                        <button class="journal-filter-btn" data-filter="lặng">lặng</button>
+                        <button class="journal-filter-btn" data-filter="trầm">trầm</button>
+                        <button class="journal-filter-btn" data-filter="loạn">loạn</button>
+                    </div>
+                </div>
+                
+                <div id="journal-history-list" class="journal-history-list">
+                    <!-- Sẽ render động qua Javascript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Hòa âm (Ambient Mixer) -->
+        <div class="mood-tab-content" id="tab-mixer">
+            <div class="mixer-container">
+                <p class="mixer-desc">tạo một kén âm thanh của riêng bạn...</p>
+                <div class="mixer-channels">
+                    <div class="mixer-channel">
+                        <span class="mixer-label">tiếng mưa</span>
+                        <input type="range" min="0" max="100" value="0" class="mixer-slider" id="mixer-rain">
+                        <span class="mixer-val" id="mixer-val-rain">tắt</span>
+                    </div>
+                    <div class="mixer-channel">
+                        <span class="mixer-label">sóng biển</span>
+                        <input type="range" min="0" max="100" value="0" class="mixer-slider" id="mixer-sea">
+                        <span class="mixer-val" id="mixer-val-sea">tắt</span>
+                    </div>
+                    <div class="mixer-channel">
+                        <span class="mixer-label">lofi playlist</span>
+                        <input type="range" min="0" max="100" value="0" class="mixer-slider" id="mixer-lofi">
+                        <span class="mixer-val" id="mixer-val-lofi">tắt</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Tương lai (Time Capsule) -->
+        <div class="mood-tab-content" id="tab-capsule">
+            <div class="capsule-container">
+                <p class="capsule-desc">gửi một phong thư cho bản thân ngày sau...</p>
+                <input type="text" id="capsule-title" class="capsule-input-title" placeholder="tựa đề bức thư...">
+                <textarea id="capsule-content" class="capsule-textarea" placeholder="hôm nay bạn thế nào? bạn muốn nói gì với bản thân ngày sau...?"></textarea>
+                
+                <div class="capsule-settings">
+                    <label for="capsule-date" class="capsule-date-label">mở khóa vào:</label>
+                    <input type="date" id="capsule-date" class="capsule-date-input">
+                    <button id="capsule-send-btn" class="capsule-btn">niêm phong</button>
+                </div>
+                <div id="capsule-status" class="capsule-status"></div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Trò chơi (Zen Games) -->
+        <div class="mood-tab-content" id="tab-games">
+            <div class="games-menu" id="games-menu">
+                <button class="game-select-btn" data-game="haiku">ghép thơ haiku</button>
+                <button class="game-select-btn" data-game="2048">zen 2048</button>
+                <button class="game-select-btn" data-game="snake">rắn săn mồi</button>
+                <button class="game-select-btn" data-game="conway">vườn conway</button>
+            </div>
+            
+            <div class="game-container" id="game-active-container">
+                <div class="game-header">
+                    <button id="game-back-btn" class="game-back-btn">← quay lại</button>
+                    <span id="game-title" class="game-title-text">trò chơi</span>
+                </div>
+                
+                <!-- Game A: Haiku Builder -->
+                <div class="game-playarea" id="game-play-haiku">
+                    <p class="game-desc">chọn từ để dệt thành haiku (nhịp 5-7-5)...</p>
+                    <div class="haiku-lines">
+                        <div class="haiku-line" id="haiku-line-1" data-syllables="5"><span class="line-num">1.</span> <span class="line-text" id="haiku-text-1">chạm vào đây để chọn dòng 1</span></div>
+                        <div class="haiku-line" id="haiku-line-2" data-syllables="7"><span class="line-num">2.</span> <span class="line-text" id="haiku-text-2">chạm vào đây để chọn dòng 2</span></div>
+                        <div class="haiku-line" id="haiku-line-3" data-syllables="5"><span class="line-num">3.</span> <span class="line-text" id="haiku-text-3">chạm vào đây để chọn dòng 3</span></div>
+                    </div>
+                    <div class="haiku-words-pool" id="haiku-words-pool">
+                        <!-- Tự động sinh từ qua JS -->
+                    </div>
+                    <div class="game-actions">
+                        <button id="haiku-reset" class="capsule-btn btn-small">làm lại</button>
+                        <button id="haiku-save" class="capsule-btn btn-small">ký thác vào nhật ký</button>
+                    </div>
+                </div>
+
+                <!-- Game B: Zen 2048 -->
+                <div class="game-playarea" id="game-play-2048">
+                    <div class="game-2048-score-row">
+                        <span class="game-score-lbl" id="2048-score">điểm: 0</span>
+                        <span class="game-score-lbl score-best" id="2048-best">kỷ niệm: 0</span>
+                    </div>
+                    <div class="grid-2048" id="grid-2048">
+                        <!-- 16 ô grid -->
+                    </div>
+                    <div class="game-actions">
+                        <button id="reset-2048" class="capsule-btn btn-small">làm lại</button>
+                        <p class="game-help-text">dùng phím mũi tên hoặc vuốt màn hình để di chuyển</p>
+                    </div>
+                </div>
+
+                <!-- Game C: Quiet Snake -->
+                <div class="game-playarea" id="game-play-snake">
+                    <div class="game-snake-score-row">
+                        <span class="game-score-lbl" id="snake-score">độ dài: 3</span>
+                        <span class="game-score-lbl score-best" id="snake-best">kỷ niệm: 3</span>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="snake-canvas" width="300" height="300"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <button id="reset-snake" class="capsule-btn btn-small">bắt đầu</button>
+                        <p class="game-help-text">dùng phím mũi tên để điều hướng rắn bò</p>
+                    </div>
+                </div>
+
+                <!-- Game D: Conway's Garden -->
+                <div class="game-playarea" id="game-play-conway">
+                    <p class="game-desc">gieo mầm tế bào và ngắm nhìn chu kỳ cuộc sống...</p>
+                    <div class="canvas-wrapper">
+                        <canvas id="conway-canvas" width="300" height="300"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <button id="conway-start" class="capsule-btn btn-small">chạy</button>
+                        <button id="conway-clear" class="capsule-btn btn-small">làm sạch</button>
+                        <button id="conway-random" class="capsule-btn btn-small">gieo hạt ngẫu nhiên</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 5: Phản chiếu (Self-reflection) -->
+        <div class="mood-tab-content" id="tab-reflect">
+            <div class="reflect-container">
+                <p class="reflect-desc">tấm gương soi rọi tâm cảnh 30 ngày qua...</p>
+                <div class="reflect-report" id="reflect-report-text">
+                    đang lắng nghe ký ức...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ambient Audio Player Element -->
+    <audio id="ambient-audio" loop></audio>
+
+    <!-- Script file -->
+    <script src="script.js?v=20260603-ambient-stable"></script>
+</body>
+</html>

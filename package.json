@@ -1,0 +1,17 @@
+{
+  "name": "introvert-portfolio",
+  "version": "1.0.0",
+  "description": "Minimalist personal portfolio website",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "minimalist",
+    "portfolio",
+    "introvert",
+    "personal"
+  ],
+  "author": "",
+  "license": "ISC"
+}
