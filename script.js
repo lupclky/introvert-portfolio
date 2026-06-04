@@ -2187,6 +2187,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let tictactoeTimeout = null;
     let nimTimeout = null;
+    let oanquanTimeout = null;
+    let minigoTimeout = null;
+    let mastermindTimeout = null;
+    let memoryTimeout = null;
 
     function stopIndieGames() {
         if (fireflyFrame) cancelAnimationFrame(fireflyFrame);
@@ -2198,6 +2202,14 @@ document.addEventListener('DOMContentLoaded', () => {
         tictactoeTimeout = null;
         if (nimTimeout) clearTimeout(nimTimeout);
         nimTimeout = null;
+        if (oanquanTimeout) clearTimeout(oanquanTimeout);
+        oanquanTimeout = null;
+        if (minigoTimeout) clearTimeout(minigoTimeout);
+        minigoTimeout = null;
+        if (mastermindTimeout) clearTimeout(mastermindTimeout);
+        mastermindTimeout = null;
+        if (memoryTimeout) clearTimeout(memoryTimeout);
+        memoryTimeout = null;
     }
 
     gameSelectBtns.forEach(btn => {
@@ -2219,6 +2231,10 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (gameName === 'signal') title = 'đài tín hiệu';
             else if (gameName === 'tictactoe') title = 'cờ caro tĩnh lặng';
             else if (gameName === 'nim') title = 'nhặt sỏi zen';
+            else if (gameName === 'oanquan') title = 'ô ăn quan dân gian';
+            else if (gameName === 'minigo') title = 'cờ vây thu nhỏ';
+            else if (gameName === 'mastermind') title = 'dò mã cảm xúc';
+            else if (gameName === 'memory') title = 'cặp đôi đồng điệu';
             if (gameTitleText) gameTitleText.textContent = title;
 
             gamePlayareas.forEach(p => p.classList.remove('active'));
@@ -2243,6 +2259,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 startTicTacToe();
             } else if (gameName === 'nim') {
                 startNim();
+            } else if (gameName === 'oanquan') {
+                startOanQuan();
+            } else if (gameName === 'minigo') {
+                startMiniGo();
+            } else if (gameName === 'mastermind') {
+                startMastermind();
+            } else if (gameName === 'memory') {
+                startMemory();
             }
         });
     });
@@ -3378,6 +3402,971 @@ document.addEventListener('DOMContentLoaded', () => {
     t2?.addEventListener('mouseleave', clearHighlightNimStones);
     t3?.addEventListener('mouseenter', () => highlightNimStones(3));
     t3?.addEventListener('mouseleave', clearHighlightNimStones);
+
+
+    // --- GAME J: Ô ĂN QUAN ---
+    let oanquanBoard = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 10, 10];
+    let oanquanPlayerScore = 0;
+    let oanquanBotScore = 0;
+    let oanquanActive = false;
+    let oanquanCurrentTurn = "player";
+    let oanquanSelectedCell = -1;
+
+    function startOanQuan() {
+        if (oanquanTimeout) clearTimeout(oanquanTimeout);
+        oanquanBoard = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 10, 10];
+        oanquanPlayerScore = 0;
+        oanquanBotScore = 0;
+        oanquanActive = true;
+        oanquanCurrentTurn = "player";
+        oanquanSelectedCell = -1;
+
+        const controls = document.getElementById('oanquan-controls');
+        if (controls) controls.style.display = 'none';
+
+        renderOanQuanBoard();
+        const statusEl = document.getElementById('oanquan-status');
+        if (statusEl) statusEl.textContent = "đến lượt của bạn. chọn một ô cờ để đi.";
+    }
+
+    function renderOanQuanBoard() {
+        const pScoreEl = document.getElementById('oanquan-score-player');
+        const bScoreEl = document.getElementById('oanquan-score-bot');
+        if (pScoreEl) pScoreEl.textContent = `bạn: ${oanquanPlayerScore}`;
+        if (bScoreEl) bScoreEl.textContent = `thiền sư: ${oanquanBotScore}`;
+
+        for (let i = 0; i < 12; i++) {
+            const cell = document.getElementById(`oanquan-cell-${i}`);
+            if (cell) {
+                cell.textContent = oanquanBoard[i];
+                cell.className = "oanquan-cell";
+                if (i === 10 || i === 11) {
+                    cell.classList.add('oanquan-mandarin');
+                } else {
+                    if (oanquanSelectedCell === i) {
+                        cell.classList.add('selected-cell');
+                    }
+                    if (i >= 0 && i <= 4 && oanquanBoard[i] > 0 && oanquanCurrentTurn === "player" && oanquanActive) {
+                        cell.classList.add('player-playable');
+                    }
+                }
+            }
+        }
+    }
+
+    function getNextOanQuanIndex(curr, dir) {
+        const ccwSequence = [0, 1, 2, 3, 4, 11, 5, 6, 7, 8, 9, 10];
+        const idx = ccwSequence.indexOf(curr);
+        if (dir === 1) {
+            return ccwSequence[(idx + 1) % 12];
+        } else {
+            return ccwSequence[(idx + 11) % 12];
+        }
+    }
+
+    function executeOanQuanMove(startIdx, dir) {
+        let hand = oanquanBoard[startIdx];
+        oanquanBoard[startIdx] = 0;
+        let curr = startIdx;
+
+        while (hand > 0) {
+            curr = getNextOanQuanIndex(curr, dir);
+            oanquanBoard[curr] += 1;
+            hand -= 1;
+
+            if (hand === 0) {
+                let nextCell = getNextOanQuanIndex(curr, dir);
+                if (oanquanBoard[nextCell] > 0 && nextCell !== 10 && nextCell !== 11) {
+                    hand = oanquanBoard[nextCell];
+                    oanquanBoard[nextCell] = 0;
+                    curr = nextCell;
+                } else if (nextCell === 10 || nextCell === 11) {
+                    break;
+                } else {
+                    let checkCell = nextCell;
+                    let canCapture = true;
+
+                    while (canCapture) {
+                        let target = getNextOanQuanIndex(checkCell, dir);
+                        if (oanquanBoard[target] > 0) {
+                            let pts = oanquanBoard[target];
+                            oanquanBoard[target] = 0;
+                            if (oanquanCurrentTurn === "player") {
+                                oanquanPlayerScore += pts;
+                            } else {
+                                oanquanBotScore += pts;
+                            }
+                            
+                            let pastTarget = getNextOanQuanIndex(target, dir);
+                            if (oanquanBoard[pastTarget] === 0) {
+                                checkCell = pastTarget;
+                            } else {
+                                canCapture = false;
+                            }
+                        } else {
+                            canCapture = false;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (oanquanBoard[10] === 0 && oanquanBoard[11] === 0) {
+            endOanQuan();
+            return;
+        }
+
+        checkOanQuanEmptySide();
+        renderOanQuanBoard();
+    }
+
+    function checkOanQuanEmptySide() {
+        if (oanquanBoard[10] === 0 && oanquanBoard[11] === 0) return;
+
+        let playerSideEmpty = true;
+        for (let i = 0; i < 5; i++) {
+            if (oanquanBoard[i] > 0) playerSideEmpty = false;
+        }
+
+        let botSideEmpty = true;
+        for (let i = 5; i < 10; i++) {
+            if (oanquanBoard[i] > 0) botSideEmpty = false;
+        }
+
+        if (playerSideEmpty && oanquanCurrentTurn === "player") {
+            oanquanPlayerScore -= 5;
+            for (let i = 0; i < 5; i++) oanquanBoard[i] = 1;
+        }
+
+        if (botSideEmpty && oanquanCurrentTurn === "bot") {
+            oanquanBotScore -= 5;
+            for (let i = 5; i < 10; i++) oanquanBoard[i] = 1;
+        }
+    }
+
+    function endOanQuan() {
+        oanquanActive = false;
+        for (let i = 0; i < 5; i++) {
+            oanquanPlayerScore += oanquanBoard[i];
+            oanquanBoard[i] = 0;
+        }
+        for (let i = 5; i < 10; i++) {
+            oanquanBotScore += oanquanBoard[i];
+            oanquanBoard[i] = 0;
+        }
+
+        renderOanQuanBoard();
+        const statusEl = document.getElementById('oanquan-status');
+        if (statusEl) {
+            if (oanquanPlayerScore > oanquanBotScore) {
+                statusEl.textContent = `game kết thúc. bạn thắng (${oanquanPlayerScore} vs ${oanquanBotScore}).`;
+            } else if (oanquanPlayerScore < oanquanBotScore) {
+                statusEl.textContent = `game kết thúc. thiền sư thắng (${oanquanPlayerScore} vs ${oanquanBotScore}).`;
+            } else {
+                statusEl.textContent = `hòa cờ (${oanquanPlayerScore} đều).`;
+            }
+        }
+        const controls = document.getElementById('oanquan-controls');
+        if (controls) controls.style.display = 'none';
+    }
+
+    function oanquanBotMove() {
+        if (!oanquanActive) return;
+
+        let bestMove = -1;
+        let bestDir = 1;
+        let maxPoints = -1;
+        const validMoves = [];
+
+        for (let i = 5; i < 10; i++) {
+            if (oanquanBoard[i] > 0) {
+                validMoves.push({ cell: i, dir: 1 });
+                validMoves.push({ cell: i, dir: -1 });
+            }
+        }
+
+        if (validMoves.length === 0) {
+            endOanQuan();
+            return;
+        }
+
+        validMoves.forEach(mv => {
+            const boardCopy = [...oanquanBoard];
+            let pts = 0;
+            let hand = boardCopy[mv.cell];
+            boardCopy[mv.cell] = 0;
+            let curr = mv.cell;
+            while (hand > 0) {
+                curr = getNextOanQuanIndex(curr, mv.dir);
+                boardCopy[curr] += 1;
+                hand -= 1;
+                if (hand === 0) {
+                    let nextCell = getNextOanQuanIndex(curr, mv.dir);
+                    if (boardCopy[nextCell] > 0 && nextCell !== 10 && nextCell !== 11) {
+                        hand = boardCopy[nextCell];
+                        boardCopy[nextCell] = 0;
+                        curr = nextCell;
+                    } else if (nextCell === 10 || nextCell === 11) {
+                        break;
+                    } else {
+                        let checkCell = nextCell;
+                        let canCapture = true;
+                        while (canCapture) {
+                            let target = getNextOanQuanIndex(checkCell, mv.dir);
+                            if (boardCopy[target] > 0) {
+                                pts += boardCopy[target];
+                                boardCopy[target] = 0;
+                                let pastTarget = getNextOanQuanIndex(target, mv.dir);
+                                if (boardCopy[pastTarget] === 0) {
+                                    checkCell = pastTarget;
+                                } else {
+                                    canCapture = false;
+                                }
+                            } else {
+                                canCapture = false;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+
+            if (pts > maxPoints) {
+                maxPoints = pts;
+                bestMove = mv.cell;
+                bestDir = mv.dir;
+            }
+        });
+
+        if (maxPoints === 0 && validMoves.length > 0) {
+            const r = validMoves[Math.floor(Math.random() * validMoves.length)];
+            bestMove = r.cell;
+            bestDir = r.dir;
+        }
+
+        executeOanQuanMove(bestMove, bestDir);
+
+        oanquanCurrentTurn = "player";
+        const statusEl = document.getElementById('oanquan-status');
+        if (statusEl) statusEl.textContent = "đến lượt của bạn. chọn một ô cờ để đi.";
+        checkOanQuanEmptySide();
+        renderOanQuanBoard();
+    }
+
+    // Gắn sự kiện click cho các ô từ 0-4
+    for (let i = 0; i < 5; i++) {
+        document.getElementById(`oanquan-cell-${i}`)?.addEventListener('click', (e) => {
+            if (!oanquanActive || oanquanCurrentTurn !== "player") return;
+            const idx = i;
+            if (oanquanBoard[idx] === 0) return;
+
+            oanquanSelectedCell = idx;
+            renderOanQuanBoard(); // Vẽ lại để cập nhật màu viền ô chọn
+
+            const selectedLbl = document.getElementById('oanquan-selected-lbl');
+            if (selectedLbl) selectedLbl.textContent = `đã chọn ô: ${idx + 1} (có ${oanquanBoard[idx]} sỏi)`;
+
+            const controls = document.getElementById('oanquan-controls');
+            if (controls) controls.style.display = 'flex';
+        });
+    }
+
+    document.getElementById('oanquan-dir-left')?.addEventListener('click', () => {
+        if (oanquanSelectedCell === -1 || oanquanCurrentTurn !== "player") return;
+        document.getElementById('oanquan-controls').style.display = 'none';
+        executeOanQuanMove(oanquanSelectedCell, 1);
+
+        oanquanSelectedCell = -1;
+        if (oanquanActive) {
+            oanquanCurrentTurn = "bot";
+            const statusEl = document.getElementById('oanquan-status');
+            if (statusEl) statusEl.textContent = "thiền sư đang suy ngẫm...";
+            oanquanTimeout = setTimeout(oanquanBotMove, 1500);
+        }
+    });
+
+    document.getElementById('oanquan-dir-right')?.addEventListener('click', () => {
+        if (oanquanSelectedCell === -1 || oanquanCurrentTurn !== "player") return;
+        document.getElementById('oanquan-controls').style.display = 'none';
+        executeOanQuanMove(oanquanSelectedCell, -1);
+
+        oanquanSelectedCell = -1;
+        if (oanquanActive) {
+            oanquanCurrentTurn = "bot";
+            const statusEl = document.getElementById('oanquan-status');
+            if (statusEl) statusEl.textContent = "thiền sư đang suy ngẫm...";
+            oanquanTimeout = setTimeout(oanquanBotMove, 1500);
+        }
+    });
+
+    document.getElementById('reset-oanquan')?.addEventListener('click', startOanQuan);
+
+
+    // --- GAME K: MINI GO (CỜ VÂY 5X5) ---
+    let minigoBoard = Array(25).fill(null);
+    let minigoCurrentTurn = "black";
+    let minigoActive = false;
+    let minigoPassCount = 0;
+
+    function startMiniGo() {
+        if (minigoTimeout) clearTimeout(minigoTimeout);
+        minigoBoard = Array(25).fill(null);
+        minigoCurrentTurn = "black";
+        minigoActive = true;
+        minigoPassCount = 0;
+
+        renderMiniGoBoard();
+        updateMiniGoUI();
+    }
+
+    function renderMiniGoBoard() {
+        const boardEl = document.getElementById('minigo-board');
+        if (!boardEl) return;
+        boardEl.innerHTML = "";
+
+        for (let i = 0; i < 25; i++) {
+            const cell = document.createElement('button');
+            cell.className = "minigo-cell";
+            cell.dataset.index = i;
+            cell.ariaLabel = `Giao điểm ${i + 1}`;
+
+            if (minigoBoard[i]) {
+                const stone = document.createElement('div');
+                stone.className = `minigo-stone ${minigoBoard[i]}`;
+                cell.appendChild(stone);
+            }
+
+            cell.addEventListener('click', (e) => {
+                let target = e.target;
+                if (target.classList.contains('minigo-stone')) {
+                    target = target.parentElement;
+                }
+                const idx = parseInt(target.dataset.index, 10);
+                handleMiniGoCellClick(idx);
+            });
+
+            boardEl.appendChild(cell);
+        }
+    }
+
+    function updateMiniGoUI() {
+        let bCount = 0;
+        let wCount = 0;
+        for (let i = 0; i < 25; i++) {
+            if (minigoBoard[i] === "black") bCount++;
+            if (minigoBoard[i] === "white") wCount++;
+        }
+
+        const bScoreEl = document.getElementById('minigo-score-player');
+        const wScoreEl = document.getElementById('minigo-score-bot');
+        if (bScoreEl) bScoreEl.textContent = `quân đen: ${bCount}`;
+        if (wScoreEl) wScoreEl.textContent = `quân trắng: ${wCount}`;
+
+        const statusEl = document.getElementById('minigo-status');
+        if (statusEl) {
+            if (minigoCurrentTurn === "black") {
+                statusEl.textContent = "lượt của bạn (Đen)";
+            } else {
+                statusEl.textContent = "thiền sư đang suy ngẫm...";
+            }
+        }
+    }
+
+    function getMiniGoGroup(board, idx, color) {
+        const group = [];
+        const queue = [idx];
+        const visited = new Set();
+        visited.add(idx);
+
+        while (queue.length > 0) {
+            const curr = queue.shift();
+            group.push(curr);
+
+            const row = Math.floor(curr / 5);
+            const col = curr % 5;
+
+            const neighbors = [];
+            if (row > 0) neighbors.push(curr - 5);
+            if (row < 4) neighbors.push(curr + 5);
+            if (col > 0) neighbors.push(curr - 1);
+            if (col < 4) neighbors.push(curr + 1);
+
+            neighbors.forEach(n => {
+                if (!visited.has(n) && board[n] === color) {
+                    visited.add(n);
+                    queue.push(n);
+                }
+            });
+        }
+        return group;
+    }
+
+    function getMiniGoLiberties(board, group) {
+        const liberties = new Set();
+        group.forEach(idx => {
+            const row = Math.floor(idx / 5);
+            const col = idx % 5;
+
+            const neighbors = [];
+            if (row > 0) neighbors.push(idx - 5);
+            if (row < 4) neighbors.push(idx + 5);
+            if (col > 0) neighbors.push(idx - 1);
+            if (col < 4) neighbors.push(idx + 1);
+
+            neighbors.forEach(n => {
+                if (board[n] === null) {
+                    liberties.add(n);
+                }
+            });
+        });
+        return liberties.size;
+    }
+
+    function handleMiniGoCellClick(idx) {
+        if (!minigoActive || minigoCurrentTurn !== "black") return;
+        if (minigoBoard[idx] !== null) return;
+
+        const boardCopy = [...minigoBoard];
+        boardCopy[idx] = "black";
+
+        let capturedAny = false;
+        const row = Math.floor(idx / 5);
+        const col = idx % 5;
+        const neighbors = [];
+        if (row > 0) neighbors.push(idx - 5);
+        if (row < 4) neighbors.push(idx + 5);
+        if (col > 0) neighbors.push(idx - 1);
+        if (col < 4) neighbors.push(idx + 1);
+
+        neighbors.forEach(n => {
+            if (boardCopy[n] === "white") {
+                const group = getMiniGoGroup(boardCopy, n, "white");
+                const liberties = getMiniGoLiberties(boardCopy, group);
+                if (liberties === 0) {
+                    group.forEach(gIdx => boardCopy[gIdx] = null);
+                    capturedAny = true;
+                }
+            }
+        });
+
+        if (!capturedAny) {
+            const ownGroup = getMiniGoGroup(boardCopy, idx, "black");
+            const ownLiberties = getMiniGoLiberties(boardCopy, ownGroup);
+            if (ownLiberties === 0) {
+                alert("nước đi không hợp lệ (không có khí/tự tử).");
+                return;
+            }
+        }
+
+        minigoBoard = boardCopy;
+        minigoPassCount = 0;
+        minigoCurrentTurn = "white";
+
+        renderMiniGoBoard();
+        updateMiniGoUI();
+
+        minigoTimeout = setTimeout(minigoBotMove, 1200);
+    }
+
+    function minigoBotMove() {
+        if (!minigoActive) return;
+
+        let bestMove = -1;
+        let maxCapture = -1;
+        const validMoves = [];
+
+        for (let i = 0; i < 25; i++) {
+            if (minigoBoard[i] === null) {
+                const boardCopy = [...minigoBoard];
+                boardCopy[i] = "white";
+
+                let captureCount = 0;
+                const row = Math.floor(i / 5);
+                const col = i % 5;
+                const neighbors = [];
+                if (row > 0) neighbors.push(i - 5);
+                if (row < 4) neighbors.push(i + 5);
+                if (col > 0) neighbors.push(i - 1);
+                if (col < 4) neighbors.push(i + 1);
+
+                neighbors.forEach(n => {
+                    if (boardCopy[n] === "black") {
+                        const group = getMiniGoGroup(boardCopy, n, "black");
+                        if (getMiniGoLiberties(boardCopy, group) === 0) {
+                            captureCount += group.length;
+                        }
+                    }
+                });
+
+                let isSuicide = false;
+                if (captureCount === 0) {
+                    const ownGroup = getMiniGoGroup(boardCopy, i, "white");
+                    if (getMiniGoLiberties(boardCopy, ownGroup) === 0) {
+                        isSuicide = true;
+                    }
+                }
+
+                if (!isSuicide) {
+                    validMoves.push(i);
+                    if (captureCount > maxCapture) {
+                        maxCapture = captureCount;
+                        bestMove = i;
+                    }
+                }
+            }
+        }
+
+        if (maxCapture <= 0 && validMoves.length > 0) {
+            let chosenMove = -1;
+            let bestLibs = -1;
+            
+            validMoves.sort(() => Math.random() - 0.5);
+            
+            for (let i = 0; i < validMoves.length; i++) {
+                const mv = validMoves[i];
+                const boardCopy = [...minigoBoard];
+                boardCopy[mv] = "white";
+                const group = getMiniGoGroup(boardCopy, mv, "white");
+                const libs = getMiniGoLiberties(boardCopy, group);
+                if (libs > bestLibs) {
+                    bestLibs = libs;
+                    chosenMove = mv;
+                }
+            }
+            bestMove = chosenMove !== -1 ? chosenMove : validMoves[0];
+        }
+
+        if (bestMove !== -1) {
+            minigoBoard[bestMove] = "white";
+            const row = Math.floor(bestMove / 5);
+            const col = bestMove % 5;
+            const neighbors = [];
+            if (row > 0) neighbors.push(bestMove - 5);
+            if (row < 4) neighbors.push(bestMove + 5);
+            if (col > 0) neighbors.push(bestMove - 1);
+            if (col < 4) neighbors.push(bestMove + 1);
+
+            neighbors.forEach(n => {
+                if (minigoBoard[n] === "black") {
+                    const group = getMiniGoGroup(minigoBoard, n, "black");
+                    if (getMiniGoLiberties(minigoBoard, group) === 0) {
+                        group.forEach(gIdx => minigoBoard[gIdx] = null);
+                    }
+                }
+            });
+
+            minigoPassCount = 0;
+            minigoCurrentTurn = "black";
+            renderMiniGoBoard();
+            updateMiniGoUI();
+        } else {
+            minigoPassCount++;
+            minigoCurrentTurn = "black";
+            const statusEl = document.getElementById('minigo-status');
+            if (statusEl) statusEl.textContent = "thiền sư đã bỏ lượt. đến lượt bạn.";
+            if (minigoPassCount >= 2) {
+                endMiniGo();
+            } else {
+                updateMiniGoUI();
+            }
+        }
+    }
+
+    document.getElementById('minigo-pass')?.addEventListener('click', () => {
+        if (!minigoActive || minigoCurrentTurn !== "black") return;
+        minigoPassCount++;
+        minigoCurrentTurn = "white";
+        updateMiniGoUI();
+
+        if (minigoPassCount >= 2) {
+            endMiniGo();
+        } else {
+            minigoTimeout = setTimeout(minigoBotMove, 1200);
+        }
+    });
+
+    function endMiniGo() {
+        minigoActive = false;
+        let bCount = 0;
+        let wCount = 0;
+        for (let i = 0; i < 25; i++) {
+            if (minigoBoard[i] === "black") bCount++;
+            if (minigoBoard[i] === "white") wCount++;
+        }
+
+        const statusEl = document.getElementById('minigo-status');
+        if (statusEl) {
+            if (bCount > wCount) {
+                statusEl.textContent = `trận đấu kết thúc. đen thắng (${bCount} vs ${wCount}).`;
+            } else if (bCount < wCount) {
+                statusEl.textContent = `trận đấu kết thúc. trắng thắng (${bCount} vs ${wCount}).`;
+            } else {
+                statusEl.textContent = `hòa cờ (${bCount} đều).`;
+            }
+        }
+    }
+
+    document.getElementById('reset-minigo')?.addEventListener('click', startMiniGo);
+
+
+    // --- GAME L: ZEN MASTERMIND (DÒ MÃ CẢM XÚC) ---
+    const MM_SYMBOLS = ["🌸", "🍃", "💧", "🌙", "🪵", "☀️"];
+    let mastermindSecret = [];
+    let mastermindHistory = [];
+    let mastermindGuess = ["🌸", "🌸", "🌸", "🌸"];
+    let mastermindAttempts = 0;
+    let mastermindActive = false;
+
+    function startMastermind() {
+        if (mastermindTimeout) clearTimeout(mastermindTimeout);
+        mastermindSecret = Array.from({ length: 4 }, () => MM_SYMBOLS[Math.floor(Math.random() * 6)]);
+        mastermindHistory = [];
+        mastermindGuess = ["🌸", "🌸", "🌸", "🌸"];
+        mastermindAttempts = 0;
+        mastermindActive = true;
+
+        renderMastermindBoard();
+        updateMastermindSlots();
+        const statusEl = document.getElementById('mastermind-status');
+        if (statusEl) statusEl.textContent = "lượt đoán 1/8. hãy chọn biểu tượng.";
+    }
+
+    function renderMastermindBoard() {
+        const boardEl = document.getElementById('mastermind-board');
+        if (!boardEl) return;
+        boardEl.innerHTML = "";
+
+        mastermindHistory.forEach(row => {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = "mastermind-row";
+
+            const guessDiv = document.createElement('div');
+            guessDiv.className = "mastermind-row-guess";
+            row.guess.forEach(sym => {
+                const peg = document.createElement('span');
+                peg.className = "mastermind-row-peg";
+                peg.textContent = sym;
+                guessDiv.appendChild(peg);
+            });
+
+            const feedDiv = document.createElement('div');
+            feedDiv.className = "mastermind-row-feedback";
+            
+            for (let i = 0; i < row.black; i++) {
+                const dot = document.createElement('div');
+                dot.className = "mastermind-feedback-dot black";
+                feedDiv.appendChild(dot);
+            }
+            for (let i = 0; i < row.white; i++) {
+                const dot = document.createElement('div');
+                dot.className = "mastermind-feedback-dot white";
+                feedDiv.appendChild(dot);
+            }
+            const emptyDots = 4 - row.black - row.white;
+            for (let i = 0; i < emptyDots; i++) {
+                const dot = document.createElement('div');
+                dot.className = "mastermind-feedback-dot";
+                feedDiv.appendChild(dot);
+            }
+
+            rowDiv.appendChild(guessDiv);
+            rowDiv.appendChild(feedDiv);
+            boardEl.appendChild(rowDiv);
+        });
+
+        boardEl.scrollTop = boardEl.scrollHeight;
+    }
+
+    function updateMastermindSlots() {
+        for (let i = 0; i < 4; i++) {
+            const slot = document.getElementById(`mm-slot-${i}`);
+            if (slot) slot.textContent = mastermindGuess[i];
+        }
+    }
+
+    document.querySelectorAll('.mastermind-slot').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if (!mastermindActive) return;
+            const idx = parseInt(e.target.dataset.idx, 10);
+            const currSym = mastermindGuess[idx];
+            const currIdx = MM_SYMBOLS.indexOf(currSym);
+            const nextSym = MM_SYMBOLS[(currIdx + 1) % 6];
+            mastermindGuess[idx] = nextSym;
+            updateMastermindSlots();
+        });
+    });
+
+    document.getElementById('mastermind-submit')?.addEventListener('click', () => {
+        if (!mastermindActive) return;
+
+        let black = 0;
+        let white = 0;
+        const secretCopy = [...mastermindSecret];
+        const guessCopy = [...mastermindGuess];
+
+        for (let i = 0; i < 4; i++) {
+            if (guessCopy[i] === secretCopy[i]) {
+                black++;
+                secretCopy[i] = null;
+                guessCopy[i] = null;
+            }
+        }
+
+        for (let i = 0; i < 4; i++) {
+            if (guessCopy[i] !== null) {
+                const sIdx = secretCopy.indexOf(guessCopy[i]);
+                if (sIdx !== -1) {
+                    white++;
+                    secretCopy[sIdx] = null;
+                }
+            }
+        }
+
+        mastermindHistory.push({
+            guess: [...mastermindGuess],
+            black,
+            white
+        });
+
+        mastermindAttempts++;
+        renderMastermindBoard();
+
+        const statusEl = document.getElementById('mastermind-status');
+        if (black === 4) {
+            mastermindActive = false;
+            if (statusEl) statusEl.textContent = "chúc mừng! bạn đã dò được mã cảm xúc.";
+        } else if (mastermindAttempts >= 8) {
+            mastermindActive = false;
+            if (statusEl) statusEl.textContent = `bạn đã hết lượt. mã đúng là: ${mastermindSecret.join(' ')}`;
+        } else {
+            if (statusEl) statusEl.textContent = `lượt đoán ${mastermindAttempts + 1}/8.`;
+        }
+    });
+
+    document.getElementById('reset-mastermind')?.addEventListener('click', startMastermind);
+
+
+    // --- GAME M: ZEN MEMORY MATCH (CẶP ĐÔI ĐỒNG ĐIỆU) ---
+    const MEM_SYMBOLS = ["🌸", "🍃", "💧", "🌙", "🪵", "☀️", "🕯️", "🏔️"];
+    let memoryCards = [];
+    let memoryPlayerScore = 0;
+    let memoryBotScore = 0;
+    let memoryTurn = "player";
+    let memorySelected = [];
+    let memoryActive = false;
+    let memoryKnownCards = {};
+
+    function startMemory() {
+        if (memoryTimeout) clearTimeout(memoryTimeout);
+        memoryPlayerScore = 0;
+        memoryBotScore = 0;
+        memoryTurn = "player";
+        memorySelected = [];
+        memoryActive = true;
+        memoryKnownCards = {};
+
+        const pool = [...MEM_SYMBOLS, ...MEM_SYMBOLS].sort(() => Math.random() - 0.5);
+        memoryCards = pool.map((sym, idx) => ({
+            id: idx,
+            symbol: sym,
+            flipped: false,
+            matched: false
+        }));
+
+        renderMemoryGrid();
+        updateMemoryScoreboard();
+    }
+
+    function renderMemoryGrid() {
+        const grid = document.getElementById('memory-grid');
+        if (!grid) return;
+        grid.innerHTML = "";
+
+        memoryCards.forEach((card, idx) => {
+            const cardEl = document.createElement('div');
+            cardEl.className = "memory-card";
+            if (card.flipped) cardEl.classList.add('flipped');
+            if (card.matched) cardEl.classList.add('matched');
+
+            const inner = document.createElement('div');
+            inner.className = "memory-card-inner";
+
+            const front = document.createElement('div');
+            front.className = "memory-card-front";
+
+            const back = document.createElement('div');
+            back.className = "memory-card-back";
+            back.textContent = card.symbol;
+
+            inner.appendChild(front);
+            inner.appendChild(back);
+            cardEl.appendChild(inner);
+
+            cardEl.addEventListener('click', () => {
+                if (memoryTurn !== "player" || memorySelected.length >= 2 || card.flipped || card.matched) return;
+                
+                card.flipped = true;
+                cardEl.classList.add('flipped');
+                memorySelected.push(idx);
+                
+                memoryKnownCards[idx] = card.symbol;
+
+                if (memorySelected.length === 2) {
+                    memoryTimeout = setTimeout(checkMemoryMatch, 1000);
+                }
+            });
+
+            grid.appendChild(cardEl);
+        });
+    }
+
+    function updateMemoryScoreboard() {
+        const pScoreEl = document.getElementById('memory-score-player');
+        const bScoreEl = document.getElementById('memory-score-bot');
+        if (pScoreEl) pScoreEl.textContent = `bạn: ${memoryPlayerScore}`;
+        if (bScoreEl) bScoreEl.textContent = `thiền sư: ${memoryBotScore}`;
+
+        const statusEl = document.getElementById('memory-status');
+        if (statusEl) {
+            if (memoryTurn === "player") {
+                statusEl.textContent = "đến lượt của bạn";
+            } else {
+                statusEl.textContent = "thiền sư đang tìm quân cờ...";
+            }
+        }
+    }
+
+    function checkMemoryMatch() {
+        if (!memoryActive) return;
+
+        const [idx1, idx2] = memorySelected;
+        const card1 = memoryCards[idx1];
+        const card2 = memoryCards[idx2];
+
+        if (card1.symbol === card2.symbol) {
+            card1.matched = true;
+            card2.matched = true;
+            
+            delete memoryKnownCards[idx1];
+            delete memoryKnownCards[idx2];
+
+            if (memoryTurn === "player") {
+                memoryPlayerScore++;
+            } else {
+                memoryBotScore++;
+            }
+
+            memorySelected = [];
+            updateMemoryScoreboard();
+            renderMemoryGrid();
+
+            const allMatched = memoryCards.every(c => c.matched);
+            if (allMatched) {
+                memoryActive = false;
+                const statusEl = document.getElementById('memory-status');
+                if (statusEl) {
+                    if (memoryPlayerScore > memoryBotScore) {
+                        statusEl.textContent = `bạn thắng thiền sư (${memoryPlayerScore} vs ${memoryBotScore}).`;
+                    } else if (memoryPlayerScore < memoryBotScore) {
+                        statusEl.textContent = `thiền sư thắng cuộc (${memoryPlayerScore} vs ${memoryBotScore}).`;
+                    } else {
+                        statusEl.textContent = `hòa cờ (${memoryPlayerScore} đều).`;
+                    }
+                }
+            } else {
+                if (memoryTurn === "bot") {
+                    memoryTimeout = setTimeout(memoryBotTurn, 1000);
+                }
+            }
+        } else {
+            card1.flipped = false;
+            card2.flipped = false;
+            memorySelected = [];
+            
+            renderMemoryGrid();
+
+            memoryTurn = memoryTurn === "player" ? "bot" : "player";
+            updateMemoryScoreboard();
+
+            if (memoryTurn === "bot") {
+                memoryTimeout = setTimeout(memoryBotTurn, 1000);
+            }
+        }
+    }
+
+    function memoryBotTurn() {
+        if (!memoryActive) return;
+
+        let match1 = -1;
+        let match2 = -1;
+
+        const knownIndices = Object.keys(memoryKnownCards).map(Number);
+        for (let i = 0; i < knownIndices.length; i++) {
+            for (let j = i + 1; j < knownIndices.length; j++) {
+                const idx1 = knownIndices[i];
+                const idx2 = knownIndices[j];
+                if (memoryKnownCards[idx1] === memoryKnownCards[idx2] && idx1 !== idx2) {
+                    match1 = idx1;
+                    match2 = idx2;
+                    break;
+                }
+            }
+            if (match1 !== -1) break;
+        }
+
+        if (match1 !== -1 && match2 !== -1) {
+            flipBotCard(match1);
+            memoryTimeout = setTimeout(() => {
+                flipBotCard(match2);
+                memoryTimeout = setTimeout(checkMemoryMatch, 1000);
+            }, 800);
+            return;
+        }
+
+        const unmatchedIndices = memoryCards.map((c, i) => c.matched || c.flipped ? -1 : i).filter(i => i !== -1);
+        if (unmatchedIndices.length === 0) return;
+
+        const firstChoice = unmatchedIndices[Math.floor(Math.random() * unmatchedIndices.length)];
+        flipBotCard(firstChoice);
+
+        const symbolToFind = memoryCards[firstChoice].symbol;
+        let secondChoice = -1;
+
+        for (const [idxStr, sym] of Object.entries(memoryKnownCards)) {
+            const idx = Number(idxStr);
+            if (sym === symbolToFind && idx !== firstChoice && !memoryCards[idx].matched) {
+                if (Math.random() < 0.8) {
+                    secondChoice = idx;
+                }
+                break;
+            }
+        }
+
+        memoryTimeout = setTimeout(() => {
+            if (secondChoice === -1) {
+                const remainingUnmatched = unmatchedIndices.filter(i => i !== firstChoice);
+                if (remainingUnmatched.length > 0) {
+                    secondChoice = remainingUnmatched[Math.floor(Math.random() * remainingUnmatched.length)];
+                }
+            }
+
+            if (secondChoice !== -1) {
+                flipBotCard(secondChoice);
+                memoryTimeout = setTimeout(checkMemoryMatch, 1000);
+            }
+        }, 1000);
+    }
+
+    function flipBotCard(idx) {
+        memoryCards[idx].flipped = true;
+        memorySelected.push(idx);
+        memoryKnownCards[idx] = memoryCards[idx].symbol;
+        renderMemoryGrid();
+    }
+
+    document.getElementById('reset-memory')?.addEventListener('click', startMemory);
+
 
     // --- GAME CONTROLS & KEYDOWN ACTIONS ---
     window.addEventListener('keydown', (e) => {

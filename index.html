@@ -342,6 +342,10 @@
                 <button class="game-select-btn" data-game="signal">đài tín hiệu</button>
                 <button class="game-select-btn" data-game="tictactoe">cờ caro tĩnh lặng</button>
                 <button class="game-select-btn" data-game="nim">nhặt sỏi zen</button>
+                <button class="game-select-btn" data-game="oanquan">ô ăn quan dân gian</button>
+                <button class="game-select-btn" data-game="minigo">cờ vây thu nhỏ</button>
+                <button class="game-select-btn" data-game="mastermind">dò mã cảm xúc</button>
+                <button class="game-select-btn" data-game="memory">cặp đôi đồng điệu</button>
             </div>
             
             <div class="game-container" id="game-active-container">
@@ -490,6 +494,107 @@
                             <button id="nim-take-3" class="capsule-btn btn-small" data-take="3">nhặt 3 sỏi</button>
                         </div>
                         <button id="reset-nim" class="capsule-btn btn-small">bắt đầu lại</button>
+                    </div>
+                </div>
+
+                <!-- Game J: Ô Ăn Quan -->
+                <div class="game-playarea" id="game-play-oanquan">
+                    <p class="game-desc">ô ăn quan dân gian. ai ăn được nhiều quân hơn sẽ thắng...</p>
+                    <div class="oanquan-score-row">
+                        <span class="game-score-lbl" id="oanquan-score-player">bạn: 0</span>
+                        <span class="game-score-lbl" id="oanquan-score-bot">thiền sư: 0</span>
+                    </div>
+                    <div class="oanquan-board">
+                        <div class="oanquan-cell oanquan-mandarin" id="oanquan-cell-10" data-index="10">10</div>
+                        <div class="oanquan-center-grid">
+                            <!-- Bot side (9 -> 5) -->
+                            <div class="oanquan-row oanquan-bot-row">
+                                <div class="oanquan-cell" id="oanquan-cell-9" data-index="9">5</div>
+                                <div class="oanquan-cell" id="oanquan-cell-8" data-index="8">5</div>
+                                <div class="oanquan-cell" id="oanquan-cell-7" data-index="7">5</div>
+                                <div class="oanquan-cell" id="oanquan-cell-6" data-index="6">5</div>
+                                <div class="oanquan-cell" id="oanquan-cell-5" data-index="5">5</div>
+                            </div>
+                            <!-- Player side (0 -> 4) -->
+                            <div class="oanquan-row oanquan-player-row">
+                                <div class="oanquan-cell player-playable" id="oanquan-cell-0" data-index="0">5</div>
+                                <div class="oanquan-cell player-playable" id="oanquan-cell-1" data-index="1">5</div>
+                                <div class="oanquan-cell player-playable" id="oanquan-cell-2" data-index="2">5</div>
+                                <div class="oanquan-cell player-playable" id="oanquan-cell-3" data-index="3">5</div>
+                                <div class="oanquan-cell player-playable" id="oanquan-cell-4" data-index="4">5</div>
+                            </div>
+                        </div>
+                        <div class="oanquan-cell oanquan-mandarin" id="oanquan-cell-11" data-index="11">10</div>
+                    </div>
+                    
+                    <div class="oanquan-controls" id="oanquan-controls" style="display:none;">
+                        <span id="oanquan-selected-lbl" class="game-score-lbl">đã chọn ô: </span>
+                        <div class="oanquan-direction-buttons">
+                            <button id="oanquan-dir-left" class="capsule-btn btn-small">← ngược chiều</button>
+                            <button id="oanquan-dir-right" class="capsule-btn btn-small">xuôi chiều →</button>
+                        </div>
+                    </div>
+
+                    <div class="game-actions">
+                        <span id="oanquan-status" class="game-score-lbl">đến lượt của bạn. chọn một ô để đi.</span>
+                        <button id="reset-oanquan" class="capsule-btn btn-small">bắt đầu lại</button>
+                    </div>
+                </div>
+
+                <!-- Game K: Mini Go -->
+                <div class="game-playarea" id="game-play-minigo">
+                    <p class="game-desc">vây bắt quân đối phương. cờ đen là của bạn, cờ trắng là của bot...</p>
+                    <div class="minigo-score-row">
+                        <span class="game-score-lbl" id="minigo-score-player">quân đen: 0</span>
+                        <span class="game-score-lbl" id="minigo-score-bot">quân trắng: 0</span>
+                    </div>
+                    <div class="minigo-board" id="minigo-board">
+                        <!-- Sẽ sinh 25 ô qua Javascript -->
+                    </div>
+                    <div class="game-actions">
+                        <span id="minigo-status" class="game-score-lbl">lượt của bạn (Đen)</span>
+                        <button id="minigo-pass" class="capsule-btn btn-small">bỏ lượt</button>
+                        <button id="reset-minigo" class="capsule-btn btn-small">chơi lại</button>
+                    </div>
+                </div>
+
+                <!-- Game L: Zen Mastermind -->
+                <div class="game-playarea" id="game-play-mastermind">
+                    <p class="game-desc">bot đã giấu một mã 4 biểu tượng. hãy dò ra mã đó trong 8 lượt...</p>
+                    <div class="mastermind-board" id="mastermind-board">
+                        <!-- Hiển thị các hàng lịch sử đoán và feedback -->
+                    </div>
+                    
+                    <div class="mastermind-picker-row">
+                        <p class="game-help-text">chọn biểu tượng cho lượt đoán của bạn:</p>
+                        <div class="mastermind-slots">
+                            <button class="mastermind-slot" id="mm-slot-0" data-idx="0">🌸</button>
+                            <button class="mastermind-slot" id="mm-slot-1" data-idx="1">🌸</button>
+                            <button class="mastermind-slot" id="mm-slot-2" data-idx="2">🌸</button>
+                            <button class="mastermind-slot" id="mm-slot-3" data-idx="3">🌸</button>
+                        </div>
+                    </div>
+
+                    <div class="game-actions">
+                        <span id="mastermind-status" class="game-score-lbl">lượt đoán 1/8</span>
+                        <button id="mastermind-submit" class="capsule-btn btn-small">kiểm tra</button>
+                        <button id="reset-mastermind" class="capsule-btn btn-small">chơi lại</button>
+                    </div>
+                </div>
+
+                <!-- Game M: Zen Memory Match -->
+                <div class="game-playarea" id="game-play-memory">
+                    <p class="game-desc">tìm các cặp hình đồng điệu. lật đúng bạn được đi tiếp...</p>
+                    <div class="memory-score-row">
+                        <span class="game-score-lbl" id="memory-score-player">bạn: 0</span>
+                        <span class="game-score-lbl" id="memory-score-bot">thiền sư: 0</span>
+                    </div>
+                    <div class="memory-grid" id="memory-grid">
+                        <!-- Sẽ sinh 16 thẻ bài qua Javascript -->
+                    </div>
+                    <div class="game-actions">
+                        <span id="memory-status" class="game-score-lbl">đến lượt của bạn</span>
+                        <button id="reset-memory" class="capsule-btn btn-small">bắt đầu lại</button>
                     </div>
                 </div>
             </div>
