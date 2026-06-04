@@ -14,11 +14,36 @@ document.addEventListener('DOMContentLoaded', () => {
        ============================================================= */
     const GOOGLE_APPS_SCRIPT_URL = "/api/sheet";
 
-    const OWNER_PASSCODE = "241099";
+    const UNLOCK_API_URL = "/api/unlock";
+    const PRIVATE_ABOUT_ENCRYPTED_URL = "about.enc?v=20260604-about-utf8";
+    const ENCRYPTED_PRIVATE_ABOUT = [
+        "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",
+    ].join("");
     const VIETNAM_TIME_ZONE = "Asia/Ho_Chi_Minh";
 
     // Lưu trữ mật mã hiện tại để mã hóa các thông tin nhập thêm (mood, note)
-    let currentPasscode = OWNER_PASSCODE;
+    let currentPasscode = "";
+    let privateSessionToken = "";
 
     /* -------------------------------------------------------------
        THEMING / DARK MODE LOGIC
@@ -170,7 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
        THANH ĐIỀU HƯỚNG SCROLL & ĐIỀU KHIỂN TRIGGER
        ============================================================= */
     const mainHeader = document.querySelector('.main-header');
-    const navWritingsLink = document.querySelector('a[href="#writings"]');
     const scrollWritingsLink = document.querySelector('.scroll-indicator');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
@@ -182,12 +206,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const navSanctuaryBtn = document.getElementById('nav-sanctuary-btn');
     const heroSanctuaryTrigger = document.getElementById('hero-sanctuary-trigger');
+    const homeSanctuaryTrigger = document.getElementById('home-sanctuary-trigger');
 
     if (navSanctuaryBtn) {
         navSanctuaryBtn.addEventListener('click', openMoodDrawer);
     }
     if (heroSanctuaryTrigger) {
         heroSanctuaryTrigger.addEventListener('click', openMoodDrawer);
+    }
+    if (homeSanctuaryTrigger) {
+        homeSanctuaryTrigger.addEventListener('click', openMoodDrawer);
     }
 
     // Xử lý giao diện khóa mật mã và giải mã
@@ -202,10 +230,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const publicMessageInput = document.getElementById('public-message-input');
     const publicMessageSend = document.getElementById('public-message-send');
     const publicMessageStatus = document.getElementById('public-message-status');
+    const aboutLockForm = document.getElementById('about-lock-form');
+    const aboutPasscodeDigits = Array.from(document.querySelectorAll('.about-passcode-digit'));
+    const aboutLockStatus = document.getElementById('about-lock-status');
+    const aboutPrivateLock = document.getElementById('about-private-lock');
+    const aboutPrivateContent = document.getElementById('about-private-content');
     const introvertMessagesSection = document.getElementById('introvert-messages');
     const introvertMessagesList = document.getElementById('introvert-messages-list');
     const introvertMessagesStatus = document.getElementById('introvert-messages-status');
-    const writingsSection = document.getElementById('writings');
     let privateUnlocked = !USE_PASSWORD_LOCK;
     let pendingPrivateTarget = "";
 
@@ -279,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getPrivateGateTarget(trigger) {
         if (!trigger) return "";
-        if (trigger.id === "nav-sanctuary-btn" || trigger.id === "hero-sanctuary-trigger" || trigger.id === "mood-trigger-btn") {
+        if (trigger.id === "nav-sanctuary-btn" || trigger.id === "hero-sanctuary-trigger" || trigger.id === "home-sanctuary-trigger" || trigger.id === "mood-trigger-btn") {
             return "mood";
         }
         const href = trigger.getAttribute?.("href") || "";
@@ -361,6 +393,83 @@ document.addEventListener('DOMContentLoaded', () => {
             ciphertext
         );
         return decoder.decode(decrypted);
+    }
+
+    function setAboutLockStatus(message = "") {
+        if (!aboutLockStatus) return;
+        aboutLockStatus.textContent = message;
+        aboutLockStatus.classList.toggle('is-visible', Boolean(message));
+    }
+
+    function getAboutPasscode() {
+        return aboutPasscodeDigits.map(input => input.value).join('');
+    }
+
+    function resetAboutPasscodeInputs() {
+        aboutPasscodeDigits.forEach(input => {
+            input.value = "";
+        });
+    }
+
+    async function requestPrivateUnlock(passcode) {
+        const response = await fetch(UNLOCK_API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ passcode })
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.success || !result.token) {
+            throw new Error(result.error || "Unauthorized");
+        }
+        privateSessionToken = result.token;
+        return result.token;
+    }
+
+    function getPrivateSheetHeaders(baseHeaders = {}) {
+        return privateSessionToken
+            ? { ...baseHeaders, Authorization: `Bearer ${privateSessionToken}` }
+            : baseHeaders;
+    }
+
+    async function loadEncryptedPrivateAbout() {
+        const response = await fetch(PRIVATE_ABOUT_ENCRYPTED_URL, { cache: "no-store" });
+        if (!response.ok) {
+            throw new Error("Không tải được about.enc");
+        }
+        return (await response.text()).trim();
+    }
+
+    async function unlockPrivateAbout() {
+        if (!aboutPrivateLock || !aboutPrivateContent) return;
+        const passcode = getAboutPasscode();
+        if (passcode.length !== 6) {
+            setAboutLockStatus("vui lòng nhập đủ 6 số.");
+            return;
+        }
+
+        try {
+            await requestPrivateUnlock(passcode);
+        } catch (err) {
+            setAboutLockStatus("mật mã chưa chính xác.");
+            resetAboutPasscodeInputs();
+            aboutPasscodeDigits[0]?.focus();
+            return;
+        }
+
+        try {
+            const encryptedAbout = await loadEncryptedPrivateAbout();
+            const decryptedAbout = await decryptData(encryptedAbout || ENCRYPTED_PRIVATE_ABOUT, passcode);
+            aboutPrivateContent.innerHTML = decryptedAbout;
+            aboutPrivateContent.hidden = false;
+            aboutPrivateLock.hidden = true;
+            currentPasscode = passcode;
+            setAboutLockStatus("");
+        } catch (err) {
+            console.error("Không giải mã được phần about riêng tư:", err);
+            setAboutLockStatus("chưa mở được phần này. hãy thử lại.");
+            resetAboutPasscodeInputs();
+            aboutPasscodeDigits[0]?.focus();
+        }
     }
 
     function looksEncryptedBase64(value) {
@@ -513,12 +622,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
+            await requestPrivateUnlock(passcode);
             let articles = [];
             try {
                 articles = await loadLocalArticles(passcode);
             } catch (localErr) {
-                if (passcode !== OWNER_PASSCODE) throw localErr;
-                console.error("Lỗi tải dữ liệu cục bộ, vẫn mở bằng mật mã chủ:", localErr);
+                throw localErr;
             }
 
             try {
@@ -588,7 +697,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (target === "mood") {
                 setTimeout(() => openMoodDrawer(), 80);
             } else {
-                scrollToPrivateTarget(target || "writings");
+                scrollToPrivateTarget(target || "introvert-messages");
             }
         } catch (err) {
             console.error("Lỗi giải mã:", err);
@@ -666,7 +775,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                // Hỗ trợ Paste trực tiếp chuỗi mật mã 6 số (ví dụ: 241099)
+                // Hỗ trợ paste trực tiếp chuỗi mật mã 6 số.
                 input.addEventListener('paste', (e) => {
                     e.preventDefault();
                     const pastedData = (e.clipboardData || window.clipboardData).getData('text').trim();
@@ -688,19 +797,21 @@ document.addEventListener('DOMContentLoaded', () => {
         verifyAndLoad("");
     }
 
-    [navWritingsLink, scrollWritingsLink].forEach(link => {
+    [scrollWritingsLink].forEach(link => {
         if (!link) return;
         link.addEventListener('click', (event) => {
-            if (!isPrivateUnlocked()) {
-                event.preventDefault();
-                requestPrivateSection("writings");
-            }
+            const href = link.getAttribute("href") || "";
+            if (!href.startsWith("#")) return;
+            const targetEl = document.querySelector(href);
+            if (!targetEl) return;
+            event.preventDefault();
+            targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
         });
     });
 
     document.addEventListener('click', (event) => {
         if (isPrivateUnlocked()) return;
-        const trigger = event.target.closest('a[href="#writings"], a[href="#introvert-messages"], #nav-sanctuary-btn, #hero-sanctuary-trigger, #mood-trigger-btn');
+        const trigger = event.target.closest('a[href="#introvert-messages"], #nav-sanctuary-btn, #hero-sanctuary-trigger, #home-sanctuary-trigger, #mood-trigger-btn');
         if (!trigger) return;
 
         event.preventDefault();
@@ -711,7 +822,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function guardPrivateHash() {
         if (!USE_PASSWORD_LOCK || isPrivateUnlocked()) return;
         const targetMap = {
-            "#writings": "writings",
             "#introvert-messages": "introvert-messages",
             "#sanctuary": "mood"
         };
@@ -724,6 +834,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     guardPrivateHash();
     window.addEventListener('hashchange', guardPrivateHash);
+
+    if (aboutLockForm && aboutPasscodeDigits.length > 0) {
+        aboutLockForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            await unlockPrivateAbout();
+        });
+
+        aboutPasscodeDigits.forEach((input, index) => {
+            input.addEventListener('input', () => {
+                input.value = input.value.replace(/[^0-9]/g, '');
+                setAboutLockStatus("");
+                if (input.value && index < aboutPasscodeDigits.length - 1) {
+                    aboutPasscodeDigits[index + 1].focus();
+                }
+                if (getAboutPasscode().length === 6) {
+                    unlockPrivateAbout();
+                }
+            });
+
+            input.addEventListener('keydown', (event) => {
+                if (event.key === 'Backspace' && !input.value && index > 0) {
+                    aboutPasscodeDigits[index - 1].focus();
+                    aboutPasscodeDigits[index - 1].value = '';
+                }
+            });
+
+            input.addEventListener('paste', (event) => {
+                event.preventDefault();
+                const pasted = (event.clipboardData || window.clipboardData).getData('text').trim();
+                if (!/^\d{6}$/.test(pasted)) return;
+                aboutPasscodeDigits.forEach((digit, digitIndex) => {
+                    digit.value = pasted[digitIndex];
+                });
+                unlockPrivateAbout();
+            });
+        });
+    }
 
     async function sendIntrovertMessage(inputEl, buttonEl, statusEl) {
         if (!inputEl || !buttonEl) return;
@@ -1019,6 +1166,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const moodStateBtns = document.querySelectorAll('.mood-state-btn');
     const moodNoteInput = document.getElementById('mood-note-input');
     const moodCalendarStrip = document.getElementById('mood-calendar-strip');
+    const journalStreakCount = document.getElementById('journal-streak-count');
+    const journalEntryCount = document.getElementById('journal-entry-count');
+    const journalWordCount = document.getElementById('journal-word-count');
+    const journalTemplateBtns = document.querySelectorAll('.journal-template-btn');
+    const memoryJarInput = document.getElementById('memory-jar-input');
+    const memoryJarSave = document.getElementById('memory-jar-save');
+    const memoryJarList = document.getElementById('memory-jar-list');
 
     // Tạo chấm báo hiệu lưu dữ liệu
     let saveStatusDot;
@@ -1088,6 +1242,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function countWords(text = "") {
+        const matches = String(text).trim().match(/\S+/g);
+        return matches ? matches.length : 0;
+    }
+
+    function calculateJournalStreak(logs) {
+        let streak = 0;
+        const cursor = new Date();
+        while (true) {
+            const key = getLocalDateString(cursor);
+            const log = logs[key];
+            if (!log || (!log.emoji && !String(log.note || "").trim())) break;
+            streak += 1;
+            cursor.setDate(cursor.getDate() - 1);
+        }
+        return streak;
+    }
+
+    function updateJournalStats() {
+        const logs = getMoodLogs();
+        const entries = Object.values(logs).filter(log => log && (log.emoji || String(log.note || "").trim()));
+        const todayLog = logs[getLocalDateString()] || {};
+
+        if (journalStreakCount) journalStreakCount.textContent = String(calculateJournalStreak(logs));
+        if (journalEntryCount) journalEntryCount.textContent = String(entries.length);
+        if (journalWordCount) journalWordCount.textContent = String(countWords(todayLog.note || ""));
+    }
+
     function saveMoodLog(dateStr, state, note) {
         const logs = getMoodLogs();
         if (!state && !note) {
@@ -1097,10 +1279,114 @@ document.addEventListener('DOMContentLoaded', () => {
             logs[dateStr] = { emoji: state || "", note: note || "" };
         }
         localStorage.setItem('introvert_mood_log', JSON.stringify(logs));
+        updateJournalStats();
 
         // Tự động đồng bộ lên Google Sheet nếu có cấu hình
         triggerSyncMoodToSheet(dateStr, state, note);
     }
+
+    function getMemoryJarItems() {
+        try {
+            return JSON.parse(localStorage.getItem('introvert_memory_jar')) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function setMemoryJarItems(items) {
+        localStorage.setItem('introvert_memory_jar', JSON.stringify(items.slice(0, 40)));
+    }
+
+    function renderMemoryJar() {
+        if (!memoryJarList) return;
+        const items = getMemoryJarItems();
+        if (items.length === 0) {
+            memoryJarList.innerHTML = `<p class="memory-jar-empty">lọ ký ức đang trống.</p>`;
+            return;
+        }
+
+        memoryJarList.innerHTML = items.slice(0, 5).map(item => `
+            <article class="memory-jar-item" data-id="${escapeHTML(item.id)}">
+                <span class="memory-jar-date">${escapeHTML(formatJournalDate(item.date))}</span>
+                <p class="memory-jar-text">${escapeHTML(item.text)}</p>
+                <div class="memory-jar-actions">
+                    <button type="button" class="memory-jar-use" data-id="${escapeHTML(item.id)}">đưa</button>
+                    <button type="button" class="memory-jar-delete" data-id="${escapeHTML(item.id)}">xóa</button>
+                </div>
+            </article>
+        `).join("");
+    }
+
+    function appendToMoodNote(text) {
+        if (!moodNoteInput || !text) return;
+        moodNoteInput.value = moodNoteInput.value.trim()
+            ? `${moodNoteInput.value.trim()}\n\n${text}`
+            : text;
+        moodNoteInput.dispatchEvent(new Event('input'));
+        moodNoteInput.focus();
+    }
+
+    function saveMemoryJarItem() {
+        if (!memoryJarInput) return;
+        const text = memoryJarInput.value.trim();
+        if (!text) {
+            memoryJarInput.focus();
+            return;
+        }
+
+        const items = getMemoryJarItems();
+        items.unshift({
+            id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+            date: getLocalDateString(),
+            text
+        });
+        setMemoryJarItems(items);
+        memoryJarInput.value = "";
+        renderMemoryJar();
+    }
+
+    const JOURNAL_TEMPLATES = {
+        checkin: "check-in\ncơ thể:\ntâm trí:\nđiều đang cần:",
+        gratitude: "ba điều biết ơn\n1.\n2.\n3.",
+        release: "điều cần buông xuống\nhôm nay tôi buông:\nvì:",
+        tomorrow: "gửi ngày mai\nngày mai tôi muốn:\nmột việc nhỏ đủ làm:",
+        dream: "giấc mơ / hình ảnh còn sót lại\nkhung cảnh:\ncảm giác:\ný nghĩa có thể là:"
+    };
+
+    journalTemplateBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const key = btn.getAttribute('data-template');
+            appendToMoodNote(JOURNAL_TEMPLATES[key] || "");
+        });
+    });
+
+    memoryJarSave?.addEventListener('click', saveMemoryJarItem);
+    memoryJarInput?.addEventListener('keydown', (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            saveMemoryJarItem();
+        }
+    });
+
+    memoryJarList?.addEventListener('click', (event) => {
+        const useBtn = event.target.closest('.memory-jar-use');
+        const deleteBtn = event.target.closest('.memory-jar-delete');
+        const btn = useBtn || deleteBtn;
+        if (!btn) return;
+
+        const id = btn.getAttribute('data-id');
+        const items = getMemoryJarItems();
+        const item = items.find(entry => entry.id === id);
+        if (!item) return;
+
+        if (useBtn) {
+            appendToMoodNote(item.text);
+            return;
+        }
+
+        setMemoryJarItems(items.filter(entry => entry.id !== id));
+        renderMemoryJar();
+    });
 
     function updateSaveStatus(status) {
         if (!saveStatusDot) return;
@@ -1131,21 +1417,17 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const encState = await encryptData(state, currentPasscode);
                 const encNote = await encryptData(note, currentPasscode);
-                const auth = await sha256(currentPasscode);
 
                 const payload = {
                     type: "mood",
                     date: dateStr,
                     emoji: encState, // cột emoji trên sheet sẽ chứa trạng thái text mã hóa
-                    note: encNote,
-                    auth: auth
+                    note: encNote
                 };
 
                 await fetch(GOOGLE_APPS_SCRIPT_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: getPrivateSheetHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify(payload)
                 });
 
@@ -1179,6 +1461,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             localStorage.setItem('introvert_mood_log', JSON.stringify(logs));
             renderCalendarStrip();
+            updateJournalStats();
         } catch (e) {
             console.error("Lỗi đồng bộ moods từ sheet:", e);
         }
@@ -1243,6 +1526,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderCalendarStrip();
         renderJournalHistory(); // Kết xuất lịch sử nhật ký nâng cao
+        updateJournalStats();
+        renderMemoryJar();
 
         moodBackdrop.classList.add('is-active');
         moodDrawer.classList.add('is-active');
@@ -1297,6 +1582,82 @@ document.addEventListener('DOMContentLoaded', () => {
             renderCalendarStrip();
         });
     }
+
+    /* -------------------------------------------------------------
+       Ritual Tools: prompts, breath, and note handoff
+       ------------------------------------------------------------- */
+    const ritualPromptBtn = document.getElementById('ritual-prompt-btn');
+    const ritualBreatheBtn = document.getElementById('ritual-breathe-btn');
+    const ritualNoteBtn = document.getElementById('ritual-note-btn');
+    const ritualOutput = document.getElementById('ritual-output');
+    const RITUAL_PROMPTS = [
+        "hãy viết về một âm thanh nhỏ mà hôm nay bạn bỏ sót.",
+        "nếu nỗi mệt có màu, nó đang nghiêng về sắc nào?",
+        "một điều bạn không muốn giải thích với ai là gì?",
+        "hãy đặt tên cho khoảng im lặng giữa hai lần thở.",
+        "có điều gì trong bạn đang cần được để yên?",
+        "viết một câu cho phiên bản bạn của ba tháng sau.",
+        "nơi nào trong ký ức vẫn còn bật đèn?",
+        "nếu hôm nay là một căn phòng, cửa sổ sẽ nhìn ra đâu?"
+    ];
+    let breathTimer = null;
+    let breathStep = 0;
+    const BREATH_PHASES = [
+        "hít vào 4 nhịp.",
+        "giữ lại 4 nhịp.",
+        "thở ra 6 nhịp.",
+        "nghỉ một chút."
+    ];
+
+    function setRitualText(text) {
+        if (ritualOutput) ritualOutput.textContent = text;
+    }
+
+    ritualPromptBtn?.addEventListener('click', () => {
+        if (breathTimer) {
+            clearInterval(breathTimer);
+            breathTimer = null;
+            if (ritualBreatheBtn) ritualBreatheBtn.textContent = "nhịp thở";
+        }
+        const prompt = RITUAL_PROMPTS[Math.floor(Math.random() * RITUAL_PROMPTS.length)];
+        setRitualText(prompt);
+    });
+
+    ritualBreatheBtn?.addEventListener('click', () => {
+        if (breathTimer) {
+            clearInterval(breathTimer);
+            breathTimer = null;
+            ritualBreatheBtn.textContent = "nhịp thở";
+            setRitualText("đã dừng nhịp thở.");
+            return;
+        }
+
+        breathStep = 0;
+        ritualBreatheBtn.textContent = "dừng";
+        setRitualText(BREATH_PHASES[breathStep]);
+        breathTimer = setInterval(() => {
+            breathStep += 1;
+            if (breathStep >= 12) {
+                clearInterval(breathTimer);
+                breathTimer = null;
+                ritualBreatheBtn.textContent = "nhịp thở";
+                setRitualText("nhịp thở khép lại. hãy giữ phần yên vừa tìm thấy.");
+                return;
+            }
+            setRitualText(BREATH_PHASES[breathStep % BREATH_PHASES.length]);
+        }, 4200);
+    });
+
+    ritualNoteBtn?.addEventListener('click', () => {
+        if (!moodNoteInput || !ritualOutput) return;
+        const signal = ritualOutput.textContent.trim();
+        if (!signal) return;
+        moodNoteInput.value = moodNoteInput.value.trim()
+            ? `${moodNoteInput.value.trim()}\n\n${signal}`
+            : signal;
+        moodNoteInput.dispatchEvent(new Event('input'));
+        moodNoteInput.focus();
+    });
 
     /* -------------------------------------------------------------
        6. Ambient Soundscapes & Multi-channel Mixer
@@ -1563,12 +1924,11 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const encTitle = await encryptData(title, currentPasscode);
                 const encContent = await encryptData(content, currentPasscode);
-                const auth = await sha256(currentPasscode);
                 if (GOOGLE_APPS_SCRIPT_URL && GOOGLE_APPS_SCRIPT_URL.trim() !== "") {
                     const createdAt = new Date();
                     await fetch(GOOGLE_APPS_SCRIPT_URL, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: getPrivateSheetHeaders({ 'Content-Type': 'application/json' }),
                         body: JSON.stringify({
                             type: "future_letter",
                             date: createdAt.toISOString(),
@@ -1576,8 +1936,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             preview: "future_letter:" + unlockDate,
                             content: encContent,
                             unlockDate,
-                            displayDate: formatVietnamDateTime(createdAt),
-                            auth
+                            displayDate: formatVietnamDateTime(createdAt)
                         })
                     });
                 }
@@ -1826,9 +2185,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const gamePlayareas = document.querySelectorAll('.game-playarea');
     const gameBackBtn = document.getElementById('game-back-btn');
 
+    let tictactoeTimeout = null;
+    let nimTimeout = null;
+
+    function stopIndieGames() {
+        if (fireflyFrame) cancelAnimationFrame(fireflyFrame);
+        fireflyFrame = null;
+        firefliesRunning = false;
+        if (wordRainTimer) clearInterval(wordRainTimer);
+        wordRainTimer = null;
+        if (tictactoeTimeout) clearTimeout(tictactoeTimeout);
+        tictactoeTimeout = null;
+        if (nimTimeout) clearTimeout(nimTimeout);
+        nimTimeout = null;
+    }
+
     gameSelectBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const gameName = btn.getAttribute('data-game');
+            stopIndieGames();
             currentActiveGame = gameName;
 
             if (gamesMenu) gamesMenu.style.display = 'none';
@@ -1839,6 +2214,11 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (gameName === '2048') title = 'zen 2048';
             else if (gameName === 'snake') title = 'rắn săn mồi';
             else if (gameName === 'conway') title = 'vườn conway';
+            else if (gameName === 'fireflies') title = 'đom đóm đêm';
+            else if (gameName === 'wordrain') title = 'mưa chữ';
+            else if (gameName === 'signal') title = 'đài tín hiệu';
+            else if (gameName === 'tictactoe') title = 'cờ caro tĩnh lặng';
+            else if (gameName === 'nim') title = 'nhặt sỏi zen';
             if (gameTitleText) gameTitleText.textContent = title;
 
             gamePlayareas.forEach(p => p.classList.remove('active'));
@@ -1853,6 +2233,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 startSnake();
             } else if (gameName === 'conway') {
                 initConway();
+            } else if (gameName === 'fireflies') {
+                startFireflies();
+            } else if (gameName === 'wordrain') {
+                startWordRain();
+            } else if (gameName === 'signal') {
+                startSignalRadio();
+            } else if (gameName === 'tictactoe') {
+                startTicTacToe();
+            } else if (gameName === 'nim') {
+                startNim();
             }
         });
     });
@@ -1863,6 +2253,7 @@ document.addEventListener('DOMContentLoaded', () => {
             snakeRunning = false;
             if (conwayInterval) clearInterval(conwayInterval);
             conwayRunning = false;
+            stopIndieGames();
 
             currentActiveGame = "";
 
@@ -2503,6 +2894,490 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         drawConway();
     });
+
+    // --- GAME E: FIREFLY NIGHT ---
+    let fireflies = [];
+    let fireflyFrame = null;
+    let firefliesRunning = false;
+    let fireflyScore = 0;
+
+    function createFirefly(canvas) {
+        return {
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 0.7,
+            vy: (Math.random() - 0.5) * 0.7,
+            radius: 7 + Math.random() * 6,
+            pulse: Math.random() * Math.PI * 2,
+            life: 0.7 + Math.random() * 0.3
+        };
+    }
+
+    function startFireflies() {
+        const canvas = document.getElementById('firefly-canvas');
+        if (!canvas) return;
+        if (fireflyFrame) cancelAnimationFrame(fireflyFrame);
+        fireflyScore = 0;
+        firefliesRunning = true;
+        fireflies = Array.from({ length: 9 }, () => createFirefly(canvas));
+        const scoreEl = document.getElementById('firefly-score');
+        const statusEl = document.getElementById('firefly-status');
+        if (scoreEl) scoreEl.textContent = "đom đóm: 0";
+        if (statusEl) statusEl.textContent = "chạm vào ánh sáng";
+        drawFireflies();
+    }
+
+    function drawFireflies() {
+        const canvas = document.getElementById('firefly-canvas');
+        if (!canvas || !firefliesRunning || currentActiveGame !== "fireflies") return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = activeTheme === 'dark' ? 'rgba(255,255,255,0.018)' : 'rgba(0,0,0,0.018)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        fireflies.forEach(fly => {
+            fly.x += fly.vx;
+            fly.y += fly.vy;
+            fly.pulse += 0.035;
+            fly.life -= 0.0015;
+            if (fly.x < 8 || fly.x > canvas.width - 8) fly.vx *= -1;
+            if (fly.y < 8 || fly.y > canvas.height - 8) fly.vy *= -1;
+            if (fly.life <= 0.15) Object.assign(fly, createFirefly(canvas));
+
+            const glow = 0.38 + Math.sin(fly.pulse) * 0.18;
+            const gradient = ctx.createRadialGradient(fly.x, fly.y, 1, fly.x, fly.y, fly.radius * 3.5);
+            gradient.addColorStop(0, `rgba(194,176,149,${Math.max(0.2, glow)})`);
+            gradient.addColorStop(1, 'rgba(194,176,149,0)');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(fly.x, fly.y, fly.radius * 3.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = `rgba(229,224,216,${Math.max(0.35, glow)})`;
+            ctx.beginPath();
+            ctx.arc(fly.x, fly.y, Math.max(2.5, fly.radius * 0.38), 0, Math.PI * 2);
+            ctx.fill();
+        });
+        fireflyFrame = requestAnimationFrame(drawFireflies);
+    }
+
+    function catchFirefly(event) {
+        const canvas = document.getElementById('firefly-canvas');
+        if (!canvas || currentActiveGame !== "fireflies") return;
+        const rect = canvas.getBoundingClientRect();
+        const point = event.touches ? event.touches[0] : event;
+        const x = (point.clientX - rect.left) * (canvas.width / rect.width);
+        const y = (point.clientY - rect.top) * (canvas.height / rect.height);
+        const hitIndex = fireflies.findIndex(fly => Math.hypot(fly.x - x, fly.y - y) < fly.radius * 1.8);
+        if (hitIndex === -1) return;
+        fireflyScore += 1;
+        fireflies[hitIndex] = createFirefly(canvas);
+        const scoreEl = document.getElementById('firefly-score');
+        const statusEl = document.getElementById('firefly-status');
+        if (scoreEl) scoreEl.textContent = `đom đóm: ${fireflyScore}`;
+        if (statusEl) statusEl.textContent = fireflyScore >= 12 ? "đêm đã đủ sáng" : "một ánh nhỏ được giữ lại";
+    }
+
+    document.getElementById('reset-fireflies')?.addEventListener('click', startFireflies);
+    document.getElementById('firefly-canvas')?.addEventListener('click', catchFirefly);
+    document.getElementById('firefly-canvas')?.addEventListener('touchstart', (event) => {
+        catchFirefly(event);
+        event.preventDefault();
+    }, { passive: false });
+
+    // --- GAME F: WORD RAIN ---
+    const WORD_RAIN_WORDS = ["lặng", "mưa", "đêm", "sương", "hơi thở", "gác mái", "ký ức", "vệt sáng", "trôi", "bình yên", "xa xăm", "tỉnh giấc"];
+    let wordRainTimer = null;
+    let wordRainScore = 0;
+    let wordRainTime = 45;
+    let currentRainWord = "";
+
+    function nextRainWord() {
+        currentRainWord = WORD_RAIN_WORDS[Math.floor(Math.random() * WORD_RAIN_WORDS.length)];
+        const wordEl = document.getElementById('wordrain-word');
+        if (wordEl) {
+            wordEl.textContent = currentRainWord;
+            wordEl.style.animation = 'none';
+            void wordEl.offsetWidth;
+            wordEl.style.animation = '';
+        }
+    }
+
+    function startWordRain() {
+        if (wordRainTimer) clearInterval(wordRainTimer);
+        wordRainScore = 0;
+        wordRainTime = 45;
+        const input = document.getElementById('wordrain-input');
+        if (input) input.value = "";
+        document.getElementById('wordrain-score').textContent = "điểm: 0";
+        document.getElementById('wordrain-time').textContent = "45s";
+        nextRainWord();
+        input?.focus();
+        wordRainTimer = setInterval(() => {
+            wordRainTime -= 1;
+            const timeEl = document.getElementById('wordrain-time');
+            if (timeEl) timeEl.textContent = `${wordRainTime}s`;
+            if (wordRainTime <= 0) {
+                clearInterval(wordRainTimer);
+                wordRainTimer = null;
+                if (timeEl) timeEl.textContent = "hết mưa";
+            }
+        }, 1000);
+    }
+
+    document.getElementById('reset-wordrain')?.addEventListener('click', startWordRain);
+    document.getElementById('wordrain-input')?.addEventListener('input', (event) => {
+        if (currentActiveGame !== "wordrain" || !wordRainTimer) return;
+        if (event.target.value.trim().toLowerCase() !== currentRainWord.toLowerCase()) return;
+        wordRainScore += 1;
+        const scoreEl = document.getElementById('wordrain-score');
+        if (scoreEl) scoreEl.textContent = `điểm: ${wordRainScore}`;
+        event.target.value = "";
+        nextRainWord();
+    });
+
+    // --- GAME G: SIGNAL RADIO ---
+    const SIGNAL_MESSAGES = [
+        "tín hiệu rõ: hôm nay bạn được phép chậm lại.",
+        "tín hiệu rõ: có một câu chưa viết đang đợi bạn.",
+        "tín hiệu rõ: đừng trả lời mọi tiếng gọi.",
+        "tín hiệu rõ: giữ lại một góc yên cho riêng mình.",
+        "tín hiệu rõ: ký ức không cần hoàn hảo mới đáng lưu."
+    ];
+    let hiddenSignal = 50;
+    let currentSignalMessage = SIGNAL_MESSAGES[0];
+
+    function startSignalRadio() {
+        hiddenSignal = 8 + Math.floor(Math.random() * 85);
+        currentSignalMessage = SIGNAL_MESSAGES[Math.floor(Math.random() * SIGNAL_MESSAGES.length)];
+        const dial = document.getElementById('signal-dial');
+        if (dial) dial.value = 50;
+        updateSignalRadio();
+    }
+
+    function updateSignalRadio() {
+        const dial = document.getElementById('signal-dial');
+        const status = document.getElementById('signal-status');
+        if (!dial || !status) return;
+        const distance = Math.abs(parseInt(dial.value, 10) - hiddenSignal);
+        if (distance <= 2) status.textContent = currentSignalMessage;
+        else if (distance <= 8) status.textContent = "tín hiệu gần, còn nhiễu mỏng.";
+        else if (distance <= 18) status.textContent = "có tiếng thì thầm sau lớp rè.";
+        else status.textContent = "nhiễu rất nhẹ.";
+    }
+
+    document.getElementById('signal-dial')?.addEventListener('input', updateSignalRadio);
+    document.getElementById('reset-signal')?.addEventListener('click', startSignalRadio);
+    document.getElementById('signal-note')?.addEventListener('click', () => {
+        if (!moodNoteInput) return;
+        moodNoteInput.value = moodNoteInput.value.trim()
+            ? `${moodNoteInput.value.trim()}\n\n${currentSignalMessage}`
+            : currentSignalMessage;
+        moodNoteInput.dispatchEvent(new Event('input'));
+        moodNoteInput.focus();
+    });
+
+    // --- GAME H: TIC-TAC-TOE ---
+    let tictactoeBoard = Array(9).fill("");
+    let tictactoeActive = false;
+    let tictactoeCurrentTurn = "X";
+
+    function startTicTacToe() {
+        if (tictactoeTimeout) clearTimeout(tictactoeTimeout);
+        tictactoeBoard = Array(9).fill("");
+        tictactoeActive = true;
+        tictactoeCurrentTurn = "X";
+
+        const statusEl = document.getElementById('tictactoe-status');
+        if (statusEl) statusEl.textContent = "đến lượt của bạn (X)";
+
+        const cells = document.querySelectorAll('.tictactoe-cell');
+        cells.forEach(cell => {
+            cell.textContent = "";
+            cell.className = "tictactoe-cell";
+            cell.disabled = false;
+        });
+    }
+
+    function checkTicTacToeWinner(b) {
+        const lines = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+        for (let i = 0; i < lines.length; i++) {
+            const [a, c, d] = lines[i];
+            if (b[a] && b[a] === b[c] && b[a] === b[d]) {
+                return b[a];
+            }
+        }
+        if (b.includes("")) return null;
+        return "draw";
+    }
+
+    function tictactoeMinimax(b, depth, isMaximizing) {
+        const winner = checkTicTacToeWinner(b);
+        if (winner === "O") return 10 - depth;
+        if (winner === "X") return depth - 10;
+        if (winner === "draw") return 0;
+
+        if (isMaximizing) {
+            let bestScore = -Infinity;
+            for (let i = 0; i < 9; i++) {
+                if (b[i] === "") {
+                    b[i] = "O";
+                    let score = tictactoeMinimax(b, depth + 1, false);
+                    b[i] = "";
+                    bestScore = Math.max(score, bestScore);
+                }
+            }
+            return bestScore;
+        } else {
+            let bestScore = Infinity;
+            for (let i = 0; i < 9; i++) {
+                if (b[i] === "") {
+                    b[i] = "X";
+                    let score = tictactoeMinimax(b, depth + 1, true);
+                    b[i] = "";
+                    bestScore = Math.min(score, bestScore);
+                }
+            }
+            return bestScore;
+        }
+    }
+
+    function getTicTacToeBestMove(b) {
+        // 15% ngẫu nhiên để người chơi dễ thắng hơn một chút
+        if (Math.random() < 0.15) {
+            const empties = [];
+            for (let i = 0; i < 9; i++) {
+                if (b[i] === "") empties.push(i);
+            }
+            if (empties.length > 0) {
+                return empties[Math.floor(Math.random() * empties.length)];
+            }
+        }
+
+        let bestScore = -Infinity;
+        let move = -1;
+        for (let i = 0; i < 9; i++) {
+            if (b[i] === "") {
+                b[i] = "O";
+                let score = tictactoeMinimax(b, 0, false);
+                b[i] = "";
+                if (score > bestScore) {
+                    bestScore = score;
+                    move = i;
+                }
+            }
+        }
+        return move;
+    }
+
+    function endTicTacToe(result) {
+        tictactoeActive = false;
+        const statusEl = document.getElementById('tictactoe-status');
+        if (statusEl) {
+            if (result === "X") {
+                statusEl.textContent = "bạn đã chiến thắng khoảng lặng.";
+            } else if (result === "O") {
+                statusEl.textContent = "khoảng lặng đã bao trùm.";
+            } else {
+                statusEl.textContent = "hòa trong tĩnh lặng.";
+            }
+        }
+        document.querySelectorAll('.tictactoe-cell').forEach(cell => {
+            cell.disabled = true;
+        });
+    }
+
+    function tictactoeBotMove() {
+        if (!tictactoeActive) return;
+
+        const move = getTicTacToeBestMove(tictactoeBoard);
+        if (move !== -1) {
+            tictactoeBoard[move] = "O";
+            const cell = document.querySelector(`.tictactoe-cell[data-index="${move}"]`);
+            if (cell) {
+                cell.textContent = "O";
+                cell.classList.add('o-played');
+                cell.disabled = true;
+            }
+
+            const winner = checkTicTacToeWinner(tictactoeBoard);
+            if (winner) {
+                endTicTacToe(winner);
+            } else {
+                tictactoeCurrentTurn = "X";
+                const statusEl = document.getElementById('tictactoe-status');
+                if (statusEl) statusEl.textContent = "đến lượt của bạn (X)";
+            }
+        }
+    }
+
+    document.querySelectorAll('.tictactoe-cell').forEach(cell => {
+        cell.addEventListener('click', (e) => {
+            if (!tictactoeActive || tictactoeCurrentTurn !== "X") return;
+            const index = parseInt(e.target.getAttribute('data-index'), 10);
+            if (tictactoeBoard[index] !== "") return;
+
+            tictactoeBoard[index] = "X";
+            e.target.textContent = "X";
+            e.target.classList.add('x-played');
+            e.target.disabled = true;
+
+            const winner = checkTicTacToeWinner(tictactoeBoard);
+            if (winner) {
+                endTicTacToe(winner);
+            } else {
+                tictactoeCurrentTurn = "O";
+                const statusEl = document.getElementById('tictactoe-status');
+                if (statusEl) statusEl.textContent = "khoảng lặng đang suy nghĩ...";
+                tictactoeTimeout = setTimeout(tictactoeBotMove, 1000);
+            }
+        });
+    });
+
+    document.getElementById('reset-tictactoe')?.addEventListener('click', startTicTacToe);
+
+
+    // --- GAME I: NIM GAME (NHẶT SỎI ZEN) ---
+    let nimStonesCount = 15;
+    let nimCurrentTurn = "player";
+    let nimActive = false;
+
+    function startNim() {
+        if (nimTimeout) clearTimeout(nimTimeout);
+        nimStonesCount = 15;
+        nimCurrentTurn = "player";
+        nimActive = true;
+
+        renderNimStones();
+        updateNimUI();
+    }
+
+    function renderNimStones() {
+        const pile = document.getElementById('nim-pile');
+        if (!pile) return;
+        pile.innerHTML = "";
+        for (let i = 0; i < nimStonesCount; i++) {
+            const stone = document.createElement('div');
+            stone.className = "nim-stone";
+            pile.appendChild(stone);
+        }
+    }
+
+    function updateNimUI() {
+        const statusEl = document.getElementById('nim-status');
+        if (statusEl) {
+            if (nimCurrentTurn === "player") {
+                statusEl.textContent = `${nimStonesCount} viên sỏi. đến lượt của bạn.`;
+            } else {
+                statusEl.textContent = "thiền sư đang suy ngẫm...";
+            }
+        }
+
+        const take1Btn = document.getElementById('nim-take-1');
+        const take2Btn = document.getElementById('nim-take-2');
+        const take3Btn = document.getElementById('nim-take-3');
+
+        if (take1Btn) take1Btn.disabled = !nimActive || nimCurrentTurn !== "player" || nimStonesCount < 1;
+        if (take2Btn) take2Btn.disabled = !nimActive || nimCurrentTurn !== "player" || nimStonesCount < 2;
+        if (take3Btn) take3Btn.disabled = !nimActive || nimCurrentTurn !== "player" || nimStonesCount < 3;
+    }
+
+    function nimBotMove() {
+        if (!nimActive) return;
+
+        // Chiến thuật Nim thắng (giữ số sỏi còn lại chia 4 dư 1: 13, 9, 5, 1)
+        let take = (nimStonesCount - 1) % 4;
+        if (take === 0) {
+            // Bot đang ở thế thua, nhặt ngẫu nhiên 1, 2, hoặc 3 sỏi
+            take = Math.floor(Math.random() * Math.min(3, nimStonesCount)) + 1;
+        }
+
+        // Thực hiện nhặt sỏi
+        const stones = document.querySelectorAll('#nim-pile .nim-stone:not(.removed)');
+        const startIdx = stones.length - take;
+        for (let i = startIdx; i < stones.length; i++) {
+            stones[i].classList.add('removed');
+        }
+
+        nimStonesCount -= take;
+
+        nimTimeout = setTimeout(() => {
+            // Xóa thực tế khỏi DOM
+            renderNimStones();
+
+            if (nimStonesCount === 0) {
+                nimActive = false;
+                const statusEl = document.getElementById('nim-status');
+                if (statusEl) statusEl.textContent = "thiền sư mỉm cười. bạn đã thắng.";
+                updateNimUI();
+            } else {
+                nimCurrentTurn = "player";
+                updateNimUI();
+            }
+        }, 400);
+    }
+
+    function nimPlayerTake(take) {
+        if (!nimActive || nimCurrentTurn !== "player" || nimStonesCount < take) return;
+
+        // Hiệu ứng nhặt sỏi của người chơi
+        const stones = document.querySelectorAll('#nim-pile .nim-stone:not(.removed)');
+        const startIdx = stones.length - take;
+        for (let i = startIdx; i < stones.length; i++) {
+            stones[i].classList.add('removed');
+        }
+
+        nimStonesCount -= take;
+        nimCurrentTurn = "bot";
+        updateNimUI();
+
+        nimTimeout = setTimeout(() => {
+            renderNimStones();
+
+            if (nimStonesCount === 0) {
+                nimActive = false;
+                const statusEl = document.getElementById('nim-status');
+                if (statusEl) statusEl.textContent = "bạn đã nhặt viên sỏi cuối. thiền sư thắng.";
+                updateNimUI();
+            } else {
+                nimTimeout = setTimeout(nimBotMove, 1200);
+            }
+        }, 400);
+    }
+
+    document.getElementById('nim-take-1')?.addEventListener('click', () => nimPlayerTake(1));
+    document.getElementById('nim-take-2')?.addEventListener('click', () => nimPlayerTake(2));
+    document.getElementById('nim-take-3')?.addEventListener('click', () => nimPlayerTake(3));
+    document.getElementById('reset-nim')?.addEventListener('click', startNim);
+
+    // Hiệu ứng hover nhặt sỏi
+    function highlightNimStones(count) {
+        if (!nimActive || nimCurrentTurn !== "player") return;
+        const stones = document.querySelectorAll('#nim-pile .nim-stone:not(.removed)');
+        const start = Math.max(0, stones.length - count);
+        for (let i = start; i < stones.length; i++) {
+            stones[i].classList.add('taking');
+        }
+    }
+
+    function clearHighlightNimStones() {
+        const stones = document.querySelectorAll('#nim-pile .nim-stone');
+        stones.forEach(s => s.classList.remove('taking'));
+    }
+
+    const t1 = document.getElementById('nim-take-1');
+    const t2 = document.getElementById('nim-take-2');
+    const t3 = document.getElementById('nim-take-3');
+
+    t1?.addEventListener('mouseenter', () => highlightNimStones(1));
+    t1?.addEventListener('mouseleave', clearHighlightNimStones);
+    t2?.addEventListener('mouseenter', () => highlightNimStones(2));
+    t2?.addEventListener('mouseleave', clearHighlightNimStones);
+    t3?.addEventListener('mouseenter', () => highlightNimStones(3));
+    t3?.addEventListener('mouseleave', clearHighlightNimStones);
 
     // --- GAME CONTROLS & KEYDOWN ACTIONS ---
     window.addEventListener('keydown', (e) => {

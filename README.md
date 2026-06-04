@@ -32,9 +32,9 @@ Phương án này cho phép bạn mở trang [write.html](file:///d:/Fortfolio/w
 1.  Tại trang Google Sheets vừa tạo, chọn **Mở rộng (Extensions)** -> **Apps Script**.
 2.  Xóa toàn bộ mã mặc định và dán đoạn mã sau vào:
     ```javascript
-    // Dán mã hash SHA-256 của mật khẩu để xác thực quyền đăng bài (Ví dụ dưới đây là của mật khẩu "241099")
-    // Bạn có thể tạo mã hash SHA-256 của mật khẩu bất kỳ từ trang web hoặc để trống "" nếu không cần xác thực POST.
-    const EXPECTED_AUTH_HASH = "8d30e7cc8e7fa52994c653457a419266187747e9b01518f8eb069c9b36ebc534"; 
+    // Lưu mã hash trong Script Properties với key EXPECTED_AUTH_HASH.
+    // Không hardcode mật mã hoặc hash trực tiếp vào file public.
+    const EXPECTED_AUTH_HASH = PropertiesService.getScriptProperties().getProperty("EXPECTED_AUTH_HASH") || "";
 
     function doPost(e) {
       const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -97,7 +97,7 @@ Phương án này cho phép bạn mở trang [write.html](file:///d:/Fortfolio/w
 Nếu bạn không muốn thiết lập Google Sheets và muốn quản lý bài viết cục bộ bằng file tĩnh:
 
 1.  Mở công cụ quản lý ngoại tuyến [encrypt.html](file:///d:/Fortfolio/encrypt.html) trên trình duyệt của bạn.
-2.  Nhập mật khẩu (ví dụ: `241099`), soạn thảo các bài viết, nhấn **Thêm vào danh sách**.
+2.  Nhập mật khẩu riêng của bạn, soạn thảo các bài viết, nhấn **Thêm vào danh sách**.
 3.  Nhấp **Xuất bản file writings.enc** để tải file đã mã hóa về máy.
 4.  Chép đè file `writings.enc` vừa tải về vào thư mục dự án (ngang cấp với `index.html`).
 5.  Hãy chắc chắn rằng trong [script.js](file:///d:/Fortfolio/script.js) biến `GOOGLE_APPS_SCRIPT_URL` đang để trống `""`. Website sẽ tự động tải file `writings.enc` nội bộ để giải mã.

@@ -587,7 +587,7 @@
                 <label for="lock-password"
                     style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal; margin-bottom: 0.3rem;">Mật
                     mã bẻ khóa / đẩy bài:</label>
-                <input type="password" id="lock-password" class="sidebar-input" value="241099" placeholder="Nhập mật mã của bạn...">
+                <input type="password" id="lock-password" class="sidebar-input" placeholder="Nhập mật mã của bạn...">
                 <button class="btn btn-secondary" id="load-posts-btn" style="gap: 0.5rem;">
                     Tải bài viết từ Sheet
                 </button>
@@ -654,7 +654,9 @@
            Dán URL Apps Script Web App của bạn vào đây (Xem hướng dẫn trong README.md)
            ============================================================= */
         const GOOGLE_APPS_SCRIPT_URL = "/api/sheet";
+        const UNLOCK_API_URL = "/api/unlock";
         const VIETNAM_TIME_ZONE = "Asia/Ho_Chi_Minh";
+        let privateSessionToken = "";
 
         // --- CẤU HÌNH KHỞI TẠO TRÌNH SOẠN THẢO QUILL ---
         const quill = new Quill('#editor', {
@@ -741,14 +743,6 @@
             return decoder.decode(decrypted);
         }
 
-        // Tạo mã SHA-256 làm token xác thực
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
         // --- TƯƠNG TÁC GIAO DIỆN ---
         const statusBanner = document.getElementById('status-banner');
         const passwordField = document.getElementById('lock-password');
@@ -781,6 +775,26 @@
             } catch (err) {
                 throw new Error(`Proxy không trả JSON hợp lệ cho ${label}.`);
             }
+        }
+
+        async function requestPrivateUnlock(passcode) {
+            const response = await fetch(UNLOCK_API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ passcode })
+            });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok || !result.success || !result.token) {
+                throw new Error(result.error || "Mật mã chưa chính xác.");
+            }
+            privateSessionToken = result.token;
+            return result.token;
+        }
+
+        function getPrivateSheetHeaders(baseHeaders = {}) {
+            return privateSessionToken
+                ? { ...baseHeaders, Authorization: `Bearer ${privateSessionToken}` }
+                : baseHeaders;
         }
 
         function formatVietnamDateTime(value, options = {}) {
@@ -822,6 +836,7 @@
             postsList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; font-style: italic; text-align: center; padding: 1rem 0;">Đang kết nối...</p>';
 
             try {
+                await requestPrivateUnlock(password);
                 const encryptedRows = await fetchSheetJson("articles", "bài viết");
                 const articles = [];
                 let decryptFailCount = 0;
@@ -909,6 +924,7 @@
             showStatus("Đang tiến hành mã hóa dữ liệu & đăng bài...");
 
             try {
+                await requestPrivateUnlock(password);
                 await fetchSheetJson("articles", "bài viết");
 
                 // Mã hóa các trường dữ liệu trước khi gửi
@@ -916,24 +932,18 @@
                 const encPreview = await encryptData(preview, password);
                 const encContent = await encryptData(contentHTML, password);
 
-                // Tạo token xác thực
-                const authToken = await sha256(password);
-
                 const payload = {
                     type: "article",
                     date: new Date().toISOString(),
                     displayDate: date || formatVietnamDateTime(new Date()),
                     title: encTitle,
                     preview: encPreview,
-                    content: encContent,
-                    auth: authToken
+                    content: encContent
                 };
 
                 const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: getPrivateSheetHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify(payload)
                 });
 

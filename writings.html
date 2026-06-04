@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>introvert — writings</title>
+    <meta name="description" content="Những bài viết riêng của introvert.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20260604-about-utf8">
+    <script>
+        const savedTheme = localStorage.getItem('introvert_theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', savedTheme || (prefersDark ? 'dark' : 'light'));
+    </script>
+</head>
+<body class="writings-page">
+    <header class="main-header writings-main-header scrolled">
+        <nav class="nav-container">
+            <a href="index.html#hero" class="header-brand writings-header-brand" aria-label="Về trang chủ">
+                <img src="assets/introvert.png" alt="introvert" class="header-logo">
+            </a>
+            <div class="nav-links">
+                <a href="index.html#hero" class="nav-link">home</a>
+                <span class="nav-separator">/</span>
+                <a href="journal.html" class="nav-link">journal</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="writings-shell">
+        <section id="writings-lock" class="writings-lock password-box">
+            <img src="assets/introvert.png" alt="introvert" class="password-logo-img writings-lock-logo">
+            <p class="password-hint writings-lock-copy">Không gian riêng tư. Vui lòng nhập mật mã 6 số để mở khóa.</p>
+            <form id="writings-lock-form" class="writings-lock-form">
+                <div class="passcode-inputs writings-passcode-inputs">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit writings-passcode-digit" aria-label="Số thứ 1" autocomplete="off">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit writings-passcode-digit" aria-label="Số thứ 2" autocomplete="off">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit writings-passcode-digit" aria-label="Số thứ 3" autocomplete="off">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit writings-passcode-digit" aria-label="Số thứ 4" autocomplete="off">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit writings-passcode-digit" aria-label="Số thứ 5" autocomplete="off">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit writings-passcode-digit" aria-label="Số thứ 6" autocomplete="off">
+                </div>
+                <button type="submit" id="writings-unlock-btn" class="passcode-unlock-btn writings-unlock-btn">mở khóa</button>
+            </form>
+            <p id="writings-lock-status" class="error-msg writings-lock-status" aria-live="polite"></p>
+        </section>
+
+        <section id="writings-app" class="writings-app" hidden>
+            <div class="writings-title-row">
+                <div>
+                    <p class="writings-kicker">private writings</p>
+                    <h1>writings</h1>
+                </div>
+                <button type="button" id="writings-sync-btn" class="journal-action">đồng bộ</button>
+            </div>
+
+            <div class="writings-toolbar">
+                <p id="writings-status" class="writings-status" aria-live="polite"></p>
+                <input id="writings-search" class="writings-search" type="text" placeholder="tìm trong bài viết...">
+            </div>
+
+            <div id="writings-list" class="writings-list"></div>
+        </section>
+    </main>
+
+    <script src="writings.js?v=20260604-about-utf8"></script>
+</body>
+</html>

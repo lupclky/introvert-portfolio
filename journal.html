@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>introvert — journal</title>
+    <meta name="description" content="Trang nhật ký riêng của introvert.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20260604-about-utf8">
+    <script>
+        const savedTheme = localStorage.getItem('introvert_theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', savedTheme || (prefersDark ? 'dark' : 'light'));
+    </script>
+</head>
+<body class="journal-page">
+    <header class="main-header journal-main-header scrolled">
+        <nav class="nav-container">
+            <a href="index.html#hero" class="header-brand journal-header-brand" aria-label="Về trang chủ">
+                <img src="assets/introvert.png" alt="introvert" class="header-logo">
+            </a>
+            <div class="nav-links">
+                <a href="index.html#hero" class="nav-link">home</a>
+                <span class="nav-separator">/</span>
+                <a href="write.html" class="nav-link">write</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="journal-shell">
+        <section id="journal-lock" class="journal-lock password-box">
+            <img src="assets/introvert.png" alt="introvert" class="password-logo-img journal-lock-logo">
+            <p class="password-hint journal-lock-copy">Không gian riêng tư. Vui lòng nhập mật mã 6 số để mở khóa.</p>
+            <form id="journal-lock-form" class="journal-lock-form">
+                <div class="passcode-inputs journal-passcode-inputs">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit journal-passcode-digit" aria-label="Số thứ 1" autocomplete="off">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit journal-passcode-digit" aria-label="Số thứ 2" autocomplete="off">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit journal-passcode-digit" aria-label="Số thứ 3" autocomplete="off">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit journal-passcode-digit" aria-label="Số thứ 4" autocomplete="off">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit journal-passcode-digit" aria-label="Số thứ 5" autocomplete="off">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="passcode-digit journal-passcode-digit" aria-label="Số thứ 6" autocomplete="off">
+                </div>
+                <button type="submit" id="journal-unlock-btn" class="passcode-unlock-btn journal-unlock-btn">mở khóa</button>
+            </form>
+            <p id="journal-lock-status" class="error-msg journal-lock-status" aria-live="polite"></p>
+        </section>
+
+        <section id="journal-app" class="journal-app" hidden>
+            <div class="journal-title-row">
+                <div>
+                    <p class="journal-kicker">private journal</p>
+                    <h1>nhật ký</h1>
+                </div>
+                <button type="button" id="journal-sync-btn" class="journal-action">đồng bộ</button>
+            </div>
+
+            <section class="journal-editor">
+                <div class="journal-editor-grid">
+                    <label>
+                        <span>ngày</span>
+                        <input id="journal-date" type="date">
+                    </label>
+                    <label>
+                        <span>tâm trạng</span>
+                        <select id="journal-mood">
+                            <option value="tĩnh">tĩnh</option>
+                            <option value="mơ">mơ</option>
+                            <option value="lặng">lặng</option>
+                            <option value="trầm">trầm</option>
+                            <option value="loạn">loạn</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span>tag</span>
+                        <input id="journal-tags" type="text" placeholder="đêm, mưa, riêng tư">
+                    </label>
+                </div>
+
+                <input id="journal-title" class="journal-title-input" type="text" placeholder="tựa đề hôm nay...">
+                <textarea id="journal-content" class="journal-content-input" placeholder="viết dài hơn ở đây..."></textarea>
+
+                <div class="journal-template-panel journal-page-templates">
+                    <button type="button" class="journal-page-template" data-template="checkin">check-in</button>
+                    <button type="button" class="journal-page-template" data-template="gratitude">biết ơn</button>
+                    <button type="button" class="journal-page-template" data-template="release">buông xuống</button>
+                    <button type="button" class="journal-page-template" data-template="letter">thư cho mình</button>
+                    <button type="button" class="journal-page-template" data-template="dream">giấc mơ</button>
+                </div>
+
+                <div class="journal-editor-actions">
+                    <button type="button" id="journal-save-btn" class="journal-action primary">lưu lên Sheet</button>
+                    <button type="button" id="journal-draft-clear" class="journal-action">xóa nháp</button>
+                    <span id="journal-save-status" class="journal-status" aria-live="polite"></span>
+                </div>
+            </section>
+
+            <section class="journal-list-section">
+                <div class="journal-list-header">
+                    <h2>những trang đã lưu</h2>
+                    <input id="journal-search-input" class="journal-search-wide" type="text" placeholder="tìm trong nhật ký...">
+                </div>
+                <div id="journal-list" class="journal-list"></div>
+            </section>
+        </section>
+    </main>
+
+    <script src="journal.js?v=20260604-about-utf8"></script>
+</body>
+</html>

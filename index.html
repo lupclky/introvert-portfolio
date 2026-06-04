@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
     
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="styles.css?v=20260603-ambient-stable">
+    <link rel="stylesheet" href="styles.css?v=20260604-about-utf8">
 </head>
 <body class="private-locked">
 
@@ -27,7 +27,9 @@
                 <img src="assets/introvert.png" alt="introvert" class="header-logo">
             </a>
             <div class="nav-links">
-                <a href="#writings" class="nav-link">writings</a>
+                <a href="writings.html" class="nav-link">writings</a>
+                <span class="nav-separator">/</span>
+                <a href="journal.html" class="nav-link">journal</a>
                 <span class="nav-separator">/</span>
                 <button id="nav-sanctuary-btn" class="nav-btn" aria-label="Mở góc bình yên">sanctuary</button>
                 <span class="nav-separator">/</span>
@@ -41,6 +43,7 @@
         <div class="hero-container">
             <img src="assets/introvert.png" alt="introvert logo" class="hero-logo" id="logo-img">
             <p class="hero-tagline" id="hero-tagline"></p>
+            <p class="hero-intro-line">một người hướng nội đang học cách nói chậm hơn.</p>
             <div class="public-message hero-message">
                     <label for="public-message-input" class="passcode-message-label">gửi lời nhắn tới introvert</label>
                     <textarea id="public-message-input" class="passcode-message-input" rows="3" placeholder="để lại vài dòng trước khi rời đi..."></textarea>
@@ -49,22 +52,65 @@
                         <span id="public-message-status" class="passcode-message-status" aria-live="polite"></span>
                     </div>
             </div>
-            <button id="hero-sanctuary-trigger" class="hero-cta" aria-label="Mở góc bình yên">[ bước vào góc bình yên ]</button>
+            <div class="hero-actions">
+                <a href="#about" class="hero-cta hero-cta-link">[ đọc một chút ]</a>
+                <button id="hero-sanctuary-trigger" class="hero-cta" aria-label="Mở góc bình yên">[ bước vào góc bình yên ]</button>
+            </div>
         </div>
-        <a href="#writings" class="scroll-indicator" aria-label="Cuộn xuống để xem bài viết">
+        <a href="#about" class="scroll-indicator" aria-label="Cuộn xuống để đọc giới thiệu">
             <span class="scroll-arrow">·</span>
         </a>
     </section>
 
     <!-- Main Content Container -->
     <main class="content-container">
-        
-        <!-- Writings Section -->
-        <section id="writings" class="fade-in-section">
-            <h2 class="section-title">Writings</h2>
-            <div class="writings-list">
-                <p class="writings-loading" style="color: var(--text-muted); font-style: italic;">cần mở khóa để đọc những dòng này.</p>
+
+        <section id="about" class="home-intro fade-in-section">
+            <p class="home-kicker">about</p>
+            <h1 class="home-title">tôi là một người hướng nội.</h1>
+            <div class="home-copy">
+                <p>Tôi thường hiểu thế giới bằng những khoảng lặng: một buổi chiều ít tiếng động, một đoạn nhạc nhỏ, vài dòng chữ viết ra rồi để yên.</p>
+                <p>Trang này là nơi tôi giữ lại những suy nghĩ chậm. Không phải để ồn ào hơn, chỉ để những điều khó nói có một chỗ đủ mềm để tồn tại.</p>
             </div>
+
+            <div class="about-private" id="about-private">
+                <div id="about-private-lock" class="about-private-lock">
+                    <p class="about-private-label">bản giới thiệu đầy đủ</p>
+                    <p class="about-private-desc">phần này riêng tư hơn, cần mã khóa để đọc.</p>
+                    <form id="about-lock-form" class="about-lock-form">
+                        <div class="about-passcode-inputs">
+                            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="about-passcode-digit" aria-label="Số thứ 1" autocomplete="off">
+                            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="about-passcode-digit" aria-label="Số thứ 2" autocomplete="off">
+                            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="about-passcode-digit" aria-label="Số thứ 3" autocomplete="off">
+                            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="about-passcode-digit" aria-label="Số thứ 4" autocomplete="off">
+                            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="about-passcode-digit" aria-label="Số thứ 5" autocomplete="off">
+                            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="about-passcode-digit" aria-label="Số thứ 6" autocomplete="off">
+                        </div>
+                        <button type="submit" class="about-unlock-btn">đọc bản đầy đủ</button>
+                    </form>
+                    <p id="about-lock-status" class="about-lock-status" aria-live="polite"></p>
+                </div>
+                <article id="about-private-content" class="about-private-content" hidden></article>
+            </div>
+        </section>
+
+        <section id="spaces" class="home-spaces fade-in-section" aria-label="Những góc riêng">
+            <a href="writings.html" class="home-space-link">
+                <span class="home-space-name">writings</span>
+                <span class="home-space-desc">những bài viết riêng, mở bằng mật mã.</span>
+            </a>
+            <a href="journal.html" class="home-space-link">
+                <span class="home-space-name">journal</span>
+                <span class="home-space-desc">nhật ký dài hơn, lưu trên Sheet.</span>
+            </a>
+            <button type="button" id="home-sanctuary-trigger" class="home-space-link home-space-button">
+                <span class="home-space-name">sanctuary</span>
+                <span class="home-space-desc">mood, âm thanh, thư tương lai và vài trò chơi nhỏ.</span>
+            </button>
+            <a href="#introvert-messages" class="home-space-link">
+                <span class="home-space-name">messages</span>
+                <span class="home-space-desc">những lời nhắn được giữ lại sau khi mở khóa.</span>
+            </a>
         </section>
 
         <!-- Introvert Messages Section -->
@@ -166,12 +212,54 @@
                 <button class="mood-state-btn" data-state="trầm" aria-label="Buồn bã">trầm</button>
                 <button class="mood-state-btn" data-state="loạn" aria-label="Bất an">loạn</button>
             </div>
+
+            <a href="journal.html" class="journal-page-link">mở trang nhật ký rộng</a>
+
+            <div class="ritual-panel">
+                <div class="ritual-actions">
+                    <button type="button" id="ritual-prompt-btn" class="ritual-btn">rút tín hiệu</button>
+                    <button type="button" id="ritual-breathe-btn" class="ritual-btn">nhịp thở</button>
+                    <button type="button" id="ritual-note-btn" class="ritual-btn">đưa vào nhật ký</button>
+                </div>
+                <p id="ritual-output" class="ritual-output">một tín hiệu nhỏ sẽ xuất hiện ở đây.</p>
+            </div>
+
+            <div class="journal-dashboard">
+                <div class="journal-stat">
+                    <span class="journal-stat-value" id="journal-streak-count">0</span>
+                    <span class="journal-stat-label">ngày liên tiếp</span>
+                </div>
+                <div class="journal-stat">
+                    <span class="journal-stat-value" id="journal-entry-count">0</span>
+                    <span class="journal-stat-label">ngày đã ghi</span>
+                </div>
+                <div class="journal-stat">
+                    <span class="journal-stat-value" id="journal-word-count">0</span>
+                    <span class="journal-stat-label">từ hôm nay</span>
+                </div>
+            </div>
+
+            <div class="journal-template-panel">
+                <button type="button" class="journal-template-btn" data-template="checkin">check-in</button>
+                <button type="button" class="journal-template-btn" data-template="gratitude">biết ơn</button>
+                <button type="button" class="journal-template-btn" data-template="release">buông xuống</button>
+                <button type="button" class="journal-template-btn" data-template="tomorrow">ngày mai</button>
+                <button type="button" class="journal-template-btn" data-template="dream">giấc mơ</button>
+            </div>
             
             <div class="mood-note-container">
                 <textarea id="mood-note-input" class="mood-note-input" placeholder="hôm nay thế nào? dệt những suy nghĩ vào đây..."></textarea>
                 <div class="journal-save-row">
                     <button id="mood-save-btn" class="capsule-btn btn-small">ghi lại</button>
                 </div>
+            </div>
+
+            <div class="memory-jar">
+                <div class="memory-jar-row">
+                    <input type="text" id="memory-jar-input" class="memory-jar-input" placeholder="giữ lại một mảnh ký ức...">
+                    <button type="button" id="memory-jar-save" class="memory-jar-save">cất</button>
+                </div>
+                <div id="memory-jar-list" class="memory-jar-list"></div>
             </div>
             
             <div class="mood-calendar-section">
@@ -249,6 +337,11 @@
                 <button class="game-select-btn" data-game="2048">zen 2048</button>
                 <button class="game-select-btn" data-game="snake">rắn săn mồi</button>
                 <button class="game-select-btn" data-game="conway">vườn conway</button>
+                <button class="game-select-btn" data-game="fireflies">đom đóm đêm</button>
+                <button class="game-select-btn" data-game="wordrain">mưa chữ</button>
+                <button class="game-select-btn" data-game="signal">đài tín hiệu</button>
+                <button class="game-select-btn" data-game="tictactoe">cờ caro tĩnh lặng</button>
+                <button class="game-select-btn" data-game="nim">nhặt sỏi zen</button>
             </div>
             
             <div class="game-container" id="game-active-container">
@@ -316,6 +409,89 @@
                         <button id="conway-random" class="capsule-btn btn-small">gieo hạt ngẫu nhiên</button>
                     </div>
                 </div>
+
+                <!-- Game E: Firefly Night -->
+                <div class="game-playarea" id="game-play-fireflies">
+                    <p class="game-desc">chạm vào những đốm sáng trước khi đêm nuốt chúng...</p>
+                    <div class="game-quiet-score-row">
+                        <span id="firefly-score" class="game-score-lbl">đom đóm: 0</span>
+                        <span id="firefly-status" class="game-score-lbl score-best">bắt đầu khi sẵn sàng</span>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="firefly-canvas" width="320" height="240"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <button id="reset-fireflies" class="capsule-btn btn-small">thắp đêm</button>
+                    </div>
+                </div>
+
+                <!-- Game F: Word Rain -->
+                <div class="game-playarea" id="game-play-wordrain">
+                    <p class="game-desc">gõ đúng chữ đang rơi trước khi nó tan đi...</p>
+                    <div class="wordrain-stage">
+                        <span id="wordrain-word" class="wordrain-word">lặng</span>
+                    </div>
+                    <input type="text" id="wordrain-input" class="wordrain-input" autocomplete="off" placeholder="gõ chữ ở đây...">
+                    <div class="game-quiet-score-row">
+                        <span id="wordrain-score" class="game-score-lbl">điểm: 0</span>
+                        <span id="wordrain-time" class="game-score-lbl score-best">45s</span>
+                    </div>
+                    <div class="game-actions">
+                        <button id="reset-wordrain" class="capsule-btn btn-small">mở mưa</button>
+                    </div>
+                </div>
+
+                <!-- Game G: Signal Radio -->
+                <div class="game-playarea" id="game-play-signal">
+                    <p class="game-desc">dò một tần số lạ, càng gần càng rõ...</p>
+                    <div class="signal-panel">
+                        <input type="range" id="signal-dial" class="signal-dial" min="1" max="100" value="50">
+                        <p id="signal-status" class="signal-status">nhiễu rất nhẹ.</p>
+                    </div>
+                    <div class="game-actions">
+                        <button id="reset-signal" class="capsule-btn btn-small">dò lại</button>
+                        <button id="signal-note" class="capsule-btn btn-small">ghi tín hiệu</button>
+                    </div>
+                </div>
+
+                <!-- Game H: Tic-Tac-Toe -->
+                <div class="game-playarea" id="game-play-tictactoe">
+                    <p class="game-desc">một ván cờ nhỏ với khoảng lặng...</p>
+                    <div class="tictactoe-board" id="tictactoe-board">
+                        <button class="tictactoe-cell" data-index="0" aria-label="Ô cờ 1"></button>
+                        <button class="tictactoe-cell" data-index="1" aria-label="Ô cờ 2"></button>
+                        <button class="tictactoe-cell" data-index="2" aria-label="Ô cờ 3"></button>
+                        <button class="tictactoe-cell" data-index="3" aria-label="Ô cờ 4"></button>
+                        <button class="tictactoe-cell" data-index="4" aria-label="Ô cờ 5"></button>
+                        <button class="tictactoe-cell" data-index="5" aria-label="Ô cờ 6"></button>
+                        <button class="tictactoe-cell" data-index="6" aria-label="Ô cờ 7"></button>
+                        <button class="tictactoe-cell" data-index="7" aria-label="Ô cờ 8"></button>
+                        <button class="tictactoe-cell" data-index="8" aria-label="Ô cờ 9"></button>
+                    </div>
+                    <div class="game-actions">
+                        <span id="tictactoe-status" class="game-score-lbl">đến lượt của bạn (X)</span>
+                        <button id="reset-tictactoe" class="capsule-btn btn-small">chơi lại</button>
+                    </div>
+                </div>
+
+                <!-- Game I: Nim Game -->
+                <div class="game-playarea" id="game-play-nim">
+                    <p class="game-desc">nhặt sỏi cùng thiền sư. ai nhặt viên cuối cùng sẽ thua...</p>
+                    <div class="nim-container">
+                        <div class="nim-pile" id="nim-pile">
+                            <!-- Sẽ sinh tự động các viên sỏi qua Javascript -->
+                        </div>
+                    </div>
+                    <div class="game-actions">
+                        <span id="nim-status" class="game-score-lbl">15 viên sỏi. đến lượt của bạn.</span>
+                        <div class="nim-buttons">
+                            <button id="nim-take-1" class="capsule-btn btn-small" data-take="1">nhặt 1 sỏi</button>
+                            <button id="nim-take-2" class="capsule-btn btn-small" data-take="2">nhặt 2 sỏi</button>
+                            <button id="nim-take-3" class="capsule-btn btn-small" data-take="3">nhặt 3 sỏi</button>
+                        </div>
+                        <button id="reset-nim" class="capsule-btn btn-small">bắt đầu lại</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -334,6 +510,6 @@
     <audio id="ambient-audio" loop></audio>
 
     <!-- Script file -->
-    <script src="script.js?v=20260603-ambient-stable"></script>
+    <script src="script.js?v=20260604-about-utf8"></script>
 </body>
 </html>
