@@ -17,11 +17,11 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
     let minigoTimeout = null;
     let mastermindTimeout = null;
     let memoryTimeout = null;
-let snakeRunning = false;
-let snakeDir = { x: 1, y: 0 };
-let snakeNextDir = { x: 1, y: 0 };
-snakeTimeout = null;
-conwayTimer = null;
+    let snakeRunning = false;
+    let snakeDir = { x: 1, y: 0 };
+    let snakeNextDir = { x: 1, y: 0 };
+    let snakeTimeout = null;
+    let conwayTimer = null;
     let fireflyFrame = null;
     let firefliesRunning = false;
     let wordRainTimer = null;
@@ -29,6 +29,23 @@ conwayTimer = null;
     let breatheInterval = null;
     let towerAnim = null;
     let sandAnim = null;
+
+    // Variables for 18 new games
+    let rakeAnim = null;
+    let ripplesAnim = null;
+    let chimesAnim = null;
+    let bonsaiAnim = null;
+    let origamiAnim = null;
+    let pebblesAnim = null;
+    let constellationAnim = null;
+    let lanternAnim = null;
+    let shadowAnim = null;
+    let tangramAnim = null;
+    
+    // Audio Context and synthesized node references for soundscape and chimes
+    let audioCtx = null;
+    let soundscapeActiveNodes = {};
+    let soundscapeIntervals = [];
 
     function stopIndieGames() {
         if (fireflyFrame) cancelAnimationFrame(fireflyFrame);
@@ -55,6 +72,44 @@ conwayTimer = null;
         towerAnim = null;
         if (sandAnim) cancelAnimationFrame(sandAnim);
         sandAnim = null;
+
+        // Clean up 18 new games animations
+        if (rakeAnim) cancelAnimationFrame(rakeAnim);
+        rakeAnim = null;
+        if (ripplesAnim) cancelAnimationFrame(ripplesAnim);
+        ripplesAnim = null;
+        if (chimesAnim) cancelAnimationFrame(chimesAnim);
+        chimesAnim = null;
+        if (bonsaiAnim) cancelAnimationFrame(bonsaiAnim);
+        bonsaiAnim = null;
+        if (origamiAnim) cancelAnimationFrame(origamiAnim);
+        origamiAnim = null;
+        if (pebblesAnim) cancelAnimationFrame(pebblesAnim);
+        pebblesAnim = null;
+        if (constellationAnim) cancelAnimationFrame(constellationAnim);
+        constellationAnim = null;
+        if (lanternAnim) cancelAnimationFrame(lanternAnim);
+        lanternAnim = null;
+        if (shadowAnim) cancelAnimationFrame(shadowAnim);
+        shadowAnim = null;
+        if (tangramAnim) cancelAnimationFrame(tangramAnim);
+        tangramAnim = null;
+
+        // Clean up Soundscape audio contexts, nodes and intervals
+        soundscapeIntervals.forEach(interval => clearInterval(interval));
+        soundscapeIntervals = [];
+        
+        if (audioCtx) {
+            try {
+                if (audioCtx.state !== 'closed') {
+                    audioCtx.close();
+                }
+            } catch (err) {
+                console.error("Error closing AudioContext:", err);
+            }
+            audioCtx = null;
+        }
+        soundscapeActiveNodes = {};
     }
 
     gameSelectBtns.forEach(btn => {
@@ -86,6 +141,24 @@ conwayTimer = null;
             else if (gameName === 'breathe') title = 'vòng tròn thở';
             else if (gameName === 'tower') title = 'tháp cân bằng';
             else if (gameName === 'sand') title = 'rơi cát';
+            else if (gameName === 'rake') title = 'cào cát zen';
+            else if (gameName === 'soundscape') title = 'hòa âm thiên nhiên';
+            else if (gameName === 'ripples') title = 'giọt nước mặt hồ';
+            else if (gameName === 'chimes') title = 'chuông gió bình yên';
+            else if (gameName === 'kintsugi') title = 'hàn gắn kintsugi';
+            else if (gameName === 'bonsai') title = 'cắt tỉa bonsai';
+            else if (gameName === 'origami') title = 'gấp giấy origami';
+            else if (gameName === 'calligraphy') title = 'luyện thư pháp';
+            else if (gameName === 'ikebana') title = 'cắm hoa ikebana';
+            else if (gameName === 'stainedglass') title = 'xếp kính màu';
+            else if (gameName === 'pebbles') title = 'xếp đá thăng bằng';
+            else if (gameName === 'constellation') title = 'dệt sao đêm';
+            else if (gameName === 'tea') title = 'nghệ thuật trà đạo';
+            else if (gameName === 'lantern') title = 'thả đèn trời';
+            else if (gameName === 'shadow') title = 'múa bóng nghệ thuật';
+            else if (gameName === 'tangram') title = 'trò chơi trí uẩn';
+            else if (gameName === 'mahjong') title = 'cặp trùng mahjong';
+            else if (gameName === 'zensudoku') title = 'sudoku tĩnh lặng';
             if (gameTitleText) gameTitleText.textContent = title;
 
             gamePlayareas.forEach(p => p.classList.remove('active'));
@@ -124,6 +197,42 @@ conwayTimer = null;
                 startTower();
             } else if (gameName === 'sand') {
                 startSand();
+            } else if (gameName === 'rake') {
+                startRake();
+            } else if (gameName === 'soundscape') {
+                startSoundscape();
+            } else if (gameName === 'ripples') {
+                startRipples();
+            } else if (gameName === 'chimes') {
+                startChimes();
+            } else if (gameName === 'kintsugi') {
+                startKintsugi();
+            } else if (gameName === 'bonsai') {
+                startBonsai();
+            } else if (gameName === 'origami') {
+                startOrigami();
+            } else if (gameName === 'calligraphy') {
+                startCalligraphy();
+            } else if (gameName === 'ikebana') {
+                startIkebana();
+            } else if (gameName === 'stainedglass') {
+                startStainedGlass();
+            } else if (gameName === 'pebbles') {
+                startPebbles();
+            } else if (gameName === 'constellation') {
+                startConstellation();
+            } else if (gameName === 'tea') {
+                startTea();
+            } else if (gameName === 'lantern') {
+                startLantern();
+            } else if (gameName === 'shadow') {
+                startShadow();
+            } else if (gameName === 'tangram') {
+                startTangram();
+            } else if (gameName === 'mahjong') {
+                startMahjong();
+            } else if (gameName === 'zensudoku') {
+                startSudoku();
             }
         });
     });
@@ -2507,4 +2616,1921 @@ conwayTimer = null;
         
         window.addEventListener('touchend', () => isDrawingSand = false);
     }
+
+    // --- GAME 1: CÀO CÁT ZEN ---
+    let rakeCanvas, rakeCtx, isDrawingRake = false;
+    let rakeStones = [{x: 100, y: 100, r: 25}, {x: 220, y: 130, r: 30}, {x: 160, y: 230, r: 20}];
+    function startRake() {
+        if (rakeAnim) cancelAnimationFrame(rakeAnim);
+        rakeCanvas = document.getElementById('rake-canvas');
+        if (!rakeCanvas) return;
+        rakeCtx = rakeCanvas.getContext('2d');
+        clearRakeSand();
+        
+        rakeCanvas.onmousedown = (e) => { isDrawingRake = true; drawRakeStroke(e); };
+        window.onmouseup = () => isDrawingRake = false;
+        rakeCanvas.onmousemove = drawRakeStroke;
+
+        rakeCanvas.ontouchstart = (e) => { isDrawingRake = true; drawRakeStroke(e.touches[0]); };
+        window.ontouchend = () => isDrawingRake = false;
+        rakeCanvas.ontouchmove = (e) => { if(isDrawingRake) drawRakeStroke(e.touches[0]); };
+    }
+    function clearRakeSand() {
+        if (!rakeCanvas) return;
+        rakeCtx.fillStyle = '#eae2d5'; // sand color
+        rakeCtx.fillRect(0, 0, rakeCanvas.width, rakeCanvas.height);
+        rakeCtx.fillStyle = 'rgba(0,0,0,0.02)';
+        for(let i=0; i<1500; i++) {
+            rakeCtx.fillRect(Math.random()*rakeCanvas.width, Math.random()*rakeCanvas.height, 1, 1);
+        }
+        drawRakeStones();
+    }
+    function drawRakeStones() {
+        rakeStones.forEach(s => {
+            rakeCtx.beginPath();
+            rakeCtx.arc(s.x + 3, s.y + 4, s.r, 0, Math.PI*2);
+            rakeCtx.fillStyle = 'rgba(0,0,0,0.1)';
+            rakeCtx.fill();
+            
+            rakeCtx.beginPath();
+            rakeCtx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+            rakeCtx.fillStyle = activeTheme === 'dark' ? '#555' : '#888';
+            rakeCtx.fill();
+            
+            rakeCtx.beginPath();
+            rakeCtx.arc(s.x - 2, s.y - 2, s.r - 4, 0, Math.PI*2);
+            rakeCtx.fillStyle = activeTheme === 'dark' ? '#666' : '#9a9';
+            rakeCtx.fill();
+        });
+    }
+    function drawRakeStroke(e) {
+        if (!isDrawingRake || !rakeCanvas) return;
+        const rect = rakeCanvas.getBoundingClientRect();
+        const clientX = e.clientX || e.pageX;
+        const clientY = e.clientY || e.pageY;
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+
+        rakeCtx.strokeStyle = 'rgba(0,0,0,0.08)';
+        if(activeTheme === 'dark') rakeCtx.strokeStyle = 'rgba(255,255,255,0.06)';
+        rakeCtx.lineWidth = 2;
+        for(let i = -10; i <= 10; i += 5) {
+            rakeCtx.beginPath();
+            rakeCtx.arc(x, y, 8 + i, 0, Math.PI*2);
+            rakeCtx.stroke();
+        }
+        drawRakeStones();
+    }
+    document.getElementById('rake-clear')?.addEventListener('click', clearRakeSand);
+
+    // --- GAME 2: HÒA ÂM THIÊN NHIÊN ---
+    function startSoundscape() {
+        initAudioContext();
+        setupSoundscapeChannel('vol-rain', 'rain');
+        setupSoundscapeChannel('vol-wind', 'wind');
+        setupSoundscapeChannel('vol-waves', 'waves');
+        setupSoundscapeChannel('vol-fire', 'fire');
+        setupSoundscapeChannel('vol-piano', 'piano');
+        setupSoundscapeChannel('vol-chimes', 'chimes');
+    }
+    function initAudioContext() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+    function setupSoundscapeChannel(sliderId, type) {
+        const slider = document.getElementById(sliderId);
+        if (!slider) return;
+        
+        slider.oninput = () => {
+            initAudioContext();
+            const val = parseFloat(slider.value) / 100;
+            updateSoundscapeVolume(type, val);
+        };
+    }
+    function updateSoundscapeVolume(type, volume) {
+        if (!audioCtx) return;
+        if (!soundscapeActiveNodes[type]) {
+            createSoundscapeNode(type);
+        }
+        if (soundscapeActiveNodes[type] && soundscapeActiveNodes[type].gainNode) {
+            soundscapeActiveNodes[type].gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
+        }
+    }
+    function createSoundscapeNode(type) {
+        let gainNode = audioCtx.createGain();
+        gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+        gainNode.connect(audioCtx.destination);
+        
+        if (type === 'rain') {
+            let noise = audioCtx.createBufferSource();
+            noise.buffer = createNoiseBuffer('white');
+            noise.loop = true;
+            let filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(900, audioCtx.currentTime);
+            noise.connect(filter);
+            filter.connect(gainNode);
+            noise.start(0);
+            soundscapeActiveNodes[type] = { source: noise, gainNode: gainNode };
+        } else if (type === 'wind') {
+            let noise = audioCtx.createBufferSource();
+            noise.buffer = createNoiseBuffer('pink');
+            noise.loop = true;
+            let filter = audioCtx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.Q.setValueAtTime(2.0, audioCtx.currentTime);
+            
+            let lfo = audioCtx.createOscillator();
+            lfo.frequency.setValueAtTime(0.05, audioCtx.currentTime);
+            let lfoGain = audioCtx.createGain();
+            lfoGain.gain.setValueAtTime(400, audioCtx.currentTime);
+            lfo.connect(lfoGain);
+            lfoGain.connect(filter.frequency);
+            
+            noise.connect(filter);
+            filter.connect(gainNode);
+            lfo.start(0);
+            noise.start(0);
+            soundscapeActiveNodes[type] = { source: noise, gainNode: gainNode, lfo: lfo };
+        } else if (type === 'waves') {
+            let noise = audioCtx.createBufferSource();
+            noise.buffer = createNoiseBuffer('pink');
+            noise.loop = true;
+            let filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(400, audioCtx.currentTime);
+            
+            let lfo = audioCtx.createOscillator();
+            lfo.frequency.setValueAtTime(0.1, audioCtx.currentTime);
+            let lfoGain = audioCtx.createGain();
+            lfoGain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+            
+            let waveVolumeOffset = audioCtx.createGain();
+            waveVolumeOffset.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            
+            lfo.connect(lfoGain);
+            lfoGain.connect(waveVolumeOffset.gain);
+            
+            noise.connect(filter);
+            filter.connect(waveVolumeOffset);
+            waveVolumeOffset.connect(gainNode);
+            lfo.start(0);
+            noise.start(0);
+            soundscapeActiveNodes[type] = { source: noise, gainNode: gainNode, lfo: lfo };
+        } else if (type === 'fire') {
+            let noise = audioCtx.createBufferSource();
+            noise.buffer = createNoiseBuffer('pink');
+            noise.loop = true;
+            let filter = audioCtx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(600, audioCtx.currentTime);
+            noise.connect(filter);
+            filter.connect(gainNode);
+            noise.start(0);
+            
+            let fireInterval = setInterval(() => {
+                if (Math.random() < 0.15 && audioCtx && gainNode.gain.value > 0) {
+                    playCrackNode(gainNode);
+                }
+            }, 100);
+            soundscapeIntervals.push(fireInterval);
+            soundscapeActiveNodes[type] = { source: noise, gainNode: gainNode };
+        } else if (type === 'piano') {
+            let pianoInterval = setInterval(() => {
+                if (Math.random() < 0.4 && audioCtx && gainNode.gain.value > 0) {
+                    const freqs = [130.81, 146.83, 164.81, 196.00, 220.00, 261.63, 293.66, 329.63, 392.00, 440.00];
+                    const freq = freqs[Math.floor(Math.random() * freqs.length)];
+                    playPianoNode(freq, gainNode);
+                }
+            }, 3000);
+            soundscapeIntervals.push(pianoInterval);
+            soundscapeActiveNodes[type] = { gainNode: gainNode };
+        } else if (type === 'chimes') {
+            let chimeInterval = setInterval(() => {
+                if (Math.random() < 0.3 && audioCtx && gainNode.gain.value > 0) {
+                    const freqs = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
+                    const freq = freqs[Math.floor(Math.random() * freqs.length)];
+                    playChimeNode(freq, gainNode);
+                }
+            }, 4000);
+            soundscapeIntervals.push(chimeInterval);
+            soundscapeActiveNodes[type] = { gainNode: gainNode };
+        }
+    }
+    function playCrackNode(parentGain) {
+        if (!audioCtx) return;
+        let osc = audioCtx.createOscillator();
+        let gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(1200 + Math.random() * 800, audioCtx.currentTime);
+        gain.gain.setValueAtTime(parentGain.gain.value * 0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.02);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(0);
+        osc.stop(audioCtx.currentTime + 0.03);
+    }
+    function playPianoNode(freq, parentGain) {
+        if (!audioCtx) return;
+        let osc = audioCtx.createOscillator();
+        let gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        
+        let now = audioCtx.currentTime;
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(parentGain.gain.value * 0.3, now + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 4.0);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(0);
+        osc.stop(now + 4.5);
+    }
+    function playChimeNode(freq, parentGain) {
+        if (!audioCtx) return;
+        let osc1 = audioCtx.createOscillator();
+        let osc2 = audioCtx.createOscillator();
+        let gain = audioCtx.createGain();
+        
+        osc1.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        osc2.frequency.setValueAtTime(freq * 1.5, audioCtx.currentTime);
+        
+        let now = audioCtx.currentTime;
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(parentGain.gain.value * 0.2, now + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.0);
+        
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc1.start(0);
+        osc2.start(0);
+        osc1.stop(now + 3.5);
+        osc2.stop(now + 3.5);
+    }
+    function createNoiseBuffer(type) {
+        let bufferSize = 2 * audioCtx.sampleRate;
+        let noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        let output = noiseBuffer.getChannelData(0);
+        let b0, b1, b2, b3, b4, b5, b6;
+        b0 = b1 = b2 = b3 = b4 = b5 = b6 = 0.0;
+        
+        for (let i = 0; i < bufferSize; i++) {
+            let white = Math.random() * 2 - 1;
+            if (type === 'pink') {
+                b0 = 0.99886 * b0 + white * 0.0555179;
+                b1 = 0.99332 * b1 + white * 0.0750759;
+                b2 = 0.96900 * b2 + white * 0.1538520;
+                b3 = 0.86650 * b3 + white * 0.3104856;
+                b4 = 0.55000 * b4 + white * 0.5329522;
+                b5 = -0.7616 * b5 - white * 0.0168980;
+                output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                output[i] *= 0.11;
+                b6 = white * 0.115926;
+            } else {
+                output[i] = white;
+            }
+        }
+        return noiseBuffer;
+    }
+    document.getElementById('soundscape-mute')?.addEventListener('click', () => {
+        const sliders = ['vol-rain', 'vol-wind', 'vol-waves', 'vol-fire', 'vol-piano', 'vol-chimes'];
+        sliders.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = 0;
+        });
+        Object.keys(soundscapeActiveNodes).forEach(type => {
+            updateSoundscapeVolume(type, 0);
+        });
+    });
+
+    // --- GAME 3: GIỌT NƯỚC MẶT HỒ ---
+    let ripplesCanvas, ripplesCtx;
+    let ripplesList = [];
+    let rippleLeaves = [];
+    function startRipples() {
+        if (ripplesAnim) cancelAnimationFrame(ripplesAnim);
+        ripplesCanvas = document.getElementById('ripples-canvas');
+        if (!ripplesCanvas) return;
+        ripplesCtx = ripplesCanvas.getContext('2d');
+        
+        ripplesList = [];
+        rippleLeaves = [
+            { x: 80, y: 120, vx: 0, vy: 0, r: 8, color: '#e5a65d', angle: 0.2 },
+            { x: 220, y: 100, vx: 0, vy: 0, r: 10, color: '#d48a60', angle: -0.5 },
+            { x: 150, y: 240, vx: 0, vy: 0, r: 7, color: '#a2b082', angle: 0.8 }
+        ];
+        
+        ripplesCanvas.onclick = (e) => {
+            const rect = ripplesCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            ripplesList.push({ x: x, y: y, r: 0, maxR: 120, alpha: 1 });
+            triggerChimeSound(x);
+        };
+        
+        loopRipples();
+    }
+    function triggerChimeSound(x) {
+        try {
+            initAudioContext();
+            if (audioCtx) {
+                const pitch = 300 + (x / 320) * 600;
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(pitch, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.5);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(0);
+                osc.stop(audioCtx.currentTime + 1.6);
+            }
+        } catch(e) {}
+    }
+    function loopRipples() {
+        if (!ripplesCanvas) return;
+        ripplesCtx.clearRect(0, 0, ripplesCanvas.width, ripplesCanvas.height);
+        ripplesCtx.fillStyle = activeTheme === 'dark' ? '#0f172a' : '#f0f9ff';
+        ripplesCtx.fillRect(0, 0, ripplesCanvas.width, ripplesCanvas.height);
+        
+        ripplesCtx.lineWidth = 1.5;
+        for (let i = ripplesList.length - 1; i >= 0; i--) {
+            let r = ripplesList[i];
+            r.r += 2;
+            r.alpha = 1 - (r.r / r.maxR);
+            
+            if (r.r >= r.maxR) {
+                ripplesList.splice(i, 1);
+                continue;
+            }
+            
+            ripplesCtx.beginPath();
+            ripplesCtx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+            ripplesCtx.strokeStyle = activeTheme === 'dark' 
+                ? `rgba(148, 163, 184, ${r.alpha * 0.4})` 
+                : `rgba(56, 189, 248, ${r.alpha * 0.5})`;
+            ripplesCtx.stroke();
+            
+            rippleLeaves.forEach(l => {
+                let dx = l.x - r.x;
+                let dy = l.y - r.y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                if (Math.abs(dist - r.r) < 5 && dist > 1) {
+                    let force = (1 - (dist / r.maxR)) * 0.5;
+                    l.vx += (dx / dist) * force;
+                    l.vy += (dy / dist) * force;
+                }
+            });
+        }
+        
+        rippleLeaves.forEach(l => {
+            l.x += l.vx;
+            l.y += l.vy;
+            l.vx *= 0.95;
+            l.vy *= 0.95;
+            
+            if(l.x < l.r) { l.x = l.r; l.vx *= -1; }
+            if(l.x > ripplesCanvas.width - l.r) { l.x = ripplesCanvas.width - l.r; l.vx *= -1; }
+            if(l.y < l.r) { l.y = l.r; l.vy *= -1; }
+            if(l.y > ripplesCanvas.height - l.r) { l.y = ripplesCanvas.height - l.r; l.vy *= -1; }
+            
+            ripplesCtx.save();
+            ripplesCtx.translate(l.x, l.y);
+            ripplesCtx.rotate(l.angle + Math.atan2(l.vy, l.vx)*0.1);
+            ripplesCtx.beginPath();
+            ripplesCtx.ellipse(0, 0, l.r * 1.5, l.r, 0, 0, Math.PI * 2);
+            ripplesCtx.fillStyle = l.color;
+            ripplesCtx.fill();
+            ripplesCtx.beginPath();
+            ripplesCtx.moveTo(-l.r * 1.5, 0);
+            ripplesCtx.lineTo(l.r * 1.5, 0);
+            ripplesCtx.strokeStyle = 'rgba(0,0,0,0.15)';
+            ripplesCtx.stroke();
+            ripplesCtx.restore();
+        });
+        
+        ripplesAnim = requestAnimationFrame(loopRipples);
+    }
+    document.getElementById('ripples-reset')?.addEventListener('click', () => {
+        ripplesList = [];
+    });
+
+    // --- GAME 4: CHUÔNG GIÓ BÌNH YÊN ---
+    let chimesCanvas, chimesCtx;
+    let chimeTubes = [];
+    function startChimes() {
+        if (chimesAnim) cancelAnimationFrame(chimesAnim);
+        chimesCanvas = document.getElementById('chimes-canvas');
+        if (!chimesCanvas) return;
+        chimesCtx = chimesCanvas.getContext('2d');
+        
+        const freqs = [392.00, 440.00, 523.25, 587.33, 659.25];
+        chimeTubes = [];
+        for (let i = 0; i < 5; i++) {
+            chimeTubes.push({
+                x: 60 + i * 50,
+                length: 120 + i * 20,
+                angle: 0,
+                angVel: 0,
+                freq: freqs[i],
+                color: activeTheme === 'dark' ? '#b4b4b4' : '#6b7280',
+                width: 12,
+                hitCooldown: 0
+            });
+        }
+        
+        const chimeTouch = (e) => {
+            const rect = chimesCanvas.getBoundingClientRect();
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            if (!clientX) return;
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+            
+            chimeTubes.forEach(t => {
+                if (Math.abs(x - t.x) < 25 && y > 30 && y < 30 + t.length) {
+                    t.angVel += (x - t.x) * 0.005;
+                }
+            });
+        };
+        
+        chimesCanvas.onmousemove = chimeTouch;
+        chimesCanvas.ontouchmove = (e) => chimeTouch(e);
+        
+        loopChimes();
+    }
+    function loopChimes() {
+        if (!chimesCanvas) return;
+        chimesCtx.clearRect(0, 0, chimesCanvas.width, chimesCanvas.height);
+        chimesCtx.fillStyle = '#8b5a2b';
+        chimesCtx.fillRect(30, 20, chimesCanvas.width - 60, 10);
+        
+        chimeTubes.forEach((t) => {
+            const gravity = 0.0005;
+            const damping = 0.985;
+            const torque = -gravity * Math.sin(t.angle);
+            t.angVel += torque;
+            t.angVel *= damping;
+            t.angle += t.angVel;
+            
+            if (t.hitCooldown > 0) t.hitCooldown--;
+            if (Math.abs(t.angle) > 0.15 && t.hitCooldown === 0) {
+                playChimeNode(t.freq, { gainNode: { gain: { value: Math.abs(t.angle) * 0.5 } } });
+                t.hitCooldown = 60;
+            }
+            
+            chimesCtx.save();
+            chimesCtx.translate(t.x, 30);
+            chimesCtx.rotate(t.angle);
+            chimesCtx.beginPath();
+            chimesCtx.moveTo(0, 0);
+            chimesCtx.lineTo(0, 20);
+            chimesCtx.strokeStyle = '#999';
+            chimesCtx.stroke();
+            chimesCtx.fillStyle = t.color;
+            chimesCtx.fillRect(-t.width/2, 20, t.width, t.length);
+            chimesCtx.strokeStyle = 'rgba(0,0,0,0.2)';
+            chimesCtx.strokeRect(-t.width/2, 20, t.width, t.length);
+            chimesCtx.restore();
+        });
+        
+        if (Math.random() < 0.02) {
+            const windForce = (Math.random() - 0.5) * 0.02;
+            chimeTubes.forEach(t => t.angVel += windForce);
+        }
+        chimesAnim = requestAnimationFrame(loopChimes);
+    }
+
+    // --- GAME 5: HÀN GẮN KINTSUGI ---
+    let kintsugiCanvas, kintsugiCtx;
+    let kintsugiDone = false, goldLinesPainted = 0, isPaintingKintsugi = false;
+    function startKintsugi() {
+        const board = document.getElementById('kintsugi-board');
+        kintsugiCanvas = document.getElementById('kintsugi-canvas');
+        const desc = document.getElementById('kintsugi-desc');
+        if (!board || !kintsugiCanvas) return;
+        
+        desc.textContent = "ghép các mảnh vỡ lại thành một chiếc bát hoàn chỉnh...";
+        board.innerHTML = '';
+        kintsugiCtx = kintsugiCanvas.getContext('2d');
+        kintsugiCtx.clearRect(0, 0, 320, 320);
+        kintsugiDone = false;
+        goldLinesPainted = 0;
+        isPaintingKintsugi = false;
+        
+        const pieceData = [
+            { id: 1, char: '◜', style: 'top: 30px; left: 40px; border-radius: 100px 0 0 0;', target: { x: 80, y: 80 } },
+            { id: 2, char: '◝', style: 'top: 40px; right: 50px; border-radius: 0 100px 0 0;', target: { x: 160, y: 80 } },
+            { id: 3, char: '◟', style: 'bottom: 50px; left: 30px; border-radius: 0 0 0 100px;', target: { x: 80, y: 160 } },
+            { id: 4, char: '◞', style: 'bottom: 30px; right: 40px; border-radius: 0 0 100px 0;', target: { x: 160, y: 160 } }
+        ];
+        
+        pieceData.forEach(p => {
+            const el = document.createElement('div');
+            el.className = 'kintsugi-piece';
+            el.style = `position: absolute; width: 80px; height: 80px; background: ${activeTheme === 'dark' ? '#334155' : '#cbd5e1'}; border: 2px dashed rgba(0,0,0,0.1); cursor: grab; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-muted); ${p.style}`;
+            el.setAttribute('data-id', p.id);
+            el.draggable = true;
+            
+            let isDragging = false;
+            let startX, startY;
+            
+            const onStart = (clientX, clientY) => {
+                isDragging = true;
+                el.style.zIndex = 100;
+                startX = clientX - el.offsetLeft;
+                startY = clientY - el.offsetTop;
+            };
+            
+            const onMove = (clientX, clientY) => {
+                if (!isDragging) return;
+                el.style.left = `${clientX - startX}px`;
+                el.style.top = `${clientY - startY}px`;
+            };
+            
+            const onEnd = () => {
+                if (!isDragging) return;
+                isDragging = false;
+                el.style.zIndex = 10;
+                
+                const dx = el.offsetLeft - p.target.x;
+                const dy = el.offsetTop - p.target.y;
+                if (Math.sqrt(dx*dx + dy*dy) < 20) {
+                    el.style.left = `${p.target.x}px`;
+                    el.style.top = `${p.target.y}px`;
+                    el.style.border = 'none';
+                    el.style.background = activeTheme === 'dark' ? '#475569' : '#94a3b8';
+                    el.draggable = false;
+                    checkKintsugiAssembled();
+                }
+            };
+            
+            el.addEventListener('mousedown', (e) => onStart(e.clientX, e.clientY));
+            window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+            window.addEventListener('mouseup', onEnd);
+            
+            el.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive: true});
+            window.addEventListener('touchmove', (e) => onMove(e.touches[0].clientX, e.touches[0].clientY), {passive: true});
+            window.addEventListener('touchend', onEnd);
+            
+            board.appendChild(el);
+        });
+    }
+    function checkKintsugiAssembled() {
+        const pieces = document.querySelectorAll('.kintsugi-piece');
+        let snappedCount = 0;
+        pieces.forEach(p => {
+            if (p.draggable === false) snappedCount++;
+        });
+        
+        if (snappedCount === 4) {
+            document.getElementById('kintsugi-desc').textContent = "hãy vẽ cọ dọc theo vết nứt để gắn kết chúng bằng vàng...";
+            kintsugiCanvas.style.pointerEvents = 'auto';
+            kintsugiCanvas.onmousedown = () => isPaintingKintsugi = true;
+            window.onmouseup = () => isPaintingKintsugi = false;
+            kintsugiCanvas.onmousemove = paintKintsugiGold;
+            
+            kintsugiCanvas.ontouchstart = () => isPaintingKintsugi = true;
+            window.ontouchend = () => isPaintingKintsugi = false;
+            kintsugiCanvas.ontouchmove = (e) => paintKintsugiGold(e.touches[0]);
+        }
+    }
+    function paintKintsugiGold(e) {
+        if (!isPaintingKintsugi || kintsugiDone) return;
+        const rect = kintsugiCanvas.getBoundingClientRect();
+        const clientX = e.clientX || e.pageX;
+        const clientY = e.clientY || e.pageY;
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+        
+        kintsugiCtx.beginPath();
+        kintsugiCtx.arc(x, y, 4, 0, Math.PI*2);
+        kintsugiCtx.fillStyle = '#fbbf24';
+        kintsugiCtx.fill();
+        
+        goldLinesPainted++;
+        if (goldLinesPainted > 150) {
+            kintsugiDone = true;
+            document.getElementById('kintsugi-desc').textContent = "tác phẩm hoàn hảo. vẻ đẹp của sự hàn gắn và bất toàn.";
+            triggerChimeSound(160);
+        }
+    }
+    document.getElementById('reset-kintsugi')?.addEventListener('click', startKintsugi);
+
+    // --- GAME 6: CẮT TỈA BONSAI ---
+    let bonsaiTree = {};
+    let bonsaiLeavesPruned = 0;
+    function startBonsai() {
+        const canvas = document.getElementById('bonsai-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        bonsaiLeavesPruned = 0;
+        
+        bonsaiTree = generateBonsaiBranch(160, 280, -Math.PI / 2, 70, 7);
+        
+        canvas.onclick = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            pruneBonsaiLeaf(bonsaiTree, x, y);
+            renderBonsai(ctx, canvas.width, canvas.height);
+            
+            const scoreEl = document.getElementById('bonsai-rating');
+            if (scoreEl) {
+                let rating = Math.max(20, 100 - bonsaiLeavesPruned * 5);
+                scoreEl.textContent = `tĩnh lặng: ${rating}%`;
+            }
+        };
+        renderBonsai(ctx, canvas.width, canvas.height);
+    }
+    function generateBonsaiBranch(x, y, angle, length, depth) {
+        let xEnd = x + Math.cos(angle) * length;
+        let yEnd = y + Math.sin(angle) * length;
+        
+        let branch = {
+            xStart: x, yStart: y,
+            xEnd: xEnd, yEnd: yEnd,
+            thickness: depth * 1.5,
+            length: length,
+            depth: depth,
+            isLeaf: depth <= 2,
+            pruned: false,
+            branches: []
+        };
+        
+        if (depth > 1) {
+            const numBranches = Math.random() < 0.2 ? 1 : 2;
+            for (let i = 0; i < numBranches; i++) {
+                const angleOffset = (Math.random() - 0.5) * 0.6;
+                const nextLength = length * (0.7 + Math.random() * 0.15);
+                branch.branches.push(generateBonsaiBranch(xEnd, yEnd, angle + angleOffset, nextLength, depth - 1));
+            }
+        }
+        return branch;
+    }
+    function pruneBonsaiLeaf(branch, mx, my) {
+        if (branch.pruned) return;
+        
+        if (branch.isLeaf) {
+            const dx = branch.xEnd - mx;
+            const dy = branch.yEnd - my;
+            if (Math.sqrt(dx*dx + dy*dy) < 15) {
+                branch.pruned = true;
+                bonsaiLeavesPruned++;
+                triggerChimeSound(mx);
+                return;
+            }
+        }
+        branch.branches.forEach(b => pruneBonsaiLeaf(b, mx, my));
+    }
+    function renderBonsai(ctx, w, h) {
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = '#8b5a2b';
+        ctx.fillRect(100, 280, 120, 15);
+        ctx.fillRect(110, 295, 100, 10);
+        drawBonsaiBranch(ctx, bonsaiTree);
+    }
+    function drawBonsaiBranch(ctx, b) {
+        if (b.pruned) return;
+        ctx.strokeStyle = activeTheme === 'dark' ? '#b45309' : '#78350f';
+        ctx.lineWidth = b.thickness;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(b.xStart, b.yStart);
+        ctx.lineTo(b.xEnd, b.yEnd);
+        ctx.stroke();
+        
+        if (b.isLeaf) {
+            ctx.fillStyle = activeTheme === 'dark' ? '#065f46' : '#10b981';
+            ctx.beginPath();
+            ctx.arc(b.xEnd, b.yEnd, 6, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        b.branches.forEach(sub => drawBonsaiBranch(ctx, sub));
+    }
+    document.getElementById('reset-bonsai')?.addEventListener('click', startBonsai);
+
+    // --- GAME 7: GẤP GIẤY ORIGAMI ---
+    let origamiStepIndex = 0;
+    const origamiSteps = [
+        { desc: "bước 1: vuốt từ góc trên bên trái xuống góc dưới bên phải", pts: [{x: 40, y: 40}, {x: 280, y: 280}] },
+        { desc: "bước 2: gấp góc dưới bên trái vào đường chéo giữa", pts: [{x: 40, y: 280}, {x: 160, y: 160}] },
+        { desc: "bước 3: gấp góc trên bên phải đối xứng vào giữa", pts: [{x: 280, y: 40}, {x: 160, y: 160}] },
+        { desc: "bước 4: gấp đỉnh nhọn phía dưới lên trên để tạo chiếc thuyền", pts: [{x: 160, y: 280}, {x: 160, y: 100}] }
+    ];
+    function startOrigami() {
+        origamiStepIndex = 0;
+        renderOrigamiStep();
+    }
+    function renderOrigamiStep() {
+        const canvas = document.getElementById('origami-canvas');
+        const desc = document.getElementById('origami-desc');
+        const stepLbl = document.getElementById('origami-step');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const step = origamiSteps[origamiStepIndex];
+        if (desc) desc.textContent = step.desc;
+        if (stepLbl) stepLbl.textContent = `bước ${origamiStepIndex + 1}/4`;
+        
+        ctx.fillStyle = activeTheme === 'dark' ? 'rgba(212, 184, 134, 0.15)' : 'rgba(212, 184, 134, 0.4)';
+        ctx.strokeStyle = 'var(--text-primary)';
+        ctx.lineWidth = 2;
+        
+        ctx.beginPath();
+        if (origamiStepIndex === 0) {
+            ctx.rect(40, 40, 240, 240);
+        } else if (origamiStepIndex === 1) {
+            ctx.moveTo(40, 40); ctx.lineTo(280, 40); ctx.lineTo(280, 280); ctx.closePath();
+        } else if (origamiStepIndex === 2) {
+            ctx.moveTo(160, 160); ctx.lineTo(280, 40); ctx.lineTo(280, 280); ctx.closePath();
+        } else if (origamiStepIndex >= 3) {
+            ctx.moveTo(160, 160); ctx.lineTo(280, 40); ctx.lineTo(280, 200); ctx.lineTo(160, 280); ctx.lineTo(40, 200); ctx.lineTo(40, 40); ctx.closePath();
+        }
+        ctx.fill();
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.setLineDash([5, 5]);
+        ctx.moveTo(step.pts[0].x, step.pts[0].y);
+        ctx.lineTo(step.pts[1].x, step.pts[1].y);
+        ctx.strokeStyle = '#ef4444';
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        let isDragging = false;
+        canvas.onmousedown = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            if (Math.sqrt((x-step.pts[0].x)**2 + (y-step.pts[0].y)**2) < 25) {
+                isDragging = true;
+            }
+        };
+        canvas.onmousemove = (e) => {
+            if (!isDragging) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            if (Math.sqrt((x-step.pts[1].x)**2 + (y-step.pts[1].y)**2) < 25) {
+                isDragging = false;
+                triggerChimeSound(x);
+                if (origamiStepIndex < origamiSteps.length - 1) {
+                    origamiStepIndex++;
+                    renderOrigamiStep();
+                } else {
+                    if (desc) desc.textContent = "hoàn thành! bạn đã gấp được chiếc thuyền Origami bình yên.";
+                    if (stepLbl) stepLbl.textContent = "hoàn thành";
+                }
+            }
+        };
+        canvas.onmouseup = () => isDragging = false;
+        
+        canvas.ontouchstart = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.touches[0].clientX - rect.left;
+            const y = e.touches[0].clientY - rect.top;
+            if (Math.sqrt((x-step.pts[0].x)**2 + (y-step.pts[0].y)**2) < 25) isDragging = true;
+        };
+        canvas.ontouchmove = (e) => {
+            if (!isDragging) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.touches[0].clientX - rect.left;
+            const y = e.touches[0].clientY - rect.top;
+            if (Math.sqrt((x-step.pts[1].x)**2 + (y-step.pts[1].y)**2) < 25) {
+                isDragging = false;
+                triggerChimeSound(x);
+                if (origamiStepIndex < origamiSteps.length - 1) {
+                    origamiStepIndex++;
+                    renderOrigamiStep();
+                } else {
+                    if (desc) desc.textContent = "hoàn thành! bạn đã gấp được chiếc thuyền Origami bình yên.";
+                    if (stepLbl) stepLbl.textContent = "hoàn thành";
+                }
+            }
+        };
+        canvas.ontouchend = () => isDragging = false;
+    }
+    document.getElementById('origami-next')?.addEventListener('click', () => {
+        if (origamiStepIndex < origamiSteps.length - 1) {
+            origamiStepIndex++;
+            renderOrigamiStep();
+        }
+    });
+    document.getElementById('reset-origami')?.addEventListener('click', startOrigami);
+
+    // --- GAME 8: LUYỆN THƯ PHÁP ---
+    let calligraphyCanvas, calligraphyCtx;
+    let isDrawingCalligraphy = false;
+    let selectedCalligraphyWord = 'thien';
+    const calligraphyPaths = {
+        thien: [
+            [{x: 100, y: 80}, {x: 100, y: 150}],
+            [{x: 70, y: 110}, {x: 130, y: 110}],
+            [{x: 160, y: 70}, {x: 260, y: 70}],
+            [{x: 210, y: 70}, {x: 210, y: 260}],
+            [{x: 160, y: 150}, {x: 260, y: 150}],
+            [{x: 160, y: 220}, {x: 260, y: 220}]
+        ],
+        tinh: [
+            [{x: 80, y: 80}, {x: 140, y: 80}],
+            [{x: 110, y: 80}, {x: 110, y: 260}],
+            [{x: 80, y: 160}, {x: 140, y: 160}],
+            [{x: 180, y: 90}, {x: 250, y: 90}],
+            [{x: 210, y: 90}, {x: 170, y: 250}],
+            [{x: 210, y: 150}, {x: 260, y: 250}]
+        ],
+        an: [
+            [{x: 120, y: 80}, {x: 200, y: 80}],
+            [{x: 160, y: 80}, {x: 160, y: 130}],
+            [{x: 100, y: 130}, {x: 220, y: 130}],
+            [{x: 160, y: 130}, {x: 110, y: 240}],
+            [{x: 130, y: 180}, {x: 230, y: 180}],
+            [{x: 190, y: 150}, {x: 230, y: 240}]
+        ]
+    };
+    function startCalligraphy() {
+        calligraphyCanvas = document.getElementById('calligraphy-canvas');
+        if (!calligraphyCanvas) return;
+        calligraphyCtx = calligraphyCanvas.getContext('2d');
+        clearCalligraphyCanvas();
+        
+        calligraphyCanvas.onmousedown = (e) => { isDrawingCalligraphy = true; drawCalligraphyStroke(e); };
+        window.onmouseup = () => isDrawingCalligraphy = false;
+        calligraphyCanvas.onmousemove = drawCalligraphyStroke;
+        
+        calligraphyCanvas.ontouchstart = (e) => { isDrawingCalligraphy = true; drawCalligraphyStroke(e.touches[0]); };
+        window.ontouchend = () => isDrawingCalligraphy = false;
+        calligraphyCanvas.ontouchmove = (e) => { if(isDrawingCalligraphy) drawCalligraphyStroke(e.touches[0]); };
+    }
+    function clearCalligraphyCanvas() {
+        if (!calligraphyCanvas) return;
+        calligraphyCtx.clearRect(0, 0, calligraphyCanvas.width, calligraphyCanvas.height);
+        
+        calligraphyCtx.strokeStyle = 'rgba(212, 184, 134, 0.3)';
+        calligraphyCtx.lineWidth = 1;
+        calligraphyCtx.setLineDash([5, 5]);
+        
+        calligraphyCtx.beginPath();
+        calligraphyCtx.moveTo(0, 160); calligraphyCtx.lineTo(320, 160);
+        calligraphyCtx.moveTo(160, 0); calligraphyCtx.lineTo(160, 320);
+        calligraphyCtx.stroke();
+        calligraphyCtx.setLineDash([]);
+        
+        calligraphyCtx.strokeStyle = 'rgba(200, 200, 200, 0.4)';
+        calligraphyCtx.lineWidth = 12;
+        calligraphyCtx.lineCap = 'round';
+        calligraphyCtx.lineJoin = 'round';
+        
+        const lines = calligraphyPaths[selectedCalligraphyWord];
+        lines.forEach(stroke => {
+            calligraphyCtx.beginPath();
+            calligraphyCtx.moveTo(stroke[0].x, stroke[0].y);
+            calligraphyCtx.lineTo(stroke[1].x, stroke[1].y);
+            calligraphyCtx.stroke();
+        });
+    }
+    function drawCalligraphyStroke(e) {
+        if (!isDrawingCalligraphy || !calligraphyCanvas) return;
+        const rect = calligraphyCanvas.getBoundingClientRect();
+        const clientX = e.clientX || e.pageX;
+        const clientY = e.clientY || e.pageY;
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+        
+        calligraphyCtx.strokeStyle = '#1e293b';
+        calligraphyCtx.lineWidth = 6 + Math.random() * 4;
+        calligraphyCtx.lineCap = 'round';
+        calligraphyCtx.lineJoin = 'round';
+        
+        calligraphyCtx.beginPath();
+        calligraphyCtx.arc(x, y, calligraphyCtx.lineWidth / 2, 0, Math.PI * 2);
+        calligraphyCtx.fillStyle = '#1e293b';
+        calligraphyCtx.fill();
+    }
+    document.querySelectorAll('.calligraphy-word-select').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.calligraphy-word-select').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedCalligraphyWord = btn.getAttribute('data-word');
+            clearCalligraphyCanvas();
+        };
+    });
+    document.getElementById('clear-calligraphy')?.addEventListener('click', clearCalligraphyCanvas);
+
+    // --- GAME 9: CẮM HOA IKEBANA ---
+    function startIkebana() {
+        const workspace = document.getElementById('ikebana-workspace');
+        const tray = document.getElementById('ikebana-tray');
+        if (!workspace || !tray) return;
+        
+        workspace.innerHTML = '';
+        tray.innerHTML = '';
+        
+        const flowers = ['🌸', '🌿', '🍃', '🌹', '🌾', '🎋'];
+        flowers.forEach(symbol => {
+            const item = document.createElement('div');
+            item.className = 'ikebana-item';
+            item.textContent = symbol;
+            item.onclick = () => addIkebanaFlowerToWorkspace(symbol);
+            tray.appendChild(item);
+        });
+    }
+    function addIkebanaFlowerToWorkspace(symbol) {
+        const workspace = document.getElementById('ikebana-workspace');
+        if(!workspace) return;
+        
+        const el = document.createElement('div');
+        el.className = 'ikebana-placed';
+        el.textContent = symbol;
+        el.style.left = '140px';
+        el.style.top = '120px';
+        el.style.fontSize = '2.5rem';
+        el.style.transform = 'rotate(0deg)';
+        
+        let rotationAngle = 0;
+        let isDragging = false;
+        let startX, startY;
+        
+        const onStart = (clientX, clientY) => {
+            isDragging = true;
+            startX = clientX - el.offsetLeft;
+            startY = clientY - el.offsetTop;
+            document.querySelectorAll('.ikebana-placed').forEach(x => x.style.outline = 'none');
+            el.style.outline = '1px dashed var(--accent)';
+        };
+        const onMove = (clientX, clientY) => {
+            if (!isDragging) return;
+            el.style.left = `${clientX - startX}px`;
+            el.style.top = `${clientY - startY}px`;
+        };
+        const onEnd = () => { isDragging = false; };
+        
+        el.addEventListener('mousedown', (e) => onStart(e.clientX, e.clientY));
+        window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+        window.addEventListener('mouseup', onEnd);
+        
+        el.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive: true});
+        window.addEventListener('touchmove', (e) => onMove(e.touches[0].clientX, e.touches[0].clientY), {passive: true});
+        window.addEventListener('touchend', onEnd);
+        
+        window.addEventListener('keydown', (e) => {
+            if(el.style.outline === 'none' || el.style.outline === '') return;
+            if(e.key === 'ArrowLeft') {
+                rotationAngle -= 15;
+                el.style.transform = `rotate(${rotationAngle}deg)`;
+            } else if (e.key === 'ArrowRight') {
+                rotationAngle += 15;
+                el.style.transform = `rotate(${rotationAngle}deg)`;
+            }
+        });
+        workspace.appendChild(el);
+        triggerChimeSound(160);
+    }
+    document.getElementById('clear-ikebana')?.addEventListener('click', startIkebana);
+
+    // --- GAME 10: XẾP KÍNH MÀU ---
+    function startStainedGlass() {
+        const board = document.getElementById('stainedglass-board');
+        const tray = document.getElementById('stainedglass-tray');
+        if (!board || !tray) return;
+        
+        board.innerHTML = '';
+        tray.innerHTML = '';
+        
+        const targets = [
+            { id: 1, color: 'rgba(239, 68, 68, 0.4)', colorFull: '#ef4444', left: 40, top: 40, w: 100, h: 100, symbol: '❤️' },
+            { id: 2, color: 'rgba(59, 130, 246, 0.4)', colorFull: '#3b82f6', left: 180, top: 40, w: 100, h: 100, symbol: '💎' },
+            { id: 3, color: 'rgba(245, 158, 11, 0.4)', colorFull: '#f59e0b', left: 40, top: 180, w: 100, h: 100, symbol: '☀️' },
+            { id: 4, color: 'rgba(16, 185, 129, 0.4)', colorFull: '#10b989', left: 180, top: 180, w: 100, h: 100, symbol: '🍀' },
+            { id: 5, color: 'rgba(139, 92, 246, 0.4)', colorFull: '#8b5cf6', left: 110, top: 110, w: 100, h: 100, symbol: '🔮' }
+        ];
+        
+        targets.forEach(t => {
+            const slot = document.createElement('div');
+            slot.className = 'stainedglass-slot';
+            slot.style = `position: absolute; left: ${t.left}px; top: ${t.top}px; width: ${t.w}px; height: ${t.h}px; background: ${t.color}; border: 1px dashed var(--border-color); border-radius: 50%; opacity: 0.3;`;
+            board.appendChild(slot);
+        });
+        
+        targets.forEach(t => {
+            const piece = document.createElement('div');
+            piece.className = 'stainedglass-item';
+            piece.textContent = t.symbol;
+            piece.style = `font-size: 2.2rem; cursor: grab; background: ${t.color}; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);`;
+            piece.onclick = () => {
+                addStainedGlassToBoard(t, board);
+                piece.style.display = 'none';
+            };
+            tray.appendChild(piece);
+        });
+    }
+    function addStainedGlassToBoard(t, board) {
+        const el = document.createElement('div');
+        el.className = 'stainedglass-placed';
+        el.textContent = t.symbol;
+        el.style.left = '120px';
+        el.style.top = '120px';
+        el.style.width = '100px';
+        el.style.height = '100px';
+        el.style.fontSize = '2.5rem';
+        el.style.background = t.color;
+        el.style.borderRadius = '50%';
+        el.style.display = 'flex';
+        el.style.alignItems = 'center';
+        el.style.justifyContent = 'center';
+        
+        let isDragging = false;
+        let startX, startY;
+        
+        const onStart = (clientX, clientY) => {
+            isDragging = true;
+            startX = clientX - el.offsetLeft;
+            startY = clientY - el.offsetTop;
+        };
+        const onMove = (clientX, clientY) => {
+            if (!isDragging) return;
+            el.style.left = `${clientX - startX}px`;
+            el.style.top = `${clientY - startY}px`;
+        };
+        const onEnd = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            const dx = el.offsetLeft - t.left;
+            const dy = el.offsetTop - t.top;
+            if (Math.sqrt(dx*dx + dy*dy) < 25) {
+                el.style.left = `${t.left}px`;
+                el.style.top = `${t.top}px`;
+                el.style.background = t.colorFull;
+                el.style.boxShadow = '0 0 15px ' + t.colorFull;
+                el.style.cursor = 'default';
+                el.onmousedown = null;
+                el.ontouchstart = null;
+                triggerChimeSound(t.left);
+            }
+        };
+        
+        el.addEventListener('mousedown', (e) => onStart(e.clientX, e.clientY));
+        window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+        window.addEventListener('mouseup', onEnd);
+        
+        el.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive: true});
+        window.addEventListener('touchmove', (e) => onMove(e.touches[0].clientX, e.touches[0].clientY), {passive: true});
+        window.addEventListener('touchend', onEnd);
+        
+        board.appendChild(el);
+    }
+    document.getElementById('reset-stainedglass')?.addEventListener('click', startStainedGlass);
+
+    // --- GAME 11: XẾP ĐÁ THĂNG BẰNG ---
+    let pebblesList = [];
+    let pebblesActiveRock = null;
+    let pebblesCanvas, pebblesCtx;
+    function startPebbles() {
+        if (pebblesAnim) cancelAnimationFrame(pebblesAnim);
+        pebblesCanvas = document.getElementById('pebbles-canvas');
+        if (!pebblesCanvas) return;
+        pebblesCtx = pebblesCanvas.getContext('2d');
+        
+        pebblesList = [
+            { id: 'base', x: 160, y: 310, w: 120, h: 30, rx: 25, color: '#475569', isFixed: true },
+            { id: 1, x: 50, y: 60, w: 70, h: 25, rx: 12, color: '#64748b', isFixed: false },
+            { id: 2, x: 130, y: 60, w: 85, h: 28, rx: 14, color: '#94a3b8', isFixed: false },
+            { id: 3, x: 230, y: 60, w: 60, h: 22, rx: 10, color: '#cbd5e1', isFixed: false },
+            { id: 4, x: 90, y: 110, w: 95, h: 32, rx: 16, color: '#78716c', isFixed: false },
+            { id: 5, x: 210, y: 110, w: 75, h: 26, rx: 13, color: '#a8a29e', isFixed: false }
+        ];
+        pebblesActiveRock = null;
+        setupPebbleInteraction();
+        loopPebbles();
+        updatePebbleStatus();
+    }
+    function setupPebbleInteraction() {
+        const getRockAt = (x, y) => {
+            for(let i = pebblesList.length - 1; i >= 0; i--) {
+                const r = pebblesList[i];
+                if (r.isFixed) continue;
+                if (x > r.x - r.w/2 && x < r.x + r.w/2 && y > r.y - r.h/2 && y < r.y + r.h/2) {
+                    return r;
+                }
+            }
+            return null;
+        };
+        const onStart = (x, y) => {
+            pebblesActiveRock = getRockAt(x, y);
+        };
+        const onMove = (x, y) => {
+            if (!pebblesActiveRock) return;
+            pebblesActiveRock.x = x;
+            pebblesActiveRock.y = y;
+        };
+        const onEnd = () => {
+            if (!pebblesActiveRock) return;
+            pebblesActiveRock = null;
+            checkPebblesGravity();
+        };
+        
+        pebblesCanvas.onmousedown = (e) => {
+            const rect = pebblesCanvas.getBoundingClientRect();
+            onStart(e.clientX - rect.left, e.clientY - rect.top);
+        };
+        pebblesCanvas.onmousemove = (e) => {
+            const rect = pebblesCanvas.getBoundingClientRect();
+            onMove(e.clientX - rect.left, e.clientY - rect.top);
+        };
+        window.onmouseup = onEnd;
+        
+        pebblesCanvas.ontouchstart = (e) => {
+            const rect = pebblesCanvas.getBoundingClientRect();
+            onStart(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
+        };
+        pebblesCanvas.ontouchmove = (e) => {
+            const rect = pebblesCanvas.getBoundingClientRect();
+            onMove(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
+        };
+        window.ontouchend = onEnd;
+    }
+    function checkPebblesGravity() {
+        let stack = [pebblesList[0]];
+        let remaining = pebblesList.filter(r => !r.isFixed);
+        remaining.sort((a,b) => b.y - a.y);
+        let collapsed = false;
+        
+        for (let i = 0; i < remaining.length; i++) {
+            let stone = remaining[i];
+            let baseUnder = null;
+            for (let j = stack.length - 1; j >= 0; j--) {
+                let st = stack[j];
+                if (Math.abs(stone.x - st.x) < (stone.w + st.w) / 2 - 10) {
+                    baseUnder = st;
+                    break;
+                }
+            }
+            if (baseUnder) {
+                let targetY = baseUnder.y - (baseUnder.h + stone.h) / 2;
+                if (stone.y < targetY) {
+                    stone.y = targetY;
+                }
+                stack.push(stone);
+                
+                let indexUnder = stack.indexOf(baseUnder);
+                let massSum = 0;
+                let weightedXSum = 0;
+                for (let k = indexUnder + 1; k < stack.length; k++) {
+                    let stAbove = stack[k];
+                    massSum += stAbove.w;
+                    weightedXSum += stAbove.x * stAbove.w;
+                }
+                if (massSum > 0) {
+                    let cogX = weightedXSum / massSum;
+                    let offset = cogX - baseUnder.x;
+                    if (Math.abs(offset) > baseUnder.w / 3.5) {
+                        collapsed = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (collapsed) {
+            remaining.forEach(st => {
+                st.y = 250 + Math.random() * 30;
+                st.x = 60 + Math.random() * 200;
+            });
+            triggerChimeSound(100);
+            updatePebbleStatus();
+        } else {
+            updatePebbleStatus();
+        }
+    }
+    function updatePebbleStatus() {
+        const count = pebblesList.filter(r => !r.isFixed && r.y < 240).length;
+        const statusEl = document.getElementById('pebbles-status');
+        if (statusEl) {
+            statusEl.textContent = `chiều cao tháp: ${count} viên đá`;
+        }
+    }
+    function loopPebbles() {
+        if (!pebblesCanvas) return;
+        pebblesCtx.clearRect(0, 0, pebblesCanvas.width, pebblesCanvas.height);
+        pebblesCtx.fillStyle = activeTheme === 'dark' ? '#1e293b' : '#e2e8f0';
+        pebblesCtx.fillRect(0, 310, pebblesCanvas.width, 30);
+        
+        pebblesList.forEach(r => {
+            pebblesCtx.save();
+            pebblesCtx.fillStyle = r.color;
+            pebblesCtx.beginPath();
+            pebblesCtx.roundRect(r.x - r.w/2, r.y - r.h/2, r.w, r.h, r.rx);
+            pebblesCtx.fill();
+            
+            pebblesCtx.beginPath();
+            pebblesCtx.roundRect(r.x - r.w/2 + 2, r.y - r.h/2 + 2, r.w - 4, r.h - 4, r.rx - 2);
+            pebblesCtx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            pebblesCtx.fill();
+            pebblesCtx.restore();
+        });
+        pebblesAnim = requestAnimationFrame(loopPebbles);
+    }
+    document.getElementById('reset-pebbles')?.addEventListener('click', startPebbles);
+
+    // --- GAME 12: DỆT SAO ĐÊM ---
+    let constellationIndex = 0;
+    const constellations = [
+        {
+            name: "chòm sao diều giấy",
+            stars: [{x: 160, y: 60}, {x: 240, y: 140}, {x: 160, y: 260}, {x: 80, y: 140}, {x: 160, y: 140}],
+            lines: [[0, 1], [1, 2], [2, 3], [3, 0], [0, 4], [2, 4]]
+        },
+        {
+            name: "chòm sao chim bồ câu",
+            stars: [{x: 80, y: 80}, {x: 160, y: 120}, {x: 260, y: 80}, {x: 200, y: 180}, {x: 120, y: 220}],
+            lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 1]]
+        }
+    ];
+    let constellationConnected = [];
+    function startConstellation() {
+        constellationConnected = [];
+        const btnNext = document.getElementById('next-constellation');
+        if (btnNext) btnNext.style.display = 'none';
+        const nameLbl = document.getElementById('constellation-name');
+        if (nameLbl) nameLbl.textContent = `chòm sao: ?`;
+        renderConstellation();
+    }
+    function renderConstellation() {
+        const canvas = document.getElementById('constellation-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const data = constellations[constellationIndex];
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+        for (let i = 0; i < 40; i++) {
+            ctx.fillRect((Math.random() * 320), (Math.random() * 320), 1.5, 1.5);
+        }
+        
+        ctx.strokeStyle = '#60a5fa';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        for (let i = 0; i < constellationConnected.length - 1; i++) {
+            const s1 = data.stars[constellationConnected[i]];
+            const s2 = data.stars[constellationConnected[i+1]];
+            ctx.moveTo(s1.x, s1.y);
+            ctx.lineTo(s2.x, s2.y);
+        }
+        ctx.stroke();
+        
+        data.stars.forEach((s, idx) => {
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = constellationConnected.includes(idx) ? '#60a5fa' : '#f8fafc';
+            ctx.fill();
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.font = '10px monospace';
+            ctx.fillText(idx + 1, s.x + 8, s.y - 4);
+        });
+        
+        canvas.onclick = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            data.stars.forEach((s, idx) => {
+                const dist = Math.sqrt((x-s.x)**2 + (y-s.y)**2);
+                if (dist < 15) {
+                    const expectedNext = constellationConnected.length;
+                    if (idx === expectedNext) {
+                        constellationConnected.push(idx);
+                        triggerChimeSound(s.x);
+                        renderConstellation();
+                        
+                        if (constellationConnected.length === data.stars.length) {
+                            document.getElementById('constellation-name').textContent = `chòm sao: ${data.name}`;
+                            document.getElementById('next-constellation').style.display = 'inline-block';
+                        }
+                    }
+                }
+            });
+        };
+    }
+    document.getElementById('next-constellation')?.addEventListener('click', () => {
+        constellationIndex = (constellationIndex + 1) % constellations.length;
+        startConstellation();
+    });
+    document.getElementById('reset-constellation')?.addEventListener('click', startConstellation);
+
+    // --- GAME 13: NGHỆ THUẬT TRÀ ĐẠO ---
+    let teaTemp = 25;
+    let teaSteepTime = 0.0;
+    let teaHeatInterval = null;
+    let teaSteepInterval = null;
+    let teaStep = 1;
+    function startTea() {
+        if (teaHeatInterval) clearInterval(teaHeatInterval);
+        if (teaSteepInterval) clearInterval(teaSteepInterval);
+        
+        teaTemp = 25;
+        teaSteepTime = 0.0;
+        teaStep = 1;
+        
+        document.getElementById('tea-heating-view').style.display = 'flex';
+        document.getElementById('tea-steeping-view').style.display = 'none';
+        document.getElementById('tea-result-view').style.display = 'none';
+        document.getElementById('tea-desc').textContent = "bước 1: đun nước đến nhiệt độ tối ưu (85°C)...";
+        document.getElementById('tea-temp-gauge').textContent = "25°C";
+        document.getElementById('tea-temp-progress').style.width = '25%';
+    }
+    document.getElementById('tea-heat-btn')?.addEventListener('click', () => {
+        if (teaStep !== 1) return;
+        const btn = document.getElementById('tea-heat-btn');
+        btn.disabled = true;
+        
+        teaHeatInterval = setInterval(() => {
+            teaTemp += 3;
+            if (teaTemp > 105) teaTemp = 105;
+            
+            document.getElementById('tea-temp-gauge').textContent = `${teaTemp}°C`;
+            document.getElementById('tea-temp-progress').style.width = `${Math.min(100, teaTemp)}%`;
+            
+            if (teaTemp >= 85) {
+                clearInterval(teaHeatInterval);
+                btn.disabled = false;
+                teaStep = 2;
+                document.getElementById('tea-heating-view').style.display = 'none';
+                document.getElementById('tea-steeping-view').style.display = 'flex';
+                document.getElementById('tea-desc').textContent = "bước 2: nhấn giữ nút để ủ trà trong 5.0 giây...";
+                triggerChimeSound(160);
+            }
+        }, 150);
+    });
+    const steepBtn = document.getElementById('tea-steep-btn');
+    if (steepBtn) {
+        const startSteeping = () => {
+            if (teaStep !== 2) return;
+            if (teaSteepInterval) clearInterval(teaSteepInterval);
+            
+            teaSteepInterval = setInterval(() => {
+                teaSteepTime += 0.1;
+                document.getElementById('tea-timer').textContent = `${teaSteepTime.toFixed(1)}s / 5.0s`;
+                
+                const indicator = document.getElementById('tea-color-indicator');
+                if (indicator) {
+                    const tint = Math.min(0.9, teaSteepTime * 0.15);
+                    indicator.style.backgroundColor = `rgba(212, 184, 134, ${tint})`;
+                }
+            }, 100);
+        };
+        const stopSteeping = () => {
+            if (teaStep !== 2) return;
+            if (teaSteepInterval) clearInterval(teaSteepInterval);
+            
+            teaStep = 3;
+            document.getElementById('tea-steeping-view').style.display = 'none';
+            document.getElementById('tea-result-view').style.display = 'flex';
+            
+            const diff = Math.abs(teaSteepTime - 5.0);
+            let evaluation = "";
+            if (diff < 0.3) {
+                evaluation = "trà ủ hoàn hảo! hương vị thanh khiết, ngọt ngào.";
+            } else if (teaSteepTime < 4.0) {
+                evaluation = "trà hơi nhạt, cần ủ lâu hơn một chút.";
+            } else {
+                evaluation = "trà bị nồng, vị hơi chát vì ủ quá thời gian.";
+            }
+            
+            document.getElementById('tea-desc').textContent = "thành quả:";
+            document.getElementById('tea-evaluation').textContent = evaluation;
+            triggerChimeSound(200);
+        };
+        
+        steepBtn.onmousedown = startSteeping;
+        steepBtn.onmouseup = stopSteeping;
+        steepBtn.ontouchstart = (e) => { e.preventDefault(); startSteeping(); };
+        steepBtn.ontouchend = (e) => { e.preventDefault(); stopSteeping(); };
+    }
+    document.getElementById('reset-tea')?.addEventListener('click', startTea);
+
+    // --- GAME 14: THẢ ĐÈN TRỜI ---
+    let lanterns = [];
+    let lanternCanvas, lanternCtx;
+    function startLantern() {
+        if (lanternAnim) cancelAnimationFrame(lanternAnim);
+        lanternCanvas = document.getElementById('lantern-canvas');
+        if (!lanternCanvas) return;
+        lanternCtx = lanternCanvas.getContext('2d');
+        lanterns = [];
+        loopLanterns();
+    }
+    function loopLanterns() {
+        if (!lanternCanvas) return;
+        lanternCtx.clearRect(0, 0, lanternCanvas.width, lanternCanvas.height);
+        
+        lanternCtx.fillStyle = '#0f172a';
+        lanternCtx.fillRect(0, 0, lanternCanvas.width, lanternCanvas.height);
+        
+        lanternCtx.fillStyle = 'rgba(251, 191, 36, 0.08)';
+        for (let i = 0; i < 15; i++) {
+            lanternCtx.beginPath();
+            lanternCtx.arc(50 + i * 20, 40 + Math.sin(i) * 15, 3, 0, Math.PI * 2);
+            lanternCtx.fill();
+        }
+        
+        for (let i = lanterns.length - 1; i >= 0; i--) {
+            let l = lanterns[i];
+            l.y -= l.speed;
+            l.x += Math.sin(l.y * 0.02) * 0.5;
+            l.size -= 0.015;
+            l.alpha -= 0.002;
+            
+            if (l.y < -50 || l.size <= 2 || l.alpha <= 0) {
+                lanterns.splice(i, 1);
+                continue;
+            }
+            
+            lanternCtx.beginPath();
+            lanternCtx.arc(l.x, l.y, l.size * 2, 0, Math.PI * 2);
+            lanternCtx.fillStyle = `rgba(251, 191, 36, ${l.alpha * 0.25})`;
+            lanternCtx.fill();
+            
+            lanternCtx.beginPath();
+            lanternCtx.roundRect(l.x - l.size, l.y - l.size * 1.5, l.size * 2, l.size * 2.5, l.size * 0.3);
+            lanternCtx.fillStyle = `rgba(254, 243, 199, ${l.alpha})`;
+            lanternCtx.fill();
+            
+            lanternCtx.beginPath();
+            lanternCtx.arc(l.x, l.y + l.size * 0.8, l.size * 0.4, 0, Math.PI * 2);
+            lanternCtx.fillStyle = '#f59e0b';
+            lanternCtx.fill();
+            
+            if (l.text) {
+                lanternCtx.fillStyle = `rgba(255, 255, 255, ${l.alpha * 0.8})`;
+                lanternCtx.font = `${Math.max(9, l.size * 0.8)}px Garamond, Lora, serif`;
+                lanternCtx.textAlign = 'center';
+                lanternCtx.fillText(l.text, l.x, l.y - l.size * 2);
+            }
+        }
+        lanternAnim = requestAnimationFrame(loopLanterns);
+    }
+    document.getElementById('lantern-send')?.addEventListener('click', () => {
+        const input = document.getElementById('lantern-input');
+        if (!input || !input.value.trim()) return;
+        
+        lanterns.push({
+            x: 80 + Math.random() * 160,
+            y: 320,
+            size: 14 + Math.random() * 4,
+            speed: 0.8 + Math.random() * 0.5,
+            alpha: 1.0,
+            text: input.value.trim()
+        });
+        input.value = '';
+        triggerChimeSound(160);
+    });
+    document.getElementById('clear-lanterns')?.addEventListener('click', () => {
+        lanterns = [];
+    });
+
+    // --- GAME 15: MÚA BÓNG NGHỆ THUẬT ---
+    let shadowTargetIndex = 0;
+    const shadowTargets = [
+        { name: "thỏ con", thumb: 30, index: -20, other: 10, hint: "khớp ngón cái: 30, ngón trỏ: -20, ngón khác: 10" },
+        { name: "chim bay", thumb: 0, index: 20, other: -30, hint: "khớp ngón cái: 0, ngón trỏ: 20, ngón khác: -30" },
+        { name: "chó con", thumb: -30, index: 0, other: 20, hint: "khớp ngón cái: -30, ngón trỏ: 0, ngón khác: 20" }
+    ];
+    function startShadow() {
+        shadowTargetIndex = 0;
+        const btnNext = document.getElementById('next-shadow-target');
+        if (btnNext) btnNext.style.display = 'none';
+        updateShadowTargetText();
+        setupShadowSliders();
+        renderShadowPuppet();
+    }
+    function updateShadowTargetText() {
+        const t = shadowTargets[shadowTargetIndex];
+        const statusEl = document.getElementById('shadow-match-status');
+        if (statusEl) statusEl.textContent = `mục tiêu: tạo bóng ${t.name} (${t.hint})`;
+    }
+    function setupShadowSliders() {
+        const renderCaller = () => {
+            renderShadowPuppet();
+            checkShadowMatch();
+        };
+        const s1 = document.getElementById('shadow-thumb');
+        const s2 = document.getElementById('shadow-index');
+        const s3 = document.getElementById('shadow-other');
+        if(s1) s1.oninput = renderCaller;
+        if(s2) s2.oninput = renderCaller;
+        if(s3) s3.oninput = renderCaller;
+    }
+    function renderShadowPuppet() {
+        const canvas = document.getElementById('shadow-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const thumbVal = parseInt(document.getElementById('shadow-thumb')?.value || '0');
+        const indexVal = parseInt(document.getElementById('shadow-index')?.value || '0');
+        const otherVal = parseInt(document.getElementById('shadow-other')?.value || '0');
+        
+        ctx.fillStyle = '#fef3c7';
+        ctx.beginPath();
+        ctx.arc(160, 130, 120, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+        ctx.save();
+        ctx.translate(160, 130);
+        
+        ctx.beginPath();
+        ctx.arc(0, 40, 25, 0, Math.PI*2);
+        ctx.fill();
+        
+        ctx.save();
+        ctx.translate(-15, 20);
+        ctx.rotate((thumbVal * Math.PI) / 180);
+        ctx.beginPath();
+        ctx.ellipse(0, -20, 8, 20, 0, 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+        
+        ctx.save();
+        ctx.translate(-5, 15);
+        ctx.rotate((indexVal * Math.PI) / 180);
+        ctx.beginPath();
+        ctx.ellipse(0, -35, 7, 28, 0, 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+        
+        ctx.save();
+        ctx.translate(15, 20);
+        ctx.rotate((otherVal * Math.PI) / 180);
+        ctx.beginPath();
+        ctx.ellipse(0, -30, 10, 25, 0, 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+        
+        ctx.restore();
+    }
+    function checkShadowMatch() {
+        const t = shadowTargets[shadowTargetIndex];
+        const thumbVal = parseInt(document.getElementById('shadow-thumb')?.value || '0');
+        const indexVal = parseInt(document.getElementById('shadow-index')?.value || '0');
+        const otherVal = parseInt(document.getElementById('shadow-other')?.value || '0');
+        
+        if (Math.abs(thumbVal - t.thumb) <= 5 && 
+            Math.abs(indexVal - t.index) <= 5 && 
+            Math.abs(otherVal - t.other) <= 5) {
+            
+            document.getElementById('shadow-match-status').textContent = `chúc mừng! bóng ${t.name} rất giống.`;
+            document.getElementById('next-shadow-target').style.display = 'inline-block';
+            triggerChimeSound(160);
+        }
+    }
+    document.getElementById('next-shadow-target')?.addEventListener('click', () => {
+        shadowTargetIndex = (shadowTargetIndex + 1) % shadowTargets.length;
+        updateShadowTargetText();
+        document.getElementById('next-shadow-target').style.display = 'none';
+        renderShadowPuppet();
+    });
+
+    // --- GAME 16: TRÒ CHƠI TRÍ UẨN ---
+    let tangramPieces = [];
+    let tangramSelectedIdx = -1;
+    let tangramCanvas, tangramCtx;
+    function startTangram() {
+        tangramCanvas = document.getElementById('tangram-canvas');
+        if (!tangramCanvas) return;
+        tangramCtx = tangramCanvas.getContext('2d');
+        tangramSelectedIdx = -1;
+        
+        tangramPieces = [
+            { id: 1, type: 'triangle', color: 'rgba(239, 68, 68, 0.75)', x: 60, y: 70, size: 50, angle: 0 },
+            { id: 2, type: 'triangle', color: 'rgba(59, 130, 246, 0.75)', x: 130, y: 70, size: 70, angle: 90 },
+            { id: 3, type: 'square', color: 'rgba(245, 158, 11, 0.75)', x: 230, y: 70, size: 30, angle: 0 },
+            { id: 4, type: 'parallelogram', color: 'rgba(16, 185, 129, 0.75)', x: 70, y: 150, w: 40, h: 30, angle: 45 },
+            { id: 5, type: 'triangle', color: 'rgba(139, 92, 246, 0.75)', x: 180, y: 150, size: 40, angle: 180 }
+        ];
+        
+        setupTangramInteraction();
+        renderTangram();
+    }
+    function setupTangramInteraction() {
+        const getPieceAt = (x, y) => {
+            for (let i = tangramPieces.length - 1; i >= 0; i--) {
+                const p = tangramPieces[i];
+                if (Math.sqrt((x-p.x)**2 + (y-p.y)**2) < 40) return i;
+            }
+            return -1;
+        };
+        let isDragging = false;
+        
+        tangramCanvas.onmousedown = (e) => {
+            const rect = tangramCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const idx = getPieceAt(x, y);
+            if (idx !== -1) {
+                tangramSelectedIdx = idx;
+                isDragging = true;
+                renderTangram();
+            }
+        };
+        tangramCanvas.onmousemove = (e) => {
+            if (!isDragging || tangramSelectedIdx === -1) return;
+            const rect = tangramCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            tangramPieces[tangramSelectedIdx].x = x;
+            tangramPieces[tangramSelectedIdx].y = y;
+            renderTangram();
+        };
+        window.onmouseup = () => { isDragging = false; };
+        
+        tangramCanvas.ontouchstart = (e) => {
+            const rect = tangramCanvas.getBoundingClientRect();
+            const x = e.touches[0].clientX - rect.left;
+            const y = e.touches[0].clientY - rect.top;
+            
+            const idx = getPieceAt(x, y);
+            if (idx !== -1) {
+                tangramSelectedIdx = idx;
+                isDragging = true;
+                renderTangram();
+            }
+        };
+        tangramCanvas.ontouchmove = (e) => {
+            if (!isDragging || tangramSelectedIdx === -1) return;
+            const rect = tangramCanvas.getBoundingClientRect();
+            const x = e.touches[0].clientX - rect.left;
+            const y = e.touches[0].clientY - rect.top;
+            
+            tangramPieces[tangramSelectedIdx].x = x;
+            tangramPieces[tangramSelectedIdx].y = y;
+            renderTangram();
+        };
+        window.ontouchend = () => { isDragging = false; };
+        
+        tangramCanvas.addEventListener('click', (e) => {
+            if (isDragging || tangramSelectedIdx === -1) return;
+            const rect = tangramCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const idx = getPieceAt(x, y);
+            if (idx === tangramSelectedIdx) {
+                tangramPieces[tangramSelectedIdx].angle = (tangramPieces[tangramSelectedIdx].angle + 45) % 360;
+                triggerChimeSound(x);
+                renderTangram();
+            }
+        });
+    }
+    function renderTangram() {
+        if (!tangramCanvas) return;
+        tangramCtx.clearRect(0, 0, tangramCanvas.width, tangramCanvas.height);
+        
+        tangramCtx.fillStyle = '#cbd5e1';
+        if(activeTheme === 'dark') tangramCtx.fillStyle = '#334155';
+        tangramCtx.save();
+        tangramCtx.beginPath();
+        tangramCtx.moveTo(160, 220);
+        tangramCtx.lineTo(220, 220);
+        tangramCtx.lineTo(190, 160);
+        
+        tangramCtx.moveTo(160, 160);
+        tangramCtx.lineTo(200, 120);
+        tangramCtx.lineTo(160, 80);
+        tangramCtx.lineTo(120, 120);
+        tangramCtx.closePath();
+        tangramCtx.fill();
+        tangramCtx.restore();
+        
+        tangramPieces.forEach((p, idx) => {
+            tangramCtx.save();
+            tangramCtx.translate(p.x, p.y);
+            tangramCtx.rotate((p.angle * Math.PI) / 180);
+            
+            tangramCtx.fillStyle = p.color;
+            if (idx === tangramSelectedIdx) {
+                tangramCtx.strokeStyle = 'var(--text-primary)';
+                tangramCtx.lineWidth = 2.5;
+            } else {
+                tangramCtx.strokeStyle = 'rgba(0,0,0,0.1)';
+                tangramCtx.lineWidth = 1;
+            }
+            
+            tangramCtx.beginPath();
+            if (p.type === 'triangle') {
+                tangramCtx.moveTo(-p.size/2, -p.size/2);
+                tangramCtx.lineTo(p.size/2, -p.size/2);
+                tangramCtx.lineTo(-p.size/2, p.size/2);
+                tangramCtx.closePath();
+            } else if (p.type === 'square') {
+                tangramCtx.rect(-p.size/2, -p.size/2, p.size, p.size);
+            } else if (p.type === 'parallelogram') {
+                tangramCtx.moveTo(-p.w/2, -p.h/2);
+                tangramCtx.lineTo(p.w/2, -p.h/2);
+                tangramCtx.lineTo(p.w/2 - 15, p.h/2);
+                tangramCtx.lineTo(-p.w/2 - 15, p.h/2);
+                tangramCtx.closePath();
+            }
+            tangramCtx.fill();
+            tangramCtx.stroke();
+            tangramCtx.restore();
+        });
+    }
+    document.getElementById('reset-tangram')?.addEventListener('click', startTangram);
+
+    // --- GAME 17: CẶP TRÙNG MAHJONG ---
+    let mahjongTiles = [];
+    let mahjongSelectedIdx = -1;
+    function startMahjong() {
+        const board = document.getElementById('mahjong-board');
+        if (!board) return;
+        board.innerHTML = '';
+        mahjongSelectedIdx = -1;
+        
+        const symbols = ['🌸', '🍃', '💧', '🌙', '☀️', '⛰️'];
+        let pool = [];
+        symbols.forEach(s => {
+            for(let i=0; i<4; i++) pool.push(s);
+        });
+        pool.sort(() => Math.random() - 0.5);
+        
+        mahjongTiles = [];
+        pool.forEach((s, idx) => {
+            mahjongTiles.push({
+                id: idx,
+                symbol: s,
+                cleared: false
+            });
+        });
+        renderMahjong();
+    }
+    function renderMahjong() {
+        const board = document.getElementById('mahjong-board');
+        if(!board) return;
+        board.innerHTML = '';
+        
+        let remaining = 0;
+        mahjongTiles.forEach((tile, idx) => {
+            if (tile.cleared) {
+                const empty = document.createElement('div');
+                empty.style.width = '42px';
+                empty.style.height = '54px';
+                board.appendChild(empty);
+                return;
+            }
+            
+            remaining++;
+            const el = document.createElement('div');
+            el.className = 'mahjong-tile';
+            el.textContent = tile.symbol;
+            
+            const col = idx % 6;
+            const leftClear = (col === 0) || mahjongTiles[idx - 1].cleared;
+            const rightClear = (col === 5) || mahjongTiles[idx + 1].cleared;
+            const free = leftClear || rightClear;
+            
+            if (!free) el.classList.add('blocked');
+            if (idx === mahjongSelectedIdx) el.classList.add('selected');
+            
+            el.onclick = () => {
+                if (!free) return;
+                
+                if (mahjongSelectedIdx === -1) {
+                    mahjongSelectedIdx = idx;
+                    renderMahjong();
+                } else if (mahjongSelectedIdx === idx) {
+                    mahjongSelectedIdx = -1;
+                    renderMahjong();
+                } else {
+                    const prev = mahjongTiles[mahjongSelectedIdx];
+                    if (prev.symbol === tile.symbol) {
+                        tile.cleared = true;
+                        prev.cleared = true;
+                        mahjongSelectedIdx = -1;
+                        triggerChimeSound(160);
+                        renderMahjong();
+                    } else {
+                        mahjongSelectedIdx = idx;
+                        renderMahjong();
+                    }
+                }
+            };
+            board.appendChild(el);
+        });
+        const statusEl = document.getElementById('mahjong-status');
+        if(statusEl) statusEl.textContent = `thẻ còn lại: ${remaining}`;
+    }
+    document.getElementById('reset-mahjong')?.addEventListener('click', startMahjong);
+
+    // --- GAME 18: SUDOKU TĨNH LẶNG ---
+    let sudokuBoard = [];
+    let sudokuSelectedCellIdx = -1;
+    const sudokuTemplates = [
+        [
+            5, 3, 0, 0, 7, 0, 0, 0, 0,
+            6, 0, 0, 1, 9, 5, 0, 0, 0,
+            0, 9, 8, 0, 0, 0, 0, 6, 0,
+            8, 0, 0, 0, 6, 0, 0, 0, 3,
+            4, 0, 0, 8, 0, 3, 0, 0, 1,
+            7, 0, 0, 0, 2, 0, 0, 0, 6,
+            0, 6, 0, 0, 0, 0, 2, 8, 0,
+            0, 0, 0, 4, 1, 9, 0, 0, 5,
+            0, 0, 0, 0, 8, 0, 0, 7, 9
+        ]
+    ];
+    function startSudoku() {
+        const grid = document.getElementById('sudoku-grid');
+        const keypad = document.getElementById('sudoku-keypad');
+        if (!grid || !keypad) return;
+        
+        sudokuSelectedCellIdx = -1;
+        const template = sudokuTemplates[0];
+        sudokuBoard = [];
+        template.forEach((val) => {
+            sudokuBoard.push({
+                val: val,
+                fixed: val !== 0,
+                wrong: false
+            });
+        });
+        
+        keypad.innerHTML = '';
+        for (let i = 1; i <= 9; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'capsule-btn';
+            btn.textContent = i;
+            btn.onclick = () => fillSudokuNumber(i);
+            keypad.appendChild(btn);
+        }
+        const delBtn = document.createElement('button');
+        delBtn.className = 'capsule-btn';
+        delBtn.textContent = 'Xóa';
+        delBtn.onclick = () => fillSudokuNumber(0);
+        keypad.appendChild(delBtn);
+        
+        renderSudoku();
+    }
+    function renderSudoku() {
+        const grid = document.getElementById('sudoku-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        
+        sudokuBoard.forEach((cell, idx) => {
+            const cellDiv = document.createElement('div');
+            cellDiv.className = 'sudoku-cell';
+            if (cell.fixed) cellDiv.classList.add('fixed');
+            if (cell.wrong) cellDiv.classList.add('wrong');
+            if (idx === sudokuSelectedCellIdx) cellDiv.classList.add('selected');
+            
+            cellDiv.textContent = cell.val !== 0 ? cell.val : '';
+            cellDiv.onclick = () => {
+                if (cell.fixed) return;
+                sudokuSelectedCellIdx = idx;
+                renderSudoku();
+            };
+            grid.appendChild(cellDiv);
+        });
+    }
+    function fillSudokuNumber(num) {
+        if (sudokuSelectedCellIdx === -1) return;
+        const cell = sudokuBoard[sudokuSelectedCellIdx];
+        if (cell.fixed) return;
+        
+        cell.val = num;
+        cell.wrong = false;
+        if (num !== 0) {
+            const row = Math.floor(sudokuSelectedCellIdx / 9);
+            const col = sudokuSelectedCellIdx % 9;
+            for (let c = 0; c < 9; c++) {
+                const otherIdx = row * 9 + c;
+                if (otherIdx !== sudokuSelectedCellIdx && sudokuBoard[otherIdx].val === num) {
+                    cell.wrong = true;
+                }
+            }
+            for (let r = 0; r < 9; r++) {
+                const otherIdx = r * 9 + col;
+                if (otherIdx !== sudokuSelectedCellIdx && sudokuBoard[otherIdx].val === num) {
+                    cell.wrong = true;
+                }
+            }
+        }
+        triggerChimeSound(160);
+        renderSudoku();
+    }
+    document.getElementById('reset-sudoku')?.addEventListener('click', startSudoku);
 });

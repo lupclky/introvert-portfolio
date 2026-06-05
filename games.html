@@ -53,10 +53,28 @@
                 <button class="game-select-btn" data-game="minigo">cờ vây thu nhỏ</button>
                 <button class="game-select-btn" data-game="mastermind">dò mã cảm xúc</button>
                 <button class="game-select-btn" data-game="memory">cặp đôi đồng điệu</button>
-                <!-- 3 New Games -->
                 <button class="game-select-btn" data-game="breathe">vòng tròn thở</button>
                 <button class="game-select-btn" data-game="tower">tháp cân bằng</button>
                 <button class="game-select-btn" data-game="sand">rơi cát</button>
+                <!-- 18 New Games -->
+                <button class="game-select-btn" data-game="rake">cào cát zen</button>
+                <button class="game-select-btn" data-game="soundscape">hòa âm thiên nhiên</button>
+                <button class="game-select-btn" data-game="ripples">giọt nước mặt hồ</button>
+                <button class="game-select-btn" data-game="chimes">chuông gió bình yên</button>
+                <button class="game-select-btn" data-game="kintsugi">hàn gắn kintsugi</button>
+                <button class="game-select-btn" data-game="bonsai">cắt tỉa bonsai</button>
+                <button class="game-select-btn" data-game="origami">gấp giấy origami</button>
+                <button class="game-select-btn" data-game="calligraphy">luyện thư pháp</button>
+                <button class="game-select-btn" data-game="ikebana">cắm hoa ikebana</button>
+                <button class="game-select-btn" data-game="stainedglass">xếp kính màu</button>
+                <button class="game-select-btn" data-game="pebbles">xếp đá thăng bằng</button>
+                <button class="game-select-btn" data-game="constellation">dệt sao đêm</button>
+                <button class="game-select-btn" data-game="tea">nghệ thuật trà đạo</button>
+                <button class="game-select-btn" data-game="lantern">thả đèn trời</button>
+                <button class="game-select-btn" data-game="shadow">múa bóng nghệ thuật</button>
+                <button class="game-select-btn" data-game="tangram">trò chơi trí uẩn</button>
+                <button class="game-select-btn" data-game="mahjong">cặp trùng mahjong</button>
+                <button class="game-select-btn" data-game="zensudoku">sudoku tĩnh lặng</button>
             </div>
             
             <div class="game-container" id="game-active-container">
@@ -343,6 +361,285 @@
                     </div>
                     <div class="game-actions">
                         <button id="sand-clear" class="capsule-btn btn-small">xóa cát</button>
+                    </div>
+                </div>
+
+                <!-- Game 1: Cào Cát Zen -->
+                <div class="game-playarea" id="game-play-rake">
+                    <p class="game-desc">cào những đường vân cát gợn sóng xung quanh các hòn đá...</p>
+                    <div class="canvas-wrapper">
+                        <canvas id="rake-canvas" width="320" height="320" style="display: block; cursor: crosshair;"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <button id="rake-clear" class="capsule-btn btn-small">làm phẳng cát</button>
+                    </div>
+                </div>
+
+                <!-- Game 2: Hòa Âm Thiên Nhiên -->
+                <div class="game-playarea" id="game-play-soundscape">
+                    <p class="game-desc">tạo không gian âm thanh thư giãn của riêng bạn...</p>
+                    <div class="soundscape-mixer" style="display: flex; flex-direction: column; gap: 12px; margin: 20px 0; width: 100%;">
+                        <div class="mixer-channel" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="channel-label" style="width: 120px; text-align: left;">🌧️ mưa rơi</span>
+                            <input type="range" id="vol-rain" class="mixer-slider" min="0" max="100" value="0" style="flex: 1; cursor: pointer;">
+                        </div>
+                        <div class="mixer-channel" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="channel-label" style="width: 120px; text-align: left;">💨 gió thổi</span>
+                            <input type="range" id="vol-wind" class="mixer-slider" min="0" max="100" value="0" style="flex: 1; cursor: pointer;">
+                        </div>
+                        <div class="mixer-channel" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="channel-label" style="width: 120px; text-align: left;">🌊 sóng biển</span>
+                            <input type="range" id="vol-waves" class="mixer-slider" min="0" max="100" value="0" style="flex: 1; cursor: pointer;">
+                        </div>
+                        <div class="mixer-channel" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="channel-label" style="width: 120px; text-align: left;">🔥 lửa trại</span>
+                            <input type="range" id="vol-fire" class="mixer-slider" min="0" max="100" value="0" style="flex: 1; cursor: pointer;">
+                        </div>
+                        <div class="mixer-channel" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="channel-label" style="width: 120px; text-align: left;">🎹 piano</span>
+                            <input type="range" id="vol-piano" class="mixer-slider" min="0" max="100" value="0" style="flex: 1; cursor: pointer;">
+                        </div>
+                        <div class="mixer-channel" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="channel-label" style="width: 120px; text-align: left;">🔔 chuông gió</span>
+                            <input type="range" id="vol-chimes" class="mixer-slider" min="0" max="100" value="0" style="flex: 1; cursor: pointer;">
+                        </div>
+                    </div>
+                    <div class="game-actions">
+                        <button id="soundscape-mute" class="capsule-btn btn-small">tắt tất cả</button>
+                    </div>
+                </div>
+
+                <!-- Game 3: Giọt Nước Mặt Hồ -->
+                <div class="game-playarea" id="game-play-ripples">
+                    <p class="game-desc">chạm lên mặt nước để ngắm những gợn sóng lan tỏa...</p>
+                    <div class="canvas-wrapper">
+                        <canvas id="ripples-canvas" width="320" height="320" style="display: block; cursor: pointer;"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <button id="ripples-reset" class="capsule-btn btn-small">mặt hồ phẳng lặng</button>
+                    </div>
+                </div>
+
+                <!-- Game 4: Chuông Gió Bình Yên -->
+                <div class="game-playarea" id="game-play-chimes">
+                    <p class="game-desc">lướt chuột hoặc vuốt để làm đung đưa chuông gió...</p>
+                    <div class="canvas-wrapper" style="height: 350px;">
+                        <canvas id="chimes-canvas" width="320" height="350" style="display: block; cursor: pointer;"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <span class="game-help-text">chuông gió tự đung đưa khi gió thoảng</span>
+                    </div>
+                </div>
+
+                <!-- Game 5: Hàn Gắn Kintsugi -->
+                <div class="game-playarea" id="game-play-kintsugi">
+                    <p class="game-desc" id="kintsugi-desc">ghép các mảnh vỡ lại thành một chiếc bát hoàn chỉnh...</p>
+                    <div class="kintsugi-container" style="position: relative; width: 320px; height: 320px; margin: auto; background: rgba(0,0,0,0.02); border-radius: 8px;">
+                        <div id="kintsugi-board" style="position: absolute; width: 100%; height: 100%;"></div>
+                        <canvas id="kintsugi-canvas" width="320" height="320" style="position: absolute; top:0; left:0; pointer-events: none;"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <button id="reset-kintsugi" class="capsule-btn btn-small">làm lại</button>
+                    </div>
+                </div>
+
+                <!-- Game 6: Cắt Tỉa Bonsai -->
+                <div class="game-playarea" id="game-play-bonsai">
+                    <p class="game-desc">chạm vào lá hoặc nhánh phụ ở đầu cành để cắt tỉa Bonsai...</p>
+                    <div class="canvas-wrapper">
+                        <canvas id="bonsai-canvas" width="320" height="320" style="display: block; cursor: pointer;"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <span id="bonsai-rating" class="game-score-lbl">tĩnh lặng: 100%</span>
+                        <button id="reset-bonsai" class="capsule-btn btn-small">nuôi cây mới</button>
+                    </div>
+                </div>
+
+                <!-- Game 7: Gấp Giấy Origami -->
+                <div class="game-playarea" id="game-play-origami">
+                    <p class="game-desc" id="origami-desc">gấp giấy theo đường nét đứt để tạo hình...</p>
+                    <div class="canvas-wrapper">
+                        <canvas id="origami-canvas" width="320" height="320" style="display: block; cursor: pointer;"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <span id="origami-step" class="game-score-lbl">bước 1/4</span>
+                        <button id="origami-next" class="capsule-btn btn-small">tiếp tục</button>
+                        <button id="reset-origami" class="capsule-btn btn-small">gấp lại</button>
+                    </div>
+                </div>
+
+                <!-- Game 8: Luyện Thư Pháp -->
+                <div class="game-playarea" id="game-play-calligraphy">
+                    <p class="game-desc" id="calligraphy-desc">tô theo các nét để luyện chữ thư pháp...</p>
+                    <div class="canvas-wrapper" style="background: #faf7f2;">
+                        <canvas id="calligraphy-canvas" width="320" height="320" style="display: block; cursor: crosshair;"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <div class="calligraphy-words" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 10px;">
+                            <button class="capsule-btn btn-small calligraphy-word-select active" data-word="thien">禪 (thiền)</button>
+                            <button class="capsule-btn btn-small calligraphy-word-select" data-word="tinh">靜 (tĩnh)</button>
+                            <button class="capsule-btn btn-small calligraphy-word-select" data-word="an">安 (an)</button>
+                        </div>
+                        <button id="clear-calligraphy" class="capsule-btn btn-small">tẩy mực</button>
+                    </div>
+                </div>
+
+                <!-- Game 9: Cắm Hoa Ikebana -->
+                <div class="game-playarea" id="game-play-ikebana">
+                    <p class="game-desc">kéo hoa/cành từ khay cắm vào lọ hoa. cuộn chuột hoặc nhấn phím ←/→ để xoay...</p>
+                    <div class="ikebana-container" style="position: relative; width: 320px; height: 350px; margin: auto; background: rgba(0,0,0,0.02); overflow: hidden; border-radius: 8px;">
+                        <div id="ikebana-pot" style="position: absolute; bottom: 20px; left: 110px; width: 100px; height: 40px; background: var(--text-muted); border-radius: 0 0 20px 20px; opacity: 0.8; z-index: 2;"></div>
+                        <div id="ikebana-workspace" style="position: absolute; width: 100%; height: 100%; z-index: 1;"></div>
+                    </div>
+                    <div class="ikebana-tray" id="ikebana-tray" style="display: flex; gap: 10px; justify-content: center; margin-top: 10px; padding: 5px; background: rgba(0,0,0,0.01); border-radius: 8px;"></div>
+                    <div class="game-actions" style="margin-top: 10px;">
+                        <button id="clear-ikebana" class="capsule-btn btn-small">cắm lại từ đầu</button>
+                    </div>
+                </div>
+
+                <!-- Game 10: Xếp Kính Màu -->
+                <div class="game-playarea" id="game-play-stainedglass">
+                    <p class="game-desc">kéo các mảnh kính màu lắp ráp vào khung tranh gỗ...</p>
+                    <div class="stainedglass-container" style="position: relative; width: 320px; height: 320px; margin: auto; background: rgba(0,0,0,0.02); border-radius: 8px;">
+                        <div id="stainedglass-board" style="position: absolute; width: 100%; height: 100%;"></div>
+                    </div>
+                    <div class="stainedglass-tray" id="stainedglass-tray" style="display: flex; gap: 8px; justify-content: center; margin-top: 10px; flex-wrap: wrap;"></div>
+                    <div class="game-actions" style="margin-top: 10px;">
+                        <button id="reset-stainedglass" class="capsule-btn btn-small">chơi lại</button>
+                    </div>
+                </div>
+
+                <!-- Game 11: Xếp Đá Thăng Bằng -->
+                <div class="game-playarea" id="game-play-pebbles">
+                    <p class="game-desc">kéo các viên đá từ khay và xếp tháp cân bằng trên tảng đá đế...</p>
+                    <div class="canvas-wrapper">
+                        <canvas id="pebbles-canvas" width="320" height="340" style="display: block; cursor: pointer;"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <span id="pebbles-status" class="game-score-lbl">chiều cao tháp: 0</span>
+                        <button id="reset-pebbles" class="capsule-btn btn-small">dọn đá</button>
+                    </div>
+                </div>
+
+                <!-- Game 12: Dệt Sao Đêm -->
+                <div class="game-playarea" id="game-play-constellation">
+                    <p class="game-desc" id="constellation-desc">nối các ngôi sao theo thứ tự số để vẽ chòm sao...</p>
+                    <div class="canvas-wrapper" style="background: #090b10;">
+                        <canvas id="constellation-canvas" width="320" height="320" style="display: block; cursor: pointer;"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <span id="constellation-name" class="game-score-lbl">chòm sao: ?</span>
+                        <button id="next-constellation" class="capsule-btn btn-small" style="display: none;">chòm sao tiếp theo</button>
+                        <button id="reset-constellation" class="capsule-btn btn-small">vẽ lại</button>
+                    </div>
+                </div>
+
+                <!-- Game 13: Nghệ Thuật Trà Đạo -->
+                <div class="game-playarea" id="game-play-tea">
+                    <p class="game-desc" id="tea-desc">bước 1: đun nước đến nhiệt độ tối ưu (85°C)...</p>
+                    <div class="tea-stage" style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin: 20px 0;">
+                        <div id="tea-heating-view" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                            <div style="font-size: 3rem;">🫖</div>
+                            <div id="tea-temp-gauge" style="font-size: 1.5rem; font-family: monospace;">25°C</div>
+                            <div class="progress-bar-container" style="width: 200px; height: 10px; background: rgba(0,0,0,0.1); border-radius: 5px; overflow: hidden;">
+                                <div id="tea-temp-progress" style="width: 25%; height: 100%; background: var(--accent); transition: width 0.1s linear;"></div>
+                            </div>
+                            <button id="tea-heat-btn" class="capsule-btn">đun nước</button>
+                        </div>
+                        
+                        <div id="tea-steeping-view" style="display: none; flex-direction: column; align-items: center; gap: 10px;">
+                            <div style="font-size: 3rem; position: relative;">
+                                🍵
+                                <span id="tea-color-indicator" style="position: absolute; bottom: 8px; left: 10px; width: 28px; height: 15px; background: rgba(212, 184, 134, 0.2); border-radius: 5px; transition: background 0.5s;"></span>
+                            </div>
+                            <div id="tea-timer" style="font-size: 1.5rem; font-family: monospace;">0.0s / 5.0s</div>
+                            <button id="tea-steep-btn" class="capsule-btn">nhúng trà</button>
+                        </div>
+                        
+                        <div id="tea-result-view" style="display: none; flex-direction: column; align-items: center; gap: 10px;">
+                            <div style="font-size: 3.5rem;">🌸🍵🌸</div>
+                            <div id="tea-evaluation" style="font-style: italic; text-align: center; max-width: 250px;">hương vị tinh khiết!</div>
+                        </div>
+                    </div>
+                    <div class="game-actions">
+                        <button id="reset-tea" class="capsule-btn btn-small">pha trà mới</button>
+                    </div>
+                </div>
+
+                <!-- Game 14: Thả Đèn Trời -->
+                <div class="game-playarea" id="game-play-lantern">
+                    <p class="game-desc">viết một tâm sự hoặc mong ước và thả đèn trời lên...</p>
+                    <div class="canvas-wrapper" style="background: linear-gradient(to bottom, #090e1a, #151d33); position: relative; height: 320px; overflow: hidden;">
+                        <canvas id="lantern-canvas" width="320" height="320" style="display: block; cursor: pointer;"></canvas>
+                    </div>
+                    <div class="lantern-input-row" style="display: flex; gap: 10px; margin-top: 15px; width: 100%;">
+                        <input type="text" id="lantern-input" class="wordrain-input" autocomplete="off" placeholder="viết điều ước/nỗi buồn vào đây..." style="flex: 1; margin: 0;">
+                        <button id="lantern-send" class="capsule-btn" style="margin: 0; padding: 0 15px;">thả đèn</button>
+                    </div>
+                    <div class="game-actions" style="margin-top: 10px;">
+                        <button id="clear-lanterns" class="capsule-btn btn-small">làm trống bầu trời</button>
+                    </div>
+                </div>
+
+                <!-- Game 15: Múa Bóng Nghệ Thuật -->
+                <div class="game-playarea" id="game-play-shadow">
+                    <p class="game-desc">di chuyển các thanh trượt điều chỉnh khớp tay để múa bóng...</p>
+                    <div class="canvas-wrapper" style="background: #f4edd8; border: 4px solid #b8a27c;">
+                        <canvas id="shadow-canvas" width="320" height="260" style="display: block;"></canvas>
+                    </div>
+                    <div class="shadow-controls" style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px; width: 100%;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="game-help-text">ngón cái:</span>
+                            <input type="range" id="shadow-thumb" class="mixer-slider" style="width: 200px; cursor: pointer;" min="-45" max="45" value="0">
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="game-help-text">ngón trỏ:</span>
+                            <input type="range" id="shadow-index" class="mixer-slider" style="width: 200px; cursor: pointer;" min="-45" max="45" value="0">
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="game-help-text">các ngón khác:</span>
+                            <input type="range" id="shadow-other" class="mixer-slider" style="width: 200px; cursor: pointer;" min="-45" max="45" value="0">
+                        </div>
+                    </div>
+                    <div class="game-actions" style="margin-top: 15px;">
+                        <span id="shadow-match-status" class="game-score-lbl">mục tiêu: tạo bóng thỏ con (ngón cái: 30, ngón trỏ: -20, ngón khác: 10)</span>
+                        <button id="next-shadow-target" class="capsule-btn btn-small" style="margin-top: 10px; display: none;">bóng tiếp theo</button>
+                    </div>
+                </div>
+
+                <!-- Game 16: Trò Chơi Trí Uẩn -->
+                <div class="game-playarea" id="game-play-tangram">
+                    <p class="game-desc">kéo lắp các khối gỗ hình học để lấp đầy bóng chim thiên nga...</p>
+                    <div class="tangram-container" style="position: relative; width: 320px; height: 320px; margin: auto; background: rgba(0,0,0,0.02); border-radius: 8px;">
+                        <canvas id="tangram-canvas" width="320" height="320" style="display: block; cursor: pointer;"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <span class="game-help-text">click chuột hoặc chạm để xoay mảnh đang chọn</span>
+                        <button id="reset-tangram" class="capsule-btn btn-small">xếp lại</button>
+                    </div>
+                </div>
+
+                <!-- Game 17: Cặp Trùng Mahjong -->
+                <div class="game-playarea" id="game-play-mahjong">
+                    <p class="game-desc">chọn hai thẻ giống nhau ở hai cạnh tự do để thu hoạch...</p>
+                    <div class="mahjong-grid-wrapper" style="width: 320px; margin: auto; background: rgba(0,0,0,0.01); border-radius: 8px; padding: 10px;">
+                        <div id="mahjong-board" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; justify-items: center;"></div>
+                    </div>
+                    <div class="game-actions" style="margin-top: 15px;">
+                        <span id="mahjong-status" class="game-score-lbl">thẻ còn lại: 24</span>
+                        <button id="reset-mahjong" class="capsule-btn btn-small">chia bài mới</button>
+                    </div>
+                </div>
+
+                <!-- Game 18: Sudoku Tĩnh Lặng -->
+                <div class="game-playarea" id="game-play-zensudoku">
+                    <p class="game-desc">điền số từ 1 đến 9 sao cho hàng, cột và ô 3x3 không trùng nhau...</p>
+                    <div class="sudoku-wrapper" style="width: 320px; margin: auto;">
+                        <div id="sudoku-grid" style="display: grid; grid-template-columns: repeat(9, 1fr); border: 2px solid var(--text-primary); margin-bottom: 15px;"></div>
+                        <div id="sudoku-keypad" style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px;"></div>
+                    </div>
+                    <div class="game-actions" style="margin-top: 15px;">
+                        <button id="reset-sudoku" class="capsule-btn btn-small">bắt đầu ván mới</button>
                     </div>
                 </div>
 
