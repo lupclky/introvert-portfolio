@@ -7155,3 +7155,86 @@ body.extreme-zen-mode #journal-zen-btn:hover {
         box-sizing: border-box;
     }
 }
+
+/* --- ZEN GAMES LAYOUT OPTIMIZATIONS (2-COLUMN & MOBILE) --- */
+
+/* Desktop layout: Side-by-side when active */
+@media (min-width: 768px) {
+    #tab-games:has(#game-active-container.active) {
+        display: grid !important;
+        grid-template-columns: 240px 1fr;
+        gap: 3rem;
+        align-items: start;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    #tab-games:has(#game-active-container.active) #games-menu {
+        display: flex !important;
+        flex-direction: column;
+        gap: 0.6rem !important;
+        padding: 0;
+        background: transparent;
+        box-shadow: none;
+        border: none;
+    }
+
+    #tab-games:has(#game-active-container.active) #games-menu .game-select-btn {
+        width: 100%;
+        text-align: left;
+        padding: 0.6rem 1rem !important;
+        font-size: 0.95rem;
+        margin: 0;
+        border-radius: 4px;
+    }
+}
+
+/* Highlight active game button in menu */
+.game-select-btn.active {
+    font-weight: bold !important;
+    color: var(--text-primary) !important;
+    border-left: 2px solid var(--accent) !important;
+    padding-left: 0.8rem !important;
+    background: var(--bg-accent) !important;
+}
+
+/* Mobile layout: Move active game to the top and shrink title spacing */
+@media (max-width: 767px) {
+    body:has(#game-active-container.active) h1,
+    body:has(#game-active-container.active) p {
+        display: none !important;
+    }
+    
+    body:has(#game-active-container.active) .content-container {
+        padding-top: 1.5rem !important;
+    }
+
+    #tab-games:has(#game-active-container.active) {
+        display: flex !important;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    #tab-games:has(#game-active-container.active) #game-active-container {
+        order: -1; /* Place game on top */
+    }
+
+    #tab-games:has(#game-active-container.active) #games-menu {
+        display: grid !important; /* Force display grid */
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem !important;
+        padding: 1.5rem 0;
+        margin-top: 1rem;
+        border-top: 1px dashed var(--border-color);
+    }
+
+    #tab-games:has(#game-active-container.active) #games-menu .game-select-btn {
+        width: 100% !important;
+        max-width: none !important;
+        font-size: 0.85rem;
+        padding: 0.5rem !important;
+        margin: 0;
+        text-align: center;
+        box-sizing: border-box;
+    }
+}

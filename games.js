@@ -63,6 +63,9 @@ conwayTimer = null;
             stopIndieGames();
             currentActiveGame = gameName;
 
+            gameSelectBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
             if (gamesMenu) gamesMenu.style.display = 'none';
             if (gameActiveContainer) gameActiveContainer.classList.add('active');
 
@@ -137,6 +140,7 @@ conwayTimer = null;
 
             if (gameActiveContainer) gameActiveContainer.classList.remove('active');
             if (gamesMenu) gamesMenu.style.display = 'flex';
+            gameSelectBtns.forEach(b => b.classList.remove('active'));
         });
     }
 
