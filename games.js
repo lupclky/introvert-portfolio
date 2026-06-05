@@ -16,7 +16,7 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
         vi: {
             navHome: "home",
             navGames: "games",
-            navPineapple: "góc của dứa 🍍",
+            navPineapple: "góc của dứa",
             kicker: "games",
             title: "zen games",
             intro: "một góc nhỏ để tĩnh tâm, không điểm số gay gắt, không âm thanh ồn ào.",
@@ -62,7 +62,7 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
         en: {
             navHome: "home",
             navGames: "games",
-            navPineapple: "pineapple's corner 🍍",
+            navPineapple: "pineapple's corner",
             kicker: "games",
             title: "zen games",
             intro: "a small quiet corner with softer goals, less noise, and slower play.",

@@ -416,12 +416,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            const cat = item.category || "video";
             const liveLabel = window.IntrovertPageI18n?.t("dua.card.liveNow") || "LIVE NOW";
-            const liveBadge = item.category === "live-current" ? `<span class="dua-live-badge pulse-anim">${liveLabel} 🔴</span>` : "";
-            const categoryLabel = window.IntrovertPageI18n?.t(`dua.filter.${item.category}`) || item.category;
+            const liveBadge = cat === "live-current" ? `<span class="dua-live-badge pulse-anim">${liveLabel} 🔴</span>` : "";
+            
+            const translationKey = `dua.filter.${cat}`;
+            const categoryLabel = window.IntrovertPageI18n?.t(translationKey) !== translationKey
+                ? window.IntrovertPageI18n.t(translationKey)
+                : cat;
 
             return `
-                <article class="dua-card category-${item.category}">
+                <article class="dua-card category-${cat}">
                     <div class="dua-card-meta">
                         <span class="dua-card-category-label">${categoryLabel}</span>
                         ${liveBadge}
