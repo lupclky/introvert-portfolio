@@ -245,16 +245,28 @@ document.addEventListener('DOMContentLoaded', () => {
         setStatus("Đang tải dữ liệu...");
         try {
             const separator = GOOGLE_APPS_SCRIPT_URL.includes('?') ? '&' : '?';
-            const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}${separator}type=pineapple`, {
+            
+            // Gọi song song 2 API: pineapple (private) và youtube_feed (public)
+            const pineapplePromise = fetch(`${GOOGLE_APPS_SCRIPT_URL}${separator}type=pineapple`, {
                 headers: getPrivateHeaders()
             });
+            const youtubePromise = fetch(`${GOOGLE_APPS_SCRIPT_URL}${separator}type=youtube_feed`);
+            
+            const [pinResponse, ytResponse] = await Promise.all([pineapplePromise, youtubePromise]);
 
-            if (response.status === 401) {
+            if (pinResponse.status === 401) {
                 throw new Error("Expired or invalid session token.");
             }
 
-            const data = await response.json();
-            moments = Array.isArray(data) ? data : [];
+            const pinData = await pinResponse.json().catch(() => []);
+            const ytData = await ytResponse.json().catch(() => []);
+            
+            const pinList = Array.isArray(pinData) ? pinData : [];
+            const ytList = Array.isArray(ytData) ? ytData : [];
+
+            // Gộp dữ liệu
+            moments = [...pinList, ...ytList];
+            
             // Cache offline
             localStorage.setItem(OFFLINE_DATA_KEY, JSON.stringify(moments));
             
@@ -274,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (offline) {
                 moments = JSON.parse(offline);
                 renderMoments();
-                setStatus("Chưa đồng bộ được với Google Sheet (Đang hiển thị ngoại tuyến).");
+                setStatus("Chưa đồng bộ được dữ liệu mới (Đang hiển thị ngoại tuyến).");
             } else {
                 setStatus("Không tải được dữ liệu. Vui lòng kiểm tra lại cấu hình kết nối.");
             }

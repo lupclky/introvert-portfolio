@@ -115,6 +115,49 @@ function doPost(e) {
 function doGet(e) {
   const type = e.parameter.type || "articles";
 
+  if (type === "youtube_feed") {
+    try {
+      const channelId = "UCwX57vE21d4j2lq2_z5Nf7Q";
+      const feedUrl = "https://www.youtube.com/feeds/videos.xml?channel_id=" + channelId;
+      const response = UrlFetchApp.fetch(feedUrl);
+      const xml = response.getContentText();
+      
+      const document = XmlService.parse(xml);
+      const root = document.getRootElement();
+      const atom = XmlService.getNamespace("http://www.w3.org/2005/Atom");
+      const media = XmlService.getNamespace("http://search.yahoo.com/mrss/");
+      const yt = XmlService.getNamespace("http://www.youtube.com/xml/schemas/2015");
+      
+      const entries = root.getChildren("entry", atom);
+      const videos = [];
+      
+      for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
+        const videoId = entry.getChildText("videoId", yt);
+        const title = entry.getChildText("title", atom);
+        const published = entry.getChildText("published", atom);
+        const group = entry.getChild("group", media);
+        let description = "";
+        if (group) {
+          description = group.getChildText("description", media) || "";
+        }
+        
+        videos.push({
+          category: (title.toLowerCase().includes("#shorts") || description.toLowerCase().includes("#shorts")) ? "short" : "video",
+          title: title,
+          content: description.slice(0, 200) + (description.length > 200 ? "..." : ""),
+          mediaUrl: "https://www.youtube.com/watch?v=" + videoId,
+          date: published,
+          createdAt: published,
+          displayDate: formatVietnamDateTime(published)
+        });
+      }
+      return json(videos);
+    } catch (err) {
+      return json({ error: err.toString() });
+    }
+  }
+
   if (type === "messages") {
     const rows = getSheet("Messages").getDataRange().getValues();
     return json(rows.map(row => ({
