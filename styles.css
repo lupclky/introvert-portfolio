@@ -7022,3 +7022,136 @@ body.private-locked .mood-drawer {
         padding-inline: 0 !important;
     }
 }
+
+/* -------------------------------------------------------------
+   Introvert Features (Journal & Write)
+   ------------------------------------------------------------- */
+body.fading-text-mode .journal-content-input {
+    color: var(--text-muted);
+}
+
+body.extreme-zen-mode .journal-main-header,
+body.extreme-zen-mode .journal-title-row,
+body.extreme-zen-mode .journal-editor-grid,
+body.extreme-zen-mode .journal-page-templates,
+body.extreme-zen-mode .journal-list-section,
+body.extreme-zen-mode .journal-editor-actions button:not(#journal-zen-btn),
+body.extreme-zen-mode .journal-save-status {
+    display: none !important;
+    opacity: 0;
+    pointer-events: none;
+}
+
+body.extreme-zen-mode .journal-shell {
+    padding-top: 2rem;
+    width: min(800px, 90vw);
+}
+
+body.extreme-zen-mode .journal-title-input {
+    text-align: center;
+    border-bottom: none;
+}
+
+body.extreme-zen-mode .journal-content-input {
+    min-height: 70vh;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+body.extreme-zen-mode .journal-editor-actions {
+    justify-content: center;
+}
+
+body.extreme-zen-mode #journal-zen-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+body.extreme-zen-mode #journal-zen-btn:hover {
+    opacity: 1;
+}
+
+/* --- ABSOLUTE MINIMALISM WRITING --- */
+.ql-toolbar.ql-snow {
+    opacity: 0.05 !important;
+    transition: opacity 0.5s ease !important;
+    border: none !important;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: transparent !important;
+}
+.ql-toolbar.ql-snow:hover,
+.ql-toolbar.ql-snow:focus-within {
+    opacity: 1 !important;
+    background: var(--bg-color) !important;
+}
+
+.ql-container.ql-snow {
+    border: none !important;
+    font-size: 1.15rem;
+    line-height: 1.8;
+}
+
+.ql-editor {
+    padding-bottom: 60vh !important; /* Typewriter mode / massive overscroll */
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+/* Secondary buttons fading when not hovered */
+.journal-introvert-tools button,
+.journal-save-row button {
+    opacity: 0.15;
+    transition: opacity 0.5s ease;
+}
+.journal-introvert-tools:hover button,
+.journal-save-row:hover button {
+    opacity: 1;
+}
+
+/* Inputs borderless */
+.write-title-input,
+.journal-title-input,
+.mood-note-input {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    background: transparent !important;
+}
+.write-title-input:focus,
+.journal-title-input:focus,
+.mood-note-input:focus {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* --- MOBILE OPTIMIZATIONS --- */
+@media (max-width: 600px) {
+    .nav-container {
+        flex-direction: column;
+        gap: 0.8rem;
+        padding: 1rem;
+    }
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.3rem;
+        font-size: 0.9rem;
+    }
+    .games-menu {
+        padding: 1rem;
+    }
+    .game-playarea {
+        padding: 1rem 0;
+    }
+    .capsule-btn, .game-select-btn {
+        width: 100%;
+        max-width: 300px;
+        margin: 0.2rem auto;
+        box-sizing: border-box;
+    }
+}

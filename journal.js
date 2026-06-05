@@ -416,5 +416,41 @@ document.addEventListener('DOMContentLoaded', () => {
         setStatus("đã xóa nháp.");
     });
 
+    const zenBtn = document.getElementById('journal-zen-btn');
+    const fadeBtn = document.getElementById('journal-fade-btn');
+    const burnBtn = document.getElementById('journal-burn-btn');
+
+    zenBtn?.addEventListener('click', () => {
+        document.body.classList.toggle('extreme-zen-mode');
+        zenBtn.textContent = document.body.classList.contains('extreme-zen-mode') ? "thoát zen" : "zen canvas";
+    });
+
+    fadeBtn?.addEventListener('click', () => {
+        document.body.classList.toggle('fading-text-mode');
+        if (document.body.classList.contains('fading-text-mode')) {
+            fadeBtn.classList.add('primary');
+        } else {
+            fadeBtn.classList.remove('primary');
+        }
+    });
+
+    burnBtn?.addEventListener('click', () => {
+        if (!contentInput.value.trim()) {
+            setStatus("không có gì để buông xả.");
+            return;
+        }
+        if (confirm("Bạn có chắc chắn muốn buông xả? Dòng chữ này sẽ bốc cháy và tan biến mãi mãi.")) {
+            contentInput.classList.add('burning-text');
+            setTimeout(() => {
+                contentInput.value = '';
+                titleInput.value = '';
+                tagsInput.value = '';
+                contentInput.classList.remove('burning-text');
+                saveDraft();
+                setStatus("mọi suy tư đã nhẹ nhàng tan biến.");
+            }, 3000);
+        }
+    });
+
     passcodeDigits[0]?.focus();
 });

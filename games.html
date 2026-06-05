@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>introvert — zen games</title>
+    <meta name="description" content="Trạm dừng chân nhỏ với những trò chơi tĩnh lặng dành cho người hướng nội.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css?v=20260604-zen-games">
+    <script>
+        const savedTheme = localStorage.getItem('introvert_theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', savedTheme || (prefersDark ? 'dark' : 'light'));
+    </script>
+</head>
+<body class="games-page">
+
+    <!-- Header Navigation -->
+    <header class="main-header">
+        <nav class="nav-container">
+            <a href="index.html" class="header-brand" aria-label="Về trang chủ">
+                <img src="assets/introvert.png" alt="introvert" class="header-logo" style="opacity: 1;">
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">home</a>
+                <span class="nav-separator">/</span>
+                <span class="nav-link" style="color: var(--text-primary);">games</span>
+            </div>
+        </nav>
+    </header>
+
+    <main class="content-container" style="padding-top: 6rem; max-width: 900px; margin: auto;">
+        <h1 style="font-family: var(--font-heading); font-size: 3rem; font-weight: normal; margin-bottom: 2rem; color: var(--text-primary); text-align: center;">zen games</h1>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 3rem;">một góc nhỏ để tĩnh tâm, không điểm số gay gắt, không âm thanh ồn ào.</p>
+
+        <!-- Trò chơi (Zen Games) -->
+        <div class="mood-tab-content active" id="tab-games" style="display: block; opacity: 1; visibility: visible; border: none; padding: 0;">
+            <div class="games-menu" id="games-menu">
+                <button class="game-select-btn" data-game="haiku">ghép thơ haiku</button>
+                <button class="game-select-btn" data-game="2048">zen 2048</button>
+                <button class="game-select-btn" data-game="snake">rắn săn mồi</button>
+                <button class="game-select-btn" data-game="conway">vườn conway</button>
+                <button class="game-select-btn" data-game="fireflies">đom đóm đêm</button>
+                <button class="game-select-btn" data-game="wordrain">mưa chữ</button>
+                <button class="game-select-btn" data-game="signal">đài tín hiệu</button>
+                <button class="game-select-btn" data-game="tictactoe">cờ caro tĩnh lặng</button>
+                <button class="game-select-btn" data-game="nim">nhặt sỏi zen</button>
+                <button class="game-select-btn" data-game="oanquan">ô ăn quan dân gian</button>
+                <button class="game-select-btn" data-game="minigo">cờ vây thu nhỏ</button>
+                <button class="game-select-btn" data-game="mastermind">dò mã cảm xúc</button>
+                <button class="game-select-btn" data-game="memory">cặp đôi đồng điệu</button>
+                <!-- 3 New Games -->
+                <button class="game-select-btn" data-game="breathe">vòng tròn thở</button>
+                <button class="game-select-btn" data-game="tower">tháp cân bằng</button>
+                <button class="game-select-btn" data-game="sand">rơi cát</button>
+            </div>
+            
+            <div class="game-container" id="game-active-container">
+                <div class="game-header">
+                    <button id="game-back-btn" class="game-back-btn">← quay lại</button>
+                    <span id="game-title" class="game-title-text">trò chơi</span>
+                </div>
+                
+                <!-- Game A: Haiku Builder -->
+                <div class="game-playarea" id="game-play-haiku">
+                    <p class="game-desc">chọn từ để dệt thành haiku (nhịp 5-7-5)...</p>
+                    <div class="haiku-lines">
+                        <div class="haiku-line" id="haiku-line-1" data-syllables="5"><span class="line-num">1.</span> <span class="line-text" id="haiku-text-1">chạm vào đây để chọn dòng 1</span></div>
+                        <div class="haiku-line" id="haiku-line-2" data-syllables="7"><span class="line-num">2.</span> <span class="line-text" id="haiku-text-2">chạm vào đây để chọn dòng 2</span></div>
+                        <div class="haiku-line" id="haiku-line-3" data-syllables="5"><span class="line-num">3.</span> <span class="line-text" id="haiku-text-3">chạm vào đây để chọn dòng 3</span></div>
+                    </div>
+                    <div class="haiku-words-pool" id="haiku-words-pool">
+                        <!-- Tự động sinh từ qua JS -->
+                    </div>
+                    <div class="game-actions">
+                        <button id="haiku-reset" class="capsule-btn btn-small">làm lại</button>
+                        <button id="haiku-save" class="capsule-btn btn-small" style="display: none;">ký thác vào nhật ký</button>
+                    </div>
+                </div>
+
+                <!-- Game B: Zen 2048 -->
+                <div class="game-playarea" id="game-play-2048">
+                    <div class="game-2048-score-row">
+                        <span class="game-score-lbl" id="2048-score">điểm: 0</span>
+                        <span class="game-score-lbl score-best" id="2048-best">kỷ niệm: 0</span>
+                    </div>
+                    <div class="grid-2048" id="grid-2048">
+                        <!-- 16 ô grid -->
+                    </div>
+                    <div class="game-actions">
+                        <button id="reset-2048" class="capsule-btn btn-small">làm lại</button>
+                        <p class="game-help-text">dùng phím mũi tên hoặc vuốt màn hình để di chuyển</p>
+                    </div>
+                </div>
+
+                <!-- Game C: Quiet Snake -->
+                <div class="game-playarea" id="game-play-snake">
+                    <div class="game-snake-score-row">
+                        <span class="game-score-lbl" id="snake-score">độ dài: 3</span>
+                        <span class="game-score-lbl score-best" id="snake-best">kỷ niệm: 3</span>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="snake-canvas" width="300" height="300"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <button id="reset-snake" class="capsule-btn btn-small">bắt đầu</button>
+                        <p class="game-help-text">dùng phím mũi tên để điều hướng rắn bò</p>
+                    </div>
+                </div>
+
+                <!-- Game D: Conway's Garden -->
+                <div class="game-playarea" id="game-play-conway">
+                    <p class="game-desc">gieo mầm tế bào và ngắm nhìn chu kỳ cuộc sống...</p>
+                    <div class="canvas-wrapper">
+                        <canvas id="conway-canvas" width="300" height="300"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <button id="conway-start" class="capsule-btn btn-small">chạy</button>
+                        <button id="conway-clear" class="capsule-btn btn-small">làm sạch</button>
+                        <button id="conway-random" class="capsule-btn btn-small">gieo hạt ngẫu nhiên</button>
+                    </div>
+                </div>
+
+                <!-- Game E: Firefly Night -->
+                <div class="game-playarea" id="game-play-fireflies">
+                    <p class="game-desc">chạm vào những đốm sáng trước khi đêm nuốt chúng...</p>
+                    <div class="game-quiet-score-row">
+                        <span id="firefly-score" class="game-score-lbl">đom đóm: 0</span>
+                        <span id="firefly-status" class="game-score-lbl score-best">bắt đầu khi sẵn sàng</span>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="firefly-canvas" width="320" height="240"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <button id="reset-fireflies" class="capsule-btn btn-small">thắp đêm</button>
+                    </div>
+                </div>
+
+                <!-- Game F: Word Rain -->
+                <div class="game-playarea" id="game-play-wordrain">
+                    <p class="game-desc">gõ đúng chữ đang rơi trước khi nó tan đi...</p>
+                    <div class="wordrain-stage">
+                        <span id="wordrain-word" class="wordrain-word">lặng</span>
+                    </div>
+                    <input type="text" id="wordrain-input" class="wordrain-input" autocomplete="off" placeholder="gõ chữ ở đây...">
+                    <div class="game-quiet-score-row">
+                        <span id="wordrain-score" class="game-score-lbl">điểm: 0</span>
+                        <span id="wordrain-time" class="game-score-lbl score-best">45s</span>
+                    </div>
+                    <div class="game-actions">
+                        <button id="reset-wordrain" class="capsule-btn btn-small">mở mưa</button>
+                    </div>
+                </div>
+
+                <!-- Game G: Signal Radio -->
+                <div class="game-playarea" id="game-play-signal">
+                    <p class="game-desc">dò một tần số lạ, càng gần càng rõ...</p>
+                    <div class="signal-panel">
+                        <input type="range" id="signal-dial" class="signal-dial" min="1" max="100" value="50">
+                        <p id="signal-status" class="signal-status">nhiễu rất nhẹ.</p>
+                    </div>
+                    <div class="game-actions">
+                        <button id="reset-signal" class="capsule-btn btn-small">dò lại</button>
+                        <button id="signal-note" class="capsule-btn btn-small" style="display: none;">ghi tín hiệu</button>
+                    </div>
+                </div>
+
+                <!-- Game H: Tic-Tac-Toe -->
+                <div class="game-playarea" id="game-play-tictactoe">
+                    <p class="game-desc">một ván cờ nhỏ với khoảng lặng...</p>
+                    <div class="tictactoe-board" id="tictactoe-board">
+                        <button class="tictactoe-cell" data-index="0" aria-label="Ô cờ 1"></button>
+                        <button class="tictactoe-cell" data-index="1" aria-label="Ô cờ 2"></button>
+                        <button class="tictactoe-cell" data-index="2" aria-label="Ô cờ 3"></button>
+                        <button class="tictactoe-cell" data-index="3" aria-label="Ô cờ 4"></button>
+                        <button class="tictactoe-cell" data-index="4" aria-label="Ô cờ 5"></button>
+                        <button class="tictactoe-cell" data-index="5" aria-label="Ô cờ 6"></button>
+                        <button class="tictactoe-cell" data-index="6" aria-label="Ô cờ 7"></button>
+                        <button class="tictactoe-cell" data-index="7" aria-label="Ô cờ 8"></button>
+                        <button class="tictactoe-cell" data-index="8" aria-label="Ô cờ 9"></button>
+                    </div>
+                    <div class="game-actions">
+                        <span id="tictactoe-status" class="game-score-lbl">đến lượt của bạn (X)</span>
+                        <button id="reset-tictactoe" class="capsule-btn btn-small">chơi lại</button>
+                    </div>
+                </div>
+
+                <!-- Game I: Nim Game -->
+                <div class="game-playarea" id="game-play-nim">
+                    <p class="game-desc">nhặt sỏi cùng thiền sư. ai nhặt viên cuối cùng sẽ thua...</p>
+                    <div class="nim-container">
+                        <div class="nim-pile" id="nim-pile">
+                            <!-- Sẽ sinh tự động các viên sỏi qua Javascript -->
+                        </div>
+                    </div>
+                    <div class="game-actions">
+                        <span id="nim-status" class="game-score-lbl">15 viên sỏi. đến lượt của bạn.</span>
+                        <div class="nim-buttons">
+                            <button id="nim-take-1" class="capsule-btn btn-small" data-take="1">nhặt 1 sỏi</button>
+                            <button id="nim-take-2" class="capsule-btn btn-small" data-take="2">nhặt 2 sỏi</button>
+                            <button id="nim-take-3" class="capsule-btn btn-small" data-take="3">nhặt 3 sỏi</button>
+                        </div>
+                        <button id="reset-nim" class="capsule-btn btn-small">bắt đầu lại</button>
+                    </div>
+                </div>
+
+                <!-- Game J: Ô Ăn Quan -->
+                <div class="game-playarea" id="game-play-oanquan">
+                    <p class="game-desc">ô ăn quan dân gian. ai ăn được nhiều quân hơn sẽ thắng...</p>
+                    <div class="oanquan-score-row">
+                        <span class="game-score-lbl" id="oanquan-score-player">bạn: 0</span>
+                        <span class="game-score-lbl" id="oanquan-score-bot">thiền sư: 0</span>
+                    </div>
+                    <div class="oanquan-board">
+                        <div class="oanquan-cell oanquan-mandarin" id="oanquan-cell-10" data-index="10">10</div>
+                        <div class="oanquan-center-grid">
+                            <!-- Bot side (9 -> 5) -->
+                            <div class="oanquan-row oanquan-bot-row">
+                                <div class="oanquan-cell" id="oanquan-cell-9" data-index="9">5</div>
+                                <div class="oanquan-cell" id="oanquan-cell-8" data-index="8">5</div>
+                                <div class="oanquan-cell" id="oanquan-cell-7" data-index="7">5</div>
+                                <div class="oanquan-cell" id="oanquan-cell-6" data-index="6">5</div>
+                                <div class="oanquan-cell" id="oanquan-cell-5" data-index="5">5</div>
+                            </div>
+                            <!-- Player side (0 -> 4) -->
+                            <div class="oanquan-row oanquan-player-row">
+                                <div class="oanquan-cell player-playable" id="oanquan-cell-0" data-index="0">5</div>
+                                <div class="oanquan-cell player-playable" id="oanquan-cell-1" data-index="1">5</div>
+                                <div class="oanquan-cell player-playable" id="oanquan-cell-2" data-index="2">5</div>
+                                <div class="oanquan-cell player-playable" id="oanquan-cell-3" data-index="3">5</div>
+                                <div class="oanquan-cell player-playable" id="oanquan-cell-4" data-index="4">5</div>
+                            </div>
+                        </div>
+                        <div class="oanquan-cell oanquan-mandarin" id="oanquan-cell-11" data-index="11">10</div>
+                    </div>
+                    
+                    <div class="oanquan-controls" id="oanquan-controls" style="display:none;">
+                        <span id="oanquan-selected-lbl" class="game-score-lbl">đã chọn ô: </span>
+                        <div class="oanquan-direction-buttons">
+                            <button id="oanquan-dir-left" class="capsule-btn btn-small">← ngược chiều</button>
+                            <button id="oanquan-dir-right" class="capsule-btn btn-small">xuôi chiều →</button>
+                        </div>
+                    </div>
+
+                    <div class="game-actions">
+                        <span id="oanquan-status" class="game-score-lbl">đến lượt của bạn. chọn một ô để đi.</span>
+                        <button id="reset-oanquan" class="capsule-btn btn-small">bắt đầu lại</button>
+                    </div>
+                </div>
+
+                <!-- Game K: Mini Go -->
+                <div class="game-playarea" id="game-play-minigo">
+                    <p class="game-desc">vây bắt quân đối phương. cờ đen là của bạn, cờ trắng là của bot...</p>
+                    <div class="minigo-score-row">
+                        <span class="game-score-lbl" id="minigo-score-player">quân đen: 0</span>
+                        <span class="game-score-lbl" id="minigo-score-bot">quân trắng: 0</span>
+                    </div>
+                    <div class="minigo-board" id="minigo-board">
+                        <!-- Sẽ sinh 25 ô qua Javascript -->
+                    </div>
+                    <div class="game-actions">
+                        <span id="minigo-status" class="game-score-lbl">lượt của bạn (Đen)</span>
+                        <button id="minigo-pass" class="capsule-btn btn-small">bỏ lượt</button>
+                        <button id="reset-minigo" class="capsule-btn btn-small">chơi lại</button>
+                    </div>
+                </div>
+
+                <!-- Game L: Zen Mastermind -->
+                <div class="game-playarea" id="game-play-mastermind">
+                    <p class="game-desc">bot đã giấu một mã 4 biểu tượng. hãy dò ra mã đó trong 8 lượt...</p>
+                    <div class="mastermind-board" id="mastermind-board">
+                        <!-- Hiển thị các hàng lịch sử đoán và feedback -->
+                    </div>
+                    
+                    <div class="mastermind-picker-row">
+                        <p class="game-help-text">chọn biểu tượng cho lượt đoán của bạn:</p>
+                        <div class="mastermind-slots">
+                            <button class="mastermind-slot" id="mm-slot-0" data-idx="0">🌸</button>
+                            <button class="mastermind-slot" id="mm-slot-1" data-idx="1">🌸</button>
+                            <button class="mastermind-slot" id="mm-slot-2" data-idx="2">🌸</button>
+                            <button class="mastermind-slot" id="mm-slot-3" data-idx="3">🌸</button>
+                        </div>
+                    </div>
+
+                    <div class="game-actions">
+                        <span id="mastermind-status" class="game-score-lbl">lượt đoán 1/8</span>
+                        <button id="mastermind-submit" class="capsule-btn btn-small">kiểm tra</button>
+                        <button id="reset-mastermind" class="capsule-btn btn-small">chơi lại</button>
+                    </div>
+                </div>
+
+                <!-- Game M: Zen Memory Match -->
+                <div class="game-playarea" id="game-play-memory">
+                    <p class="game-desc">tìm các cặp hình đồng điệu. lật đúng bạn được đi tiếp...</p>
+                    <div class="memory-score-row">
+                        <span class="game-score-lbl" id="memory-score-player">bạn: 0</span>
+                        <span class="game-score-lbl" id="memory-score-bot">thiền sư: 0</span>
+                    </div>
+                    <div class="memory-grid" id="memory-grid">
+                        <!-- Sẽ sinh 16 thẻ bài qua Javascript -->
+                    </div>
+                    <div class="game-actions">
+                        <span id="memory-status" class="game-score-lbl">đến lượt của bạn</span>
+                        <button id="reset-memory" class="capsule-btn btn-small">bắt đầu lại</button>
+                    </div>
+                </div>
+
+                <!-- NEW: Game N: Zen Breathe -->
+                <div class="game-playarea" id="game-play-breathe">
+                    <p class="game-desc">hít vào, giữ lại, thở ra...</p>
+                    <div class="breathe-circle-container" style="display: flex; justify-content: center; margin: 3rem 0; height: 200px; align-items: center;">
+                        <div id="breathe-circle" style="width: 100px; height: 100px; border-radius: 50%; background: var(--accent); opacity: 0.5; transition: all linear;"></div>
+                    </div>
+                    <div class="game-actions">
+                        <span id="breathe-status" class="game-score-lbl" style="font-size: 1.2rem; font-style: italic;">sẵn sàng</span>
+                        <button id="start-breathe" class="capsule-btn btn-small">bắt đầu nhịp 4-7-8</button>
+                    </div>
+                </div>
+
+                <!-- NEW: Game O: Zen Tower -->
+                <div class="game-playarea" id="game-play-tower">
+                    <p class="game-desc">chạm để thả khối vuông. xếp chúng cao nhất có thể...</p>
+                    <div class="game-quiet-score-row">
+                        <span id="tower-score" class="game-score-lbl">tầng: 0</span>
+                    </div>
+                    <div class="canvas-wrapper" style="background: rgba(0,0,0,0.02); overflow: hidden; position: relative;">
+                        <canvas id="tower-canvas" width="300" height="400" style="display: block; cursor: pointer;"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <button id="reset-tower" class="capsule-btn btn-small">xây lại</button>
+                    </div>
+                </div>
+
+                <!-- NEW: Game P: Falling Sand -->
+                <div class="game-playarea" id="game-play-sand">
+                    <p class="game-desc">vẽ nét cản và để cát tự do rơi...</p>
+                    <div class="canvas-wrapper">
+                        <canvas id="sand-canvas" width="300" height="300" style="display: block; cursor: crosshair;"></canvas>
+                    </div>
+                    <div class="game-actions">
+                        <button id="sand-clear" class="capsule-btn btn-small">xóa cát</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script src="games.js?v=20260604"></script>
+</body>
+</html>

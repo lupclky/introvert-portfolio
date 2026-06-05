@@ -432,11 +432,11 @@
             fill: var(--accent) !important;
         }
 
-        /* Bottom publish bar */
         .publish-footer {
             display: flex;
             justify-content: flex-end;
             margin-top: 1rem;
+            align-items: center;
         }
 
         .publish-footer .btn {
@@ -444,6 +444,75 @@
             padding: 0.9rem 2.5rem;
             font-size: 1.05rem;
             box-shadow: var(--shadow-subtle);
+        }
+
+        .publish-footer .introvert-tools .btn {
+            padding: 0.6rem 1rem;
+            font-size: 0.85rem;
+            box-shadow: none;
+        }
+
+        /* -------------------------------------------------------------
+           Introvert Features: Fade Mode, Zen Mode, Burn Mode
+           ------------------------------------------------------------- */
+        
+        /* Fade Mode */
+        body.fading-text-mode .ql-editor p:not(:last-child) {
+            opacity: 0.25 !important;
+            filter: blur(0.5px);
+            transition: opacity 2s ease, filter 2s ease;
+        }
+        
+        body.fading-text-mode .ql-editor p:last-child {
+            opacity: 1 !important;
+            filter: blur(0);
+        }
+
+        /* Zen Canvas Mode */
+        body.extreme-zen-mode .sidebar {
+            transform: translateX(-100%);
+            position: absolute;
+        }
+        body.extreme-zen-mode .canvas-meta,
+        body.extreme-zen-mode .canvas-preview,
+        body.extreme-zen-mode .ql-toolbar,
+        body.extreme-zen-mode .publish-footer .btn-primary,
+        body.extreme-zen-mode .publish-footer .introvert-tools button:not(#toggle-zen-btn) {
+            opacity: 0;
+            pointer-events: none;
+            display: none;
+        }
+        body.extreme-zen-mode .writer-main {
+            padding-top: 2rem;
+            align-items: center;
+        }
+        body.extreme-zen-mode .input-title {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--text-muted);
+            border-bottom: none;
+        }
+        body.extreme-zen-mode #toggle-zen-btn {
+            background-color: transparent;
+            border: none;
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+        body.extreme-zen-mode #toggle-zen-btn:hover {
+            opacity: 1;
+        }
+
+        /* Burn/Release Animation */
+        .burning-text {
+            animation: burnAway 3s forwards;
+            pointer-events: none;
+        }
+
+        @keyframes burnAway {
+            0% { filter: brightness(1) blur(0px); opacity: 1; color: var(--text-primary); }
+            30% { color: #e25822; filter: brightness(1.5) blur(1px); transform: translateY(-2px); }
+            70% { color: #8a2be2; opacity: 0.8; filter: brightness(2) blur(3px); transform: translateY(-10px) scale(0.98); }
+            100% { opacity: 0; filter: blur(10px); transform: translateY(-20px) scale(0.95); display: none; }
         }
 
         .publish-footer .btn:hover {
@@ -637,8 +706,13 @@
                 <div id="editor"></div>
             </div>
 
-            <!-- Publish Button Area -->
+            <!-- Publish Button Area & Introvert Features -->
             <div class="publish-footer">
+                <div class="introvert-tools" style="display: flex; gap: 0.5rem; margin-right: auto; align-items: center;">
+                    <button class="btn btn-secondary" id="toggle-zen-btn" title="Chế độ Tĩnh tại tuyệt đối">zen canvas</button>
+                    <button class="btn btn-secondary" id="toggle-fade-btn" title="Mực phai - chống nhìn lại">mực phai</button>
+                    <button class="btn btn-secondary" id="burn-release-btn" title="Viết rồi buông bỏ" style="color: #c95c41; border-color: #ecc5bb;">buông xả</button>
+                </div>
                 <button class="btn btn-primary" id="publish-btn">Đăng bài viết</button>
             </div>
 
@@ -971,6 +1045,55 @@
                 showStatus("Đăng bài thất bại: " + err.message, true);
             }
         });
+        // --- TÍNH NĂNG CHO NGƯỜI HƯỚNG NỘI ---
+        const toggleZenBtn = document.getElementById('toggle-zen-btn');
+        const toggleFadeBtn = document.getElementById('toggle-fade-btn');
+        const burnReleaseBtn = document.getElementById('burn-release-btn');
+        const editorEl = document.getElementById('editor');
+
+        if (toggleZenBtn) {
+            toggleZenBtn.addEventListener('click', () => {
+                document.body.classList.toggle('extreme-zen-mode');
+                if (document.body.classList.contains('extreme-zen-mode')) {
+                    toggleZenBtn.textContent = "thoát zen";
+                } else {
+                    toggleZenBtn.textContent = "zen canvas";
+                }
+            });
+        }
+
+        if (toggleFadeBtn) {
+            toggleFadeBtn.addEventListener('click', () => {
+                document.body.classList.toggle('fading-text-mode');
+                if (document.body.classList.contains('fading-text-mode')) {
+                    toggleFadeBtn.classList.add('btn-primary');
+                    toggleFadeBtn.classList.remove('btn-secondary');
+                } else {
+                    toggleFadeBtn.classList.add('btn-secondary');
+                    toggleFadeBtn.classList.remove('btn-primary');
+                }
+            });
+        }
+
+        if (burnReleaseBtn) {
+            burnReleaseBtn.addEventListener('click', () => {
+                if (!quill.getText().trim()) {
+                    showStatus("không có gì để buông xả.", true);
+                    return;
+                }
+                if (confirm("Bạn có chắc chắn muốn buông xả? Dòng chữ này sẽ tan biến mãi mãi và không được lưu lại.")) {
+                    editorEl.classList.add('burning-text');
+                    
+                    setTimeout(() => {
+                        quill.setText('');
+                        document.getElementById('post-title').value = '';
+                        document.getElementById('post-preview').value = '';
+                        editorEl.classList.remove('burning-text');
+                        showStatus("mọi suy tư đã nhẹ nhàng tan biến.");
+                    }, 3000);
+                }
+            });
+        }
     </script>
 </body>
 
