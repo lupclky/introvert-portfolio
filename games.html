@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="styles.css?v=20260605-layout">
+    <link rel="stylesheet" href="styles.css?v=20260605-i18n-v2">
     <script>
         const savedTheme = localStorage.getItem('introvert_theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -29,13 +29,18 @@
                 <a href="index.html" class="nav-link">home</a>
                 <span class="nav-separator">/</span>
                 <span class="nav-link" style="color: var(--text-primary);">games</span>
+                <span class="nav-separator">/</span>
+                <a href="dua.html" class="nav-link">góc của dứa</a>
             </div>
         </nav>
     </header>
 
-    <main class="content-container" style="padding-top: 6rem; max-width: 900px; margin: auto;">
-        <h1 style="font-family: var(--font-heading); font-size: 3rem; font-weight: normal; margin-bottom: 2rem; color: var(--text-primary); text-align: center;">zen games</h1>
-        <p style="text-align: center; color: var(--text-muted); margin-bottom: 3rem;">một góc nhỏ để tĩnh tâm, không điểm số gay gắt, không âm thanh ồn ào.</p>
+    <main class="content-container games-shell">
+        <header class="games-hero">
+            <p class="games-kicker">games</p>
+            <h1>zen games</h1>
+            <p>một góc nhỏ để tĩnh tâm, không điểm số gay gắt, không âm thanh ồn ào.</p>
+        </header>
 
         <!-- Trò chơi (Zen Games) -->
         <div class="mood-tab-content active" id="tab-games" style="display: block; opacity: 1; visibility: visible; border: none; padding: 0;">
@@ -639,6 +644,7 @@
                         <div id="sudoku-keypad" style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px;"></div>
                     </div>
                     <div class="game-actions" style="margin-top: 15px;">
+                        <span id="sudoku-status" class="game-score-lbl">chọn một ô trống để bắt đầu</span>
                         <button id="reset-sudoku" class="capsule-btn btn-small">bắt đầu ván mới</button>
                     </div>
                 </div>
@@ -647,6 +653,6 @@
         </div>
     </main>
 
-    <script src="games.js?v=20260605-layout"></script>
+    <script src="games.js?v=20260605-i18n-games-v2"></script>
 </body>
 </html>

@@ -45,6 +45,155 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentPasscode = "";
     let privateSessionToken = "";
 
+    const APP_I18N = {
+        vi: {
+            "nav.writings": "writings",
+            "nav.journal": "journal",
+            "nav.games": "games",
+            "nav.pineapple": "góc của dứa 🍍",
+            "nav.sanctuary": "sanctuary",
+            "nav.contact": "contact",
+            "hero.intro": "một người hướng nội đang học cách nói chậm hơn.",
+            "hero.read": "[ đọc một chút ]",
+            "hero.enter": "[ bước vào góc bình yên ]",
+            "message.label": "gửi lời nhắn tới introvert",
+            "message.placeholder": "để lại vài dòng trước khi rời đi...",
+            "message.send": "gửi",
+            "message.empty": "hãy viết một lời nhắn.",
+            "message.sheetMissing": "chưa cấu hình sheet.",
+            "message.sending": "đang gửi...",
+            "message.sent": "đã gửi.",
+            "message.fail": "chưa gửi được.",
+            "password.hint": "Không gian riêng tư. Vui lòng nhập mật mã 6 số để mở khóa.",
+            "password.unlock": "mở khóa",
+            "about.kicker": "about",
+            "about.title": "tôi là một người hướng nội.",
+            "about.p1": "Tôi thường hiểu thế giới bằng những khoảng lặng: một buổi chiều ít tiếng động, một đoạn nhạc nhỏ, vài dòng chữ viết ra rồi để yên.",
+            "about.p2": "Trang này là nơi tôi giữ lại những suy nghĩ chậm. Không phải để ồn ào hơn, chỉ để những điều khó nói có một chỗ đủ mềm để tồn tại.",
+            "about.privateLabel": "bản giới thiệu đầy đủ",
+            "about.privateDesc": "phần này riêng tư hơn, cần mã khóa để đọc.",
+            "about.unlock": "đọc bản đầy đủ",
+            "spaces.writings": "những bài viết riêng, mở bằng mật mã.",
+            "spaces.journal": "nhật ký dài hơn, lưu trên Sheet.",
+            "spaces.games": "những trò chơi tĩnh lặng, không ồn ào.",
+            "spaces.pineapple": "khoảnh khắc đáng yêu, nhật ký của dứa.",
+            "spaces.sanctuary": "mood, âm thanh, thư tương lai và vài trò chơi nhỏ.",
+            "spaces.messages": "những lời nhắn được giữ lại sau khi mở khóa.",
+            "music.kicker": "music",
+            "music.title": "một nền âm thanh nhỏ.",
+            "music.play": "phát",
+            "music.clear": "xóa",
+            "music.rain": "mưa",
+            "music.sea": "sóng",
+            "music.off": "tắt",
+            "music.nowPlaying": "now playing",
+            "music.opening": "đang mở",
+            "music.playing": "đang phát",
+            "music.stopped": "đã tắt âm nền.",
+            "music.invalid": "link chưa hợp lệ.",
+            "music.protocol": "chỉ hỗ trợ link http hoặc https.",
+            "music.youtubeError": "chưa đọc được link YouTube này.",
+            "music.spotifyError": "chưa đọc được link Spotify này.",
+            "music.unsupported": "link này chưa được hỗ trợ.",
+            "contact.lead": "nếu muốn, bạn có thể ghé qua một góc nhỏ khác của tôi.",
+            "theme.toLight": "sáng",
+            "theme.toDark": "tối",
+            "theme.lightAria": "Chuyển sang giao diện sáng",
+            "theme.darkAria": "Chuyển sang giao diện tối",
+            "ambient.rain": "tiếng mưa rơi",
+            "ambient.sea": "tiếng sóng biển",
+            "ambient.mix": "hòa âm"
+        },
+        en: {
+            "nav.writings": "writings",
+            "nav.journal": "journal",
+            "nav.games": "games",
+            "nav.pineapple": "pineapple's corner 🍍",
+            "nav.sanctuary": "sanctuary",
+            "nav.contact": "contact",
+            "hero.intro": "an introvert learning to speak more slowly.",
+            "hero.read": "[ read a little ]",
+            "hero.enter": "[ enter the quiet corner ]",
+            "message.label": "send a note to introvert",
+            "message.placeholder": "leave a few lines before you go...",
+            "message.send": "send",
+            "message.empty": "please write a note first.",
+            "message.sheetMissing": "Sheet is not configured yet.",
+            "message.sending": "sending...",
+            "message.sent": "sent.",
+            "message.fail": "could not send.",
+            "password.hint": "A private space. Enter the 6-digit passcode to unlock.",
+            "password.unlock": "unlock",
+            "about.kicker": "about",
+            "about.title": "i am an introvert.",
+            "about.p1": "I often understand the world through quiet spaces: a low-noise afternoon, a small piece of music, a few lines written down and left alone.",
+            "about.p2": "This site is where I keep slow thoughts. Not to become louder, only to give difficult things a soft enough place to exist.",
+            "about.privateLabel": "full introduction",
+            "about.privateDesc": "this part is more private and needs a passcode to read.",
+            "about.unlock": "read the full version",
+            "spaces.writings": "private writings, opened with a passcode.",
+            "spaces.journal": "a longer journal, stored in Sheet.",
+            "spaces.games": "quiet games, without the noise.",
+            "spaces.pineapple": "lovely moments, pineapple's journal.",
+            "spaces.sanctuary": "mood, sound, future letters and a few small games.",
+            "spaces.messages": "notes kept after unlocking.",
+            "music.kicker": "music",
+            "music.title": "a small layer of sound.",
+            "music.play": "play",
+            "music.clear": "clear",
+            "music.rain": "rain",
+            "music.sea": "waves",
+            "music.off": "off",
+            "music.nowPlaying": "now playing",
+            "music.opening": "opening",
+            "music.playing": "playing",
+            "music.stopped": "sound turned off.",
+            "music.invalid": "this link is not valid.",
+            "music.protocol": "only http and https links are supported.",
+            "music.youtubeError": "this YouTube link could not be read.",
+            "music.spotifyError": "this Spotify link could not be read.",
+            "music.unsupported": "this link is not supported yet.",
+            "contact.lead": "if you want, you can pass by another small corner of mine.",
+            "theme.toLight": "light",
+            "theme.toDark": "dark",
+            "theme.lightAria": "Switch to light theme",
+            "theme.darkAria": "Switch to dark theme",
+            "ambient.rain": "rain",
+            "ambient.sea": "ocean waves",
+            "ambient.mix": "soundscape"
+        }
+    };
+
+    function detectAppLanguage() {
+        const saved = localStorage.getItem('introvert_lang');
+        if (saved === 'vi' || saved === 'en') return saved;
+        const languages = navigator.languages?.length ? navigator.languages : [navigator.language || 'vi'];
+        const firstSupported = languages.find(lang => /^vi\b|^en\b/i.test(lang));
+        return firstSupported && firstSupported.toLowerCase().startsWith('en') ? 'en' : 'vi';
+    }
+
+    const appLang = detectAppLanguage();
+    document.documentElement.lang = appLang;
+    document.documentElement.dataset.lang = appLang;
+
+    function t(key) {
+        return APP_I18N[appLang]?.[key] || APP_I18N.vi[key] || key;
+    }
+
+    function applyI18n(root = document) {
+        root.querySelectorAll('[data-i18n]').forEach(el => {
+            el.textContent = t(el.dataset.i18n);
+        });
+        root.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            el.setAttribute('placeholder', t(el.dataset.i18nPlaceholder));
+        });
+        root.querySelectorAll('[data-i18n-aria]').forEach(el => {
+            el.setAttribute('aria-label', t(el.dataset.i18nAria));
+        });
+    }
+
+    applyI18n();
+
     /* -------------------------------------------------------------
        THEMING / DARK MODE LOGIC
        ------------------------------------------------------------- */
@@ -63,8 +212,8 @@ document.addEventListener('DOMContentLoaded', () => {
         activeTheme = theme; // Đồng bộ biến theme toàn cục cho hệ thống hạt bụi
         if (themeToggleBtn) {
             // Nhãn thể hiện hành động để chuyển sang trạng thái đối lập
-            themeToggleBtn.textContent = theme === 'dark' ? 'sáng' : 'tối';
-            themeToggleBtn.setAttribute('aria-label', theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối');
+            themeToggleBtn.textContent = theme === 'dark' ? t('theme.toLight') : t('theme.toDark');
+            themeToggleBtn.setAttribute('aria-label', theme === 'dark' ? t('theme.lightAria') : t('theme.darkAria'));
         }
     }
 
@@ -877,18 +1026,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = inputEl.value.trim();
 
         if (!message) {
-            if (statusEl) statusEl.textContent = "hãy viết một lời nhắn.";
+            if (statusEl) statusEl.textContent = t('message.empty');
             inputEl.focus();
             return;
         }
 
         if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL.trim() === "") {
-            if (statusEl) statusEl.textContent = "chưa cấu hình sheet.";
+            if (statusEl) statusEl.textContent = t('message.sheetMissing');
             return;
         }
 
         buttonEl.disabled = true;
-        if (statusEl) statusEl.textContent = "đang gửi...";
+        if (statusEl) statusEl.textContent = t('message.sending');
 
         try {
             await fetchSheetJson("messages", "lời nhắn");
@@ -904,10 +1053,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             });
             inputEl.value = "";
-            if (statusEl) statusEl.textContent = "đã gửi.";
+            if (statusEl) statusEl.textContent = t('message.sent');
         } catch (err) {
             console.error("Lỗi gửi lời nhắn:", err);
-            if (statusEl) statusEl.textContent = "chưa gửi được.";
+            if (statusEl) statusEl.textContent = t('message.fail');
         } finally {
             setTimeout(() => {
                 buttonEl.disabled = false;
@@ -1666,6 +1815,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const ambientToggle = document.getElementById('ambient-toggle');
     const ambientTrackBtns = document.querySelectorAll('.ambient-track-btn');
     const trackTitleEl = document.getElementById('ambient-track-title');
+    const headerNowPlaying = document.getElementById('header-now-playing');
+    const headerNowPlayingTitle = document.getElementById('header-now-playing-title');
+
+    function setHeaderNowPlaying(title) {
+        const cleanTitle = String(title || "").trim();
+        if (!headerNowPlaying || !headerNowPlayingTitle || !cleanTitle) return;
+        headerNowPlayingTitle.textContent = cleanTitle;
+        headerNowPlaying.hidden = false;
+        headerNowPlaying.classList.add('is-visible');
+        headerNowPlaying.setAttribute('title', `${t('music.nowPlaying')}: ${cleanTitle}`);
+    }
+
+    function clearHeaderNowPlaying() {
+        if (!headerNowPlaying || !headerNowPlayingTitle) return;
+        headerNowPlayingTitle.textContent = "";
+        headerNowPlaying.hidden = true;
+        headerNowPlaying.classList.remove('is-visible');
+        headerNowPlaying.removeAttribute('title');
+    }
 
     const LOFI_PLAYLIST = [
         { title: "affection", url: "https://raw.githubusercontent.com/pramit-marattha/lofi-music-player-vanilla-javascript/master/sounds/songs/Affection.mp3" },
@@ -1723,12 +1891,13 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('mixer-rain').value = 0;
             document.getElementById('mixer-sea').value = 0;
             document.getElementById('mixer-lofi').value = 0;
-            document.getElementById('mixer-val-rain').textContent = 'tắt';
-            document.getElementById('mixer-val-sea').textContent = 'tắt';
-            document.getElementById('mixer-val-lofi').textContent = 'tắt';
+            document.getElementById('mixer-val-rain').textContent = t('music.off');
+            document.getElementById('mixer-val-sea').textContent = t('music.off');
+            document.getElementById('mixer-val-lofi').textContent = t('music.off');
             rainAudio.volume = 0; rainAudio.pause();
             seaAudio.volume = 0; seaAudio.pause();
             lofiAudio.volume = 0; lofiAudio.pause();
+            clearHeaderNowPlaying();
             if (trackTitleEl) {
                 trackTitleEl.classList.remove('is-visible');
                 setTimeout(() => { if (!trackTitleEl.classList.contains('is-visible')) trackTitleEl.textContent = ""; }, 600);
@@ -1741,20 +1910,20 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('mixer-val-rain').textContent = '40%';
             rainAudio.volume = 0.4; rainAudio.play().catch(e => console.log(e));
             document.getElementById('mixer-sea').value = 0;
-            document.getElementById('mixer-val-sea').textContent = 'tắt';
+            document.getElementById('mixer-val-sea').textContent = t('music.off');
             seaAudio.volume = 0; seaAudio.pause();
             document.getElementById('mixer-lofi').value = 0;
-            document.getElementById('mixer-val-lofi').textContent = 'tắt';
+            document.getElementById('mixer-val-lofi').textContent = t('music.off');
             lofiAudio.volume = 0; lofiAudio.pause();
         } else if (trackName === "sea") {
             document.getElementById('mixer-sea').value = 40;
             document.getElementById('mixer-val-sea').textContent = '40%';
             seaAudio.volume = 0.4; seaAudio.play().catch(e => console.log(e));
             document.getElementById('mixer-rain').value = 0;
-            document.getElementById('mixer-val-rain').textContent = 'tắt';
+            document.getElementById('mixer-val-rain').textContent = t('music.off');
             rainAudio.volume = 0; rainAudio.pause();
             document.getElementById('mixer-lofi').value = 0;
-            document.getElementById('mixer-val-lofi').textContent = 'tắt';
+            document.getElementById('mixer-val-lofi').textContent = t('music.off');
             lofiAudio.volume = 0; lofiAudio.pause();
         } else if (trackName === "lofi") {
             document.getElementById('mixer-lofi').value = 40;
@@ -1762,10 +1931,10 @@ document.addEventListener('DOMContentLoaded', () => {
             lofiAudio.volume = 0.4;
             if (!lofiAudio.src) playLofiTrack(currentLofiIndex); else lofiAudio.play().catch(e => console.log(e));
             document.getElementById('mixer-rain').value = 0;
-            document.getElementById('mixer-val-rain').textContent = 'tắt';
+            document.getElementById('mixer-val-rain').textContent = t('music.off');
             rainAudio.volume = 0; rainAudio.pause();
             document.getElementById('mixer-sea').value = 0;
-            document.getElementById('mixer-val-sea').textContent = 'tắt';
+            document.getElementById('mixer-val-sea').textContent = t('music.off');
             seaAudio.volume = 0; seaAudio.pause();
         }
         updateFooterAmbientUI();
@@ -1781,36 +1950,44 @@ document.addEventListener('DOMContentLoaded', () => {
         if (activeCount === 0) {
             const btn = document.querySelector('.ambient-track-btn[data-track="none"]');
             if (btn) btn.classList.add('active');
+            clearHeaderNowPlaying();
             if (trackTitleEl) {
                 trackTitleEl.classList.remove('is-visible');
                 setTimeout(() => { if (!trackTitleEl.classList.contains('is-visible')) trackTitleEl.textContent = ""; }, 600);
             }
         } else if (activeCount === 1) {
             if (rainVol > 0) {
+                const title = t('ambient.rain');
                 const btn = document.querySelector('.ambient-track-btn[data-track="rain"]');
                 if (btn) btn.classList.add('active');
-                if (trackTitleEl) { trackTitleEl.textContent = "đang phát: tiếng mưa rơi"; trackTitleEl.classList.add('is-visible'); }
+                if (trackTitleEl) { trackTitleEl.textContent = `${t('music.playing')}: ${title}`; trackTitleEl.classList.add('is-visible'); }
+                setHeaderNowPlaying(title);
             } else if (seaVol > 0) {
+                const title = t('ambient.sea');
                 const btn = document.querySelector('.ambient-track-btn[data-track="sea"]');
                 if (btn) btn.classList.add('active');
-                if (trackTitleEl) { trackTitleEl.textContent = "đang phát: tiếng sóng biển"; trackTitleEl.classList.add('is-visible'); }
+                if (trackTitleEl) { trackTitleEl.textContent = `${t('music.playing')}: ${title}`; trackTitleEl.classList.add('is-visible'); }
+                setHeaderNowPlaying(title);
             } else if (lofiVol > 0) {
                 const btn = document.querySelector('.ambient-track-btn[data-track="lofi"]');
                 if (btn) btn.classList.add('active');
+                const track = shuffledLofiTracks[currentLofiIndex] || LOFI_PLAYLIST[0];
                 if (trackTitleEl) {
-                    const track = shuffledLofiTracks[currentLofiIndex] || LOFI_PLAYLIST[0];
-                    trackTitleEl.textContent = `đang phát: ${track.title.toLowerCase()}`;
+                    trackTitleEl.textContent = `${t('music.playing')}: ${track.title.toLowerCase()}`;
                     trackTitleEl.classList.add('is-visible');
                 }
+                setHeaderNowPlaying(track.title.toLowerCase());
             }
         } else {
-            if (trackTitleEl) { trackTitleEl.textContent = "đang phát: hòa âm"; trackTitleEl.classList.add('is-visible'); }
+            const title = t('ambient.mix');
+            if (trackTitleEl) { trackTitleEl.textContent = `${t('music.playing')}: ${title}`; trackTitleEl.classList.add('is-visible'); }
+            setHeaderNowPlaying(title);
         }
     }
 
     document.getElementById('mixer-rain').addEventListener('input', (e) => {
         const val = parseInt(e.target.value);
-        document.getElementById('mixer-val-rain').textContent = val > 0 ? `${val}%` : 'tắt';
+        document.getElementById('mixer-val-rain').textContent = val > 0 ? `${val}%` : t('music.off');
         rainAudio.volume = val / 100;
         if (val > 0 && rainAudio.paused) rainAudio.play().catch(err => console.log(err));
         else if (val === 0 && !rainAudio.paused) rainAudio.pause();
@@ -1819,7 +1996,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('mixer-sea').addEventListener('input', (e) => {
         const val = parseInt(e.target.value);
-        document.getElementById('mixer-val-sea').textContent = val > 0 ? `${val}%` : 'tắt';
+        document.getElementById('mixer-val-sea').textContent = val > 0 ? `${val}%` : t('music.off');
         seaAudio.volume = val / 100;
         if (val > 0 && seaAudio.paused) seaAudio.play().catch(err => console.log(err));
         else if (val === 0 && !seaAudio.paused) seaAudio.pause();
@@ -1828,7 +2005,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('mixer-lofi').addEventListener('input', (e) => {
         const val = parseInt(e.target.value);
-        document.getElementById('mixer-val-lofi').textContent = val > 0 ? `${val}%` : 'tắt';
+        document.getElementById('mixer-val-lofi').textContent = val > 0 ? `${val}%` : t('music.off');
         lofiAudio.volume = val / 100;
         if (val > 0) { if (lofiAudio.paused) { if (!lofiAudio.src) playLofiTrack(currentLofiIndex); else lofiAudio.play().catch(err => console.log(err)); } }
         else if (val === 0 && !lofiAudio.paused) lofiAudio.pause();
@@ -1864,6 +2041,281 @@ document.addEventListener('DOMContentLoaded', () => {
         const startAutoplay = () => { playAmbientTrack(savedTrack); document.removeEventListener('click', startAutoplay); document.removeEventListener('keydown', startAutoplay); };
         document.addEventListener('click', startAutoplay);
         document.addEventListener('keydown', startAutoplay);
+    }
+
+    const homeMusicForm = document.getElementById('home-music-form');
+    const homeMusicInput = document.getElementById('home-music-url');
+    const homeMusicEmbed = document.getElementById('home-music-embed');
+    const homeMusicStatus = document.getElementById('home-music-status');
+    const homeMusicClear = document.getElementById('home-music-clear');
+    const homeMusicPresets = document.querySelectorAll('.home-music-preset');
+
+    function setHomeMusicStatus(text) {
+        if (homeMusicStatus) homeMusicStatus.textContent = text || "";
+    }
+
+    function getYouTubeEmbed(url) {
+        const host = url.hostname.replace(/^www\./, '').replace(/^m\./, '');
+        const parts = url.pathname.split('/').filter(Boolean);
+        let videoId = "";
+
+        if (host === 'youtu.be') {
+            videoId = parts[0] || "";
+        } else if (host.endsWith('youtube.com') || host === 'youtube-nocookie.com') {
+            if (parts[0] === 'watch') videoId = url.searchParams.get('v') || "";
+            if (['embed', 'shorts', 'live'].includes(parts[0])) videoId = parts[1] || "";
+        }
+
+        const playlistId = url.searchParams.get('list') || "";
+        const params = new URLSearchParams({ rel: '0', modestbranding: '1' });
+        if (playlistId) params.set('list', playlistId);
+
+        if (/^[\w-]{11}$/.test(videoId)) {
+            return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
+        }
+        if (/^[\w-]+$/.test(playlistId)) {
+            return `https://www.youtube.com/embed/videoseries?list=${encodeURIComponent(playlistId)}`;
+        }
+        return "";
+    }
+
+    function getSpotifyEmbed(url) {
+        if (!url.hostname.replace(/^www\./, '').endsWith('open.spotify.com')) return "";
+        const parts = url.pathname.split('/').filter(Boolean);
+        if (parts[0]?.startsWith('intl-')) parts.shift();
+        const [type, id] = parts;
+        const allowed = ['track', 'album', 'playlist', 'episode', 'show', 'artist'];
+        if (!allowed.includes(type) || !/^[A-Za-z0-9]+$/.test(id || "")) return "";
+        return `https://open.spotify.com/embed/${type}/${id}?utm_source=generator&theme=0`;
+    }
+
+    function getTitleFromUrl(url) {
+        const lastPart = decodeURIComponent(url.pathname.split('/').filter(Boolean).pop() || "");
+        return lastPart
+            .replace(/\.(mp3|ogg|wav|m4a|aac)$/i, '')
+            .replace(/[-_]+/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    function cleanMusicTitle(title, fallback = "") {
+        return String(title || fallback || "")
+            .replace(/\s*-\s*YouTube\s*$/i, '')
+            .replace(/\s*\|\s*Spotify\s*$/i, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    async function fetchJsonWithTimeout(url, timeout = 2800) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeout);
+        try {
+            const response = await fetch(url, { signal: controller.signal });
+            if (!response.ok) throw new Error(`metadata ${response.status}`);
+            return await response.json();
+        } finally {
+            clearTimeout(timer);
+        }
+    }
+
+    async function resolveMusicTitle(source, originalUrl = "") {
+        if (!source) return "";
+        if (source.kind === 'audio') {
+            try {
+                return cleanMusicTitle(getTitleFromUrl(new URL(source.src)), source.fallbackTitle);
+            } catch (_) {
+                return source.fallbackTitle || source.provider;
+            }
+        }
+
+        const urls = source.metadataUrls || [];
+        for (const endpoint of urls) {
+            try {
+                const data = await fetchJsonWithTimeout(endpoint);
+                const title = cleanMusicTitle(data.title || data.name, source.fallbackTitle);
+                if (title) return title;
+            } catch (_) {}
+        }
+
+        if (originalUrl) {
+            try {
+                const parsed = new URL(originalUrl);
+                const fallback = cleanMusicTitle(getTitleFromUrl(parsed), source.fallbackTitle);
+                if (fallback) return fallback;
+            } catch (_) {}
+        }
+        return source.fallbackTitle || source.provider || "";
+    }
+
+    function resolveMusicSource(value) {
+        const raw = value.trim();
+        if (!raw) return null;
+
+        let url;
+        try {
+            url = new URL(raw);
+        } catch (_) {
+            return { error: t('music.invalid') };
+        }
+
+        if (!['http:', 'https:'].includes(url.protocol)) {
+            return { error: t('music.protocol') };
+        }
+
+        const host = url.hostname.replace(/^www\./, '').replace(/^m\./, '');
+        const path = url.pathname.toLowerCase();
+
+        if (host === 'youtu.be' || host.endsWith('youtube.com') || host === 'youtube-nocookie.com') {
+            const src = getYouTubeEmbed(url);
+            return src ? {
+                kind: 'iframe',
+                provider: 'youtube',
+                src,
+                title: 'YouTube player',
+                fallbackTitle: 'YouTube',
+                metadataUrls: [
+                    `https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(url.href)}`,
+                    `https://noembed.com/embed?url=${encodeURIComponent(url.href)}`
+                ]
+            } : { error: t('music.youtubeError') };
+        }
+
+        if (host.endsWith('open.spotify.com')) {
+            const src = getSpotifyEmbed(url);
+            return src ? {
+                kind: 'iframe',
+                provider: 'spotify',
+                src,
+                title: 'Spotify player',
+                fallbackTitle: 'Spotify',
+                metadataUrls: [
+                    `https://open.spotify.com/oembed?url=${encodeURIComponent(url.href)}`,
+                    `https://noembed.com/embed?url=${encodeURIComponent(url.href)}`
+                ]
+            } : { error: t('music.spotifyError') };
+        }
+
+        if (host.endsWith('soundcloud.com')) {
+            return {
+                kind: 'iframe',
+                provider: 'soundcloud',
+                src: `https://w.soundcloud.com/player/?url=${encodeURIComponent(url.href)}&color=%23a78b63&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false`,
+                title: 'SoundCloud player',
+                fallbackTitle: 'SoundCloud',
+                metadataUrls: [
+                    `https://soundcloud.com/oembed?format=json&url=${encodeURIComponent(url.href)}`,
+                    `https://noembed.com/embed?url=${encodeURIComponent(url.href)}`
+                ]
+            };
+        }
+
+        if (host.endsWith('music.apple.com')) {
+            return {
+                kind: 'iframe',
+                provider: 'apple music',
+                src: `https://embed.music.apple.com${url.pathname}${url.search}`,
+                title: 'Apple Music player',
+                fallbackTitle: getTitleFromUrl(url) || 'Apple Music'
+            };
+        }
+
+        if (/\.(mp3|ogg|wav|m4a|aac)(\?.*)?$/.test(path)) {
+            return { kind: 'audio', provider: 'audio', src: url.href, title: 'audio player', fallbackTitle: getTitleFromUrl(url) || 'audio' };
+        }
+
+        return { error: t('music.unsupported') };
+    }
+
+    async function renderHomeMusic(source, originalUrl = "") {
+        if (!homeMusicEmbed) return;
+        homeMusicEmbed.innerHTML = "";
+
+        if (!source || source.error) {
+            homeMusicEmbed.hidden = true;
+            delete homeMusicEmbed.dataset.provider;
+            delete homeMusicEmbed.dataset.title;
+            clearHeaderNowPlaying();
+            setHomeMusicStatus(source?.error || "");
+            return;
+        }
+
+        playAmbientTrack('none');
+        ambientTrackBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.track === 'none'));
+        localStorage.setItem('introvert_ambient_track', 'none');
+
+        if (source.kind === 'iframe') {
+            const frame = document.createElement('iframe');
+            frame.src = source.src;
+            frame.title = source.title;
+            frame.loading = 'lazy';
+            frame.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
+            frame.referrerPolicy = 'strict-origin-when-cross-origin';
+            homeMusicEmbed.appendChild(frame);
+        } else if (source.kind === 'audio') {
+            const audio = document.createElement('audio');
+            audio.src = source.src;
+            audio.controls = true;
+            audio.preload = 'metadata';
+            homeMusicEmbed.appendChild(audio);
+        }
+
+        homeMusicEmbed.hidden = false;
+        homeMusicEmbed.dataset.provider = source.provider;
+        const fallbackTitle = cleanMusicTitle(source.fallbackTitle || source.provider, source.provider);
+        if (fallbackTitle) {
+            homeMusicEmbed.dataset.title = fallbackTitle;
+            setHeaderNowPlaying(fallbackTitle);
+            setHomeMusicStatus(`${t('music.opening')}: ${fallbackTitle}`);
+        }
+        if (originalUrl) localStorage.setItem('introvert_home_music_url', originalUrl);
+
+        const resolvedTitle = await resolveMusicTitle(source, originalUrl);
+        if (resolvedTitle) {
+            homeMusicEmbed.dataset.title = resolvedTitle;
+            setHeaderNowPlaying(resolvedTitle);
+            setHomeMusicStatus(`${t('music.opening')}: ${resolvedTitle}`);
+        }
+    }
+
+    homeMusicForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const value = homeMusicInput?.value || "";
+        await renderHomeMusic(resolveMusicSource(value), value.trim());
+    });
+
+    homeMusicClear?.addEventListener('click', () => {
+        if (homeMusicEmbed) {
+            homeMusicEmbed.innerHTML = "";
+            homeMusicEmbed.hidden = true;
+            delete homeMusicEmbed.dataset.provider;
+            delete homeMusicEmbed.dataset.title;
+        }
+        if (homeMusicInput) homeMusicInput.value = "";
+        localStorage.removeItem('introvert_home_music_url');
+        clearHeaderNowPlaying();
+        setHomeMusicStatus("");
+    });
+
+    homeMusicPresets.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const track = btn.dataset.ambient || 'none';
+            if (homeMusicEmbed) {
+                homeMusicEmbed.innerHTML = "";
+                homeMusicEmbed.hidden = true;
+                delete homeMusicEmbed.dataset.provider;
+                delete homeMusicEmbed.dataset.title;
+            }
+            localStorage.removeItem('introvert_home_music_url');
+            localStorage.setItem('introvert_ambient_track', track);
+            playAmbientTrack(track);
+            setHomeMusicStatus(track === 'none' ? t('music.stopped') : `${t('music.playing')}: ${btn.textContent.trim()}`);
+        });
+    });
+
+    const savedHomeMusicUrl = localStorage.getItem('introvert_home_music_url') || "";
+    if (savedHomeMusicUrl && homeMusicInput) {
+        homeMusicInput.value = savedHomeMusicUrl;
+        renderHomeMusic(resolveMusicSource(savedHomeMusicUrl), savedHomeMusicUrl);
     }
 
     /* -------------------------------------------------------------

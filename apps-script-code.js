@@ -63,6 +63,44 @@ function doPost(e) {
     return json({ success: true });
   }
 
+  if (type === "pineapple") {
+    let mediaUrl = data.mediaUrl || "";
+
+    // Xử lý upload ảnh nếu có imageBlob gửi lên
+    if (data.imageBlob) {
+      try {
+        let base64Data = data.imageBlob;
+        if (base64Data.indexOf(",") > -1) {
+          base64Data = base64Data.split(",")[1];
+        }
+        const decoded = Utilities.base64Decode(base64Data);
+        const mimeType = data.mimeType || "image/png";
+        const filename = data.imageName || ("pineapple_" + new Date().getTime() + ".png");
+        const blob = Utilities.newBlob(decoded, mimeType, filename);
+        
+        // Tạo file trên Drive
+        const file = DriveApp.createFile(blob);
+        // Đặt quyền xem công khai
+        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        mediaUrl = file.getUrl();
+      } catch (err) {
+        return json({ success: false, error: "Failed to upload image to Drive: " + err.toString() });
+      }
+    }
+
+    const createdAt = data.createdAt || nowIso();
+    getSheet("Pineapple").appendRow([
+      data.category || "video",
+      data.title || "",
+      data.content || "",
+      mediaUrl,
+      data.date || createdAt,
+      createdAt,
+      data.displayDate || formatVietnamDateTime(createdAt)
+    ]);
+    return json({ success: true, mediaUrl: mediaUrl });
+  }
+
   const createdAt = data.date || nowIso();
   getSheet("Articles").appendRow([
     createdAt,
@@ -112,6 +150,29 @@ function doGet(e) {
         createdAt: row[5],
         displayDate: row[6] || formatVietnamDateTime(row[5] || row[0])
       })));
+  }
+
+  if (type === "pineapple") {
+    const rows = getSheet("Pineapple").getDataRange().getValues();
+    if (rows.length <= 1 && (rows.length === 0 || !rows[0][0])) {
+      return json([]);
+    }
+    const startIndex = (rows[0][0] === "category" || rows[0][0] === "Category") ? 1 : 0;
+    const items = [];
+    for (let i = startIndex; i < rows.length; i++) {
+      const row = rows[i];
+      if (!row[0]) continue;
+      items.push({
+        category: row[0],
+        title: row[1] || "",
+        content: row[2] || "",
+        mediaUrl: row[3] || "",
+        date: row[4] || "",
+        createdAt: row[5] || "",
+        displayDate: row[6] || (row[5] ? formatVietnamDateTime(row[5]) : "")
+      });
+    }
+    return json(items);
   }
 
   const rows = getSheet("Articles").getDataRange().getValues();

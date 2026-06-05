@@ -60,6 +60,13 @@ module.exports = async function handler(req, res) {
         if (req.method === "GET") {
             const requestUrl = new URL(req.url, `https://${req.headers.host || "localhost"}`);
             const type = requestUrl.searchParams.get("type") || "articles";
+
+            if (type === "pineapple") {
+                if (!verifyPrivateToken(req)) {
+                    return sendJson(res, 401, { success: false, error: "Unauthorized" });
+                }
+            }
+
             const upstreamUrl = `${appsScriptUrl}?type=${encodeURIComponent(type)}`;
             const upstream = await fetch(upstreamUrl);
             const text = await upstream.text();

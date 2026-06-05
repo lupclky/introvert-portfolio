@@ -5,11 +5,152 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
    ------------------------------------------------------------- */
     let currentActiveGame = "";
     const gameSelectBtns = document.querySelectorAll('.game-select-btn');
+    const gamesRoot = document.getElementById('tab-games');
     const gamesMenu = document.getElementById('games-menu');
     const gameActiveContainer = document.getElementById('game-active-container');
     const gameTitleText = document.getElementById('game-title');
     const gamePlayareas = document.querySelectorAll('.game-playarea');
     const gameBackBtn = document.getElementById('game-back-btn');
+
+    const GAME_TEXT = {
+        vi: {
+            navHome: "home",
+            navGames: "games",
+            navPineapple: "góc của dứa 🍍",
+            kicker: "games",
+            title: "zen games",
+            intro: "một góc nhỏ để tĩnh tâm, không điểm số gay gắt, không âm thanh ồn ào.",
+            back: "← quay lại",
+            defaultTitle: "trò chơi",
+            names: {
+                haiku: "ghép thơ haiku",
+                "2048": "zen 2048",
+                snake: "rắn săn mồi",
+                conway: "vườn conway",
+                fireflies: "đom đóm đêm",
+                wordrain: "mưa chữ",
+                signal: "đài tín hiệu",
+                tictactoe: "cờ caro tĩnh lặng",
+                nim: "nhặt sỏi zen",
+                oanquan: "ô ăn quan dân gian",
+                minigo: "cờ vây thu nhỏ",
+                mastermind: "dò mã cảm xúc",
+                memory: "cặp đôi đồng điệu",
+                breathe: "vòng tròn thở",
+                tower: "tháp cân bằng",
+                sand: "rơi cát",
+                rake: "cào cát zen",
+                soundscape: "hòa âm thiên nhiên",
+                ripples: "giọt nước mặt hồ",
+                chimes: "chuông gió bình yên",
+                kintsugi: "hàn gắn kintsugi",
+                bonsai: "cắt tỉa bonsai",
+                origami: "gấp giấy origami",
+                calligraphy: "luyện thư pháp",
+                ikebana: "cắm hoa ikebana",
+                stainedglass: "xếp kính màu",
+                pebbles: "xếp đá thăng bằng",
+                constellation: "dệt sao đêm",
+                tea: "nghệ thuật trà đạo",
+                lantern: "thả đèn trời",
+                shadow: "múa bóng nghệ thuật",
+                tangram: "trò chơi trí uẩn",
+                mahjong: "cặp trùng mahjong",
+                zensudoku: "sudoku tĩnh lặng"
+            }
+        },
+        en: {
+            navHome: "home",
+            navGames: "games",
+            navPineapple: "pineapple's corner 🍍",
+            kicker: "games",
+            title: "zen games",
+            intro: "a small quiet corner with softer goals, less noise, and slower play.",
+            back: "← back",
+            defaultTitle: "game",
+            names: {
+                haiku: "haiku builder",
+                "2048": "zen 2048",
+                snake: "quiet snake",
+                conway: "conway garden",
+                fireflies: "firefly night",
+                wordrain: "word rain",
+                signal: "signal radio",
+                tictactoe: "quiet tic tac toe",
+                nim: "zen pebbles",
+                oanquan: "folk mandarin square",
+                minigo: "mini go",
+                mastermind: "emotion code",
+                memory: "matching memory",
+                breathe: "breathing circle",
+                tower: "balance tower",
+                sand: "falling sand",
+                rake: "zen sand rake",
+                soundscape: "nature soundscape",
+                ripples: "lake ripples",
+                chimes: "wind chimes",
+                kintsugi: "kintsugi repair",
+                bonsai: "bonsai pruning",
+                origami: "origami fold",
+                calligraphy: "calligraphy practice",
+                ikebana: "ikebana arranging",
+                stainedglass: "stained glass",
+                pebbles: "stone balance",
+                constellation: "night constellation",
+                tea: "tea ceremony",
+                lantern: "sky lanterns",
+                shadow: "shadow puppet",
+                tangram: "tangram puzzle",
+                mahjong: "mahjong pairs",
+                zensudoku: "quiet sudoku"
+            }
+        }
+    };
+
+    function detectGameLanguage() {
+        const saved = localStorage.getItem('introvert_lang');
+        if (saved === 'vi' || saved === 'en') return saved;
+        const languages = navigator.languages?.length ? navigator.languages : [navigator.language || 'vi'];
+        const firstSupported = languages.find(lang => /^vi\b|^en\b/i.test(lang));
+        return firstSupported && firstSupported.toLowerCase().startsWith('en') ? 'en' : 'vi';
+    }
+
+    const gameLang = detectGameLanguage();
+    document.documentElement.lang = gameLang;
+    document.documentElement.dataset.lang = gameLang;
+
+    function gameT(key) {
+        return GAME_TEXT[gameLang]?.[key] || GAME_TEXT.vi[key] || key;
+    }
+
+    function getGameName(gameId) {
+        return GAME_TEXT[gameLang]?.names?.[gameId] || GAME_TEXT.vi.names[gameId] || "";
+    }
+
+    function applyGamesI18n() {
+        const navItems = document.querySelectorAll('.nav-links .nav-link');
+        if (navItems[0]) navItems[0].textContent = gameT('navHome');
+        if (navItems[1]) navItems[1].textContent = gameT('navGames');
+        if (navItems[2]) navItems[2].textContent = gameT('navPineapple');
+
+        const kickerEl = document.querySelector('.games-kicker');
+        const titleEl = document.querySelector('.games-hero h1');
+        const introEl = document.querySelector('.games-hero p:not(.games-kicker)');
+        if (kickerEl) kickerEl.textContent = gameT('kicker');
+        if (titleEl) titleEl.textContent = gameT('title');
+        if (introEl) introEl.textContent = gameT('intro');
+        if (gameBackBtn) gameBackBtn.textContent = gameT('back');
+        if (gameTitleText && !currentActiveGame) gameTitleText.textContent = gameT('defaultTitle');
+
+        gameSelectBtns.forEach(btn => {
+            const label = getGameName(btn.dataset.game);
+            if (label) btn.textContent = label;
+        });
+
+        document.title = gameLang === 'en' ? 'introvert - zen games' : 'introvert - trò chơi tĩnh';
+    }
+
+    applyGamesI18n();
 
     let tictactoeTimeout = null;
     let nimTimeout = null;
@@ -46,6 +187,21 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
     let audioCtx = null;
     let soundscapeActiveNodes = {};
     let soundscapeIntervals = [];
+
+    function getCanvasPoint(canvas, event) {
+        const source = event.touches?.[0] || event.changedTouches?.[0] || event;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        return {
+            x: (source.clientX - rect.left) * scaleX,
+            y: (source.clientY - rect.top) * scaleY
+        };
+    }
+
+    function keepCanvasGesture(event) {
+        if (event.cancelable) event.preventDefault();
+    }
 
     function stopIndieGames() {
         if (fireflyFrame) cancelAnimationFrame(fireflyFrame);
@@ -117,11 +273,11 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
             const gameName = btn.getAttribute('data-game');
             stopIndieGames();
             currentActiveGame = gameName;
+            gamesRoot?.classList.add('is-playing');
 
             gameSelectBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
-            if (gamesMenu) gamesMenu.style.display = 'none';
             if (gameActiveContainer) gameActiveContainer.classList.add('active');
 
             let title = 'trò chơi';
@@ -159,6 +315,7 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
             else if (gameName === 'tangram') title = 'trò chơi trí uẩn';
             else if (gameName === 'mahjong') title = 'cặp trùng mahjong';
             else if (gameName === 'zensudoku') title = 'sudoku tĩnh lặng';
+            title = getGameName(gameName) || title;
             if (gameTitleText) gameTitleText.textContent = title;
 
             gamePlayareas.forEach(p => p.classList.remove('active'));
@@ -246,9 +403,9 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
             stopIndieGames();
 
             currentActiveGame = "";
+            gamesRoot?.classList.remove('is-playing');
 
             if (gameActiveContainer) gameActiveContainer.classList.remove('active');
-            if (gamesMenu) gamesMenu.style.display = 'flex';
             gameSelectBtns.forEach(b => b.classList.remove('active'));
         });
     }
@@ -2504,9 +2661,7 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
     
     function drawWall(e) {
         if (!isDrawingSand || !sandCanvas) return;
-        const rect = sandCanvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
+        const { x: mouseX, y: mouseY } = getCanvasPoint(sandCanvas, e);
         const gridX = Math.floor(mouseX / CELL_SIZE);
         const gridY = Math.floor(mouseY / CELL_SIZE);
         if (gridX >= 0 && gridX < COLS && gridY >= 0 && gridY < ROWS) {
@@ -2518,7 +2673,9 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
         }
     }
     
-    document.getElementById('sand-canvas')?.addEventListener('mousedown', () => isDrawingSand = true);
+    document.getElementById('sand-canvas')?.addEventListener('pointerdown', (e) => { keepCanvasGesture(e); isDrawingSand = true; drawWall(e); });
+    document.getElementById('sand-canvas')?.addEventListener('pointerup', () => isDrawingSand = false);
+    document.getElementById('sand-canvas')?.addEventListener('pointerleave', () => isDrawingSand = false);
     window.addEventListener('mouseup', () => isDrawingSand = false);
     document.getElementById('sand-canvas')?.addEventListener('mousemove', drawWall);
     
@@ -2595,24 +2752,16 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
     const sandCanvasEl = document.getElementById('sand-canvas');
     if(sandCanvasEl) {
         sandCanvasEl.addEventListener('touchstart', (e) => {
+            keepCanvasGesture(e);
             isDrawingSand = true;
-            const touch = e.touches[0];
-            const mouseEvent = new MouseEvent('mousemove', {
-                clientX: touch.clientX,
-                clientY: touch.clientY
-            });
-            drawWall(mouseEvent);
-        }, {passive: true});
+            drawWall(e);
+        }, {passive: false});
         
         sandCanvasEl.addEventListener('touchmove', (e) => {
             if(!isDrawingSand) return;
-            const touch = e.touches[0];
-            const mouseEvent = new MouseEvent('mousemove', {
-                clientX: touch.clientX,
-                clientY: touch.clientY
-            });
-            drawWall(mouseEvent);
-        }, {passive: true});
+            keepCanvasGesture(e);
+            drawWall(e);
+        }, {passive: false});
         
         window.addEventListener('touchend', () => isDrawingSand = false);
     }
@@ -2627,13 +2776,14 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
         rakeCtx = rakeCanvas.getContext('2d');
         clearRakeSand();
         
-        rakeCanvas.onmousedown = (e) => { isDrawingRake = true; drawRakeStroke(e); };
-        window.onmouseup = () => isDrawingRake = false;
-        rakeCanvas.onmousemove = drawRakeStroke;
+        rakeCanvas.onpointerdown = (e) => { keepCanvasGesture(e); isDrawingRake = true; drawRakeStroke(e); };
+        rakeCanvas.onpointerup = () => isDrawingRake = false;
+        rakeCanvas.onpointerleave = () => isDrawingRake = false;
+        rakeCanvas.onpointermove = drawRakeStroke;
 
-        rakeCanvas.ontouchstart = (e) => { isDrawingRake = true; drawRakeStroke(e.touches[0]); };
-        window.ontouchend = () => isDrawingRake = false;
-        rakeCanvas.ontouchmove = (e) => { if(isDrawingRake) drawRakeStroke(e.touches[0]); };
+        rakeCanvas.ontouchstart = window.PointerEvent ? null : (e) => { keepCanvasGesture(e); isDrawingRake = true; drawRakeStroke(e); };
+        rakeCanvas.ontouchend = window.PointerEvent ? null : () => isDrawingRake = false;
+        rakeCanvas.ontouchmove = window.PointerEvent ? null : (e) => { keepCanvasGesture(e); if(isDrawingRake) drawRakeStroke(e); };
     }
     function clearRakeSand() {
         if (!rakeCanvas) return;
@@ -2665,18 +2815,15 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
     }
     function drawRakeStroke(e) {
         if (!isDrawingRake || !rakeCanvas) return;
-        const rect = rakeCanvas.getBoundingClientRect();
-        const clientX = e.clientX || e.pageX;
-        const clientY = e.clientY || e.pageY;
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
+        const { x, y } = getCanvasPoint(rakeCanvas, e);
 
         rakeCtx.strokeStyle = 'rgba(0,0,0,0.08)';
         if(activeTheme === 'dark') rakeCtx.strokeStyle = 'rgba(255,255,255,0.06)';
         rakeCtx.lineWidth = 2;
         for(let i = -10; i <= 10; i += 5) {
+            const radius = Math.max(2, 8 + i);
             rakeCtx.beginPath();
-            rakeCtx.arc(x, y, 8 + i, 0, Math.PI*2);
+            rakeCtx.arc(x, y, radius, 0, Math.PI*2);
             rakeCtx.stroke();
         }
         drawRakeStones();
@@ -2927,13 +3074,14 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
             { x: 150, y: 240, vx: 0, vy: 0, r: 7, color: '#a2b082', angle: 0.8 }
         ];
         
-        ripplesCanvas.onclick = (e) => {
-            const rect = ripplesCanvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+        const addRipple = (e) => {
+            keepCanvasGesture(e);
+            const { x, y } = getCanvasPoint(ripplesCanvas, e);
             ripplesList.push({ x: x, y: y, r: 0, maxR: 120, alpha: 1 });
             triggerChimeSound(x);
         };
+        ripplesCanvas.onpointerdown = addRipple;
+        ripplesCanvas.ontouchstart = window.PointerEvent ? null : addRipple;
         
         loopRipples();
     }
@@ -3048,12 +3196,8 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
         }
         
         const chimeTouch = (e) => {
-            const rect = chimesCanvas.getBoundingClientRect();
-            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-            if (!clientX) return;
-            const x = clientX - rect.left;
-            const y = clientY - rect.top;
+            keepCanvasGesture(e);
+            const { x, y } = getCanvasPoint(chimesCanvas, e);
             
             chimeTubes.forEach(t => {
                 if (Math.abs(x - t.x) < 25 && y > 30 && y < 30 + t.length) {
@@ -3062,8 +3206,9 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
             });
         };
         
-        chimesCanvas.onmousemove = chimeTouch;
-        chimesCanvas.ontouchmove = (e) => chimeTouch(e);
+        chimesCanvas.onpointermove = chimeTouch;
+        chimesCanvas.onpointerdown = chimeTouch;
+        chimesCanvas.ontouchmove = window.PointerEvent ? null : chimeTouch;
         
         loopChimes();
     }
@@ -3122,6 +3267,7 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
         board.innerHTML = '';
         kintsugiCtx = kintsugiCanvas.getContext('2d');
         kintsugiCtx.clearRect(0, 0, 320, 320);
+        kintsugiCanvas.style.pointerEvents = 'none';
         kintsugiDone = false;
         goldLinesPainted = 0;
         isPaintingKintsugi = false;
@@ -3142,9 +3288,23 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
             
             let isDragging = false;
             let startX, startY;
+            let moved = false;
+
+            const snapPiece = () => {
+                el.style.left = `${p.target.x}px`;
+                el.style.top = `${p.target.y}px`;
+                el.style.border = 'none';
+                el.style.background = activeTheme === 'dark' ? '#475569' : '#94a3b8';
+                el.style.cursor = 'default';
+                el.draggable = false;
+                el.dataset.snapped = "true";
+                checkKintsugiAssembled();
+            };
             
             const onStart = (clientX, clientY) => {
+                if (el.dataset.snapped === "true") return;
                 isDragging = true;
+                moved = false;
                 el.style.zIndex = 100;
                 startX = clientX - el.offsetLeft;
                 startY = clientY - el.offsetTop;
@@ -3152,8 +3312,13 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
             
             const onMove = (clientX, clientY) => {
                 if (!isDragging) return;
-                el.style.left = `${clientX - startX}px`;
-                el.style.top = `${clientY - startY}px`;
+                const nextLeft = clientX - startX;
+                const nextTop = clientY - startY;
+                if (Math.abs(nextLeft - el.offsetLeft) > 2 || Math.abs(nextTop - el.offsetTop) > 2) {
+                    moved = true;
+                }
+                el.style.left = `${nextLeft}px`;
+                el.style.top = `${nextTop}px`;
             };
             
             const onEnd = () => {
@@ -3164,21 +3329,20 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
                 const dx = el.offsetLeft - p.target.x;
                 const dy = el.offsetTop - p.target.y;
                 if (Math.sqrt(dx*dx + dy*dy) < 20) {
-                    el.style.left = `${p.target.x}px`;
-                    el.style.top = `${p.target.y}px`;
-                    el.style.border = 'none';
-                    el.style.background = activeTheme === 'dark' ? '#475569' : '#94a3b8';
-                    el.draggable = false;
-                    checkKintsugiAssembled();
+                    snapPiece();
                 }
             };
             
             el.addEventListener('mousedown', (e) => onStart(e.clientX, e.clientY));
             window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
             window.addEventListener('mouseup', onEnd);
+            el.addEventListener('dblclick', snapPiece);
+            el.addEventListener('click', () => {
+                if (!moved && el.dataset.snapped !== "true") snapPiece();
+            });
             
-            el.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive: true});
-            window.addEventListener('touchmove', (e) => onMove(e.touches[0].clientX, e.touches[0].clientY), {passive: true});
+            el.addEventListener('touchstart', (e) => { keepCanvasGesture(e); onStart(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
+            window.addEventListener('touchmove', (e) => { if (!isDragging) return; keepCanvasGesture(e); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
             window.addEventListener('touchend', onEnd);
             
             board.appendChild(el);
@@ -3188,28 +3352,29 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
         const pieces = document.querySelectorAll('.kintsugi-piece');
         let snappedCount = 0;
         pieces.forEach(p => {
-            if (p.draggable === false) snappedCount++;
+            if (p.dataset.snapped === "true") snappedCount++;
         });
         
         if (snappedCount === 4) {
             document.getElementById('kintsugi-desc').textContent = "hãy vẽ cọ dọc theo vết nứt để gắn kết chúng bằng vàng...";
             kintsugiCanvas.style.pointerEvents = 'auto';
-            kintsugiCanvas.onmousedown = () => isPaintingKintsugi = true;
-            window.onmouseup = () => isPaintingKintsugi = false;
-            kintsugiCanvas.onmousemove = paintKintsugiGold;
+            kintsugiCanvas.onpointerdown = (e) => { keepCanvasGesture(e); isPaintingKintsugi = true; paintKintsugiGold(e); };
+            kintsugiCanvas.onpointermove = paintKintsugiGold;
+            kintsugiCanvas.onpointerup = () => isPaintingKintsugi = false;
+            kintsugiCanvas.onpointerleave = () => isPaintingKintsugi = false;
+            kintsugiCanvas.onmousedown = window.PointerEvent ? null : () => isPaintingKintsugi = true;
+            kintsugiCanvas.onmouseup = window.PointerEvent ? null : () => isPaintingKintsugi = false;
+            kintsugiCanvas.onmousemove = window.PointerEvent ? null : paintKintsugiGold;
             
-            kintsugiCanvas.ontouchstart = () => isPaintingKintsugi = true;
-            window.ontouchend = () => isPaintingKintsugi = false;
-            kintsugiCanvas.ontouchmove = (e) => paintKintsugiGold(e.touches[0]);
+            kintsugiCanvas.ontouchstart = window.PointerEvent ? null : (e) => { keepCanvasGesture(e); isPaintingKintsugi = true; paintKintsugiGold(e); };
+            kintsugiCanvas.ontouchend = window.PointerEvent ? null : () => isPaintingKintsugi = false;
+            kintsugiCanvas.ontouchmove = window.PointerEvent ? null : (e) => { keepCanvasGesture(e); paintKintsugiGold(e); };
         }
     }
     function paintKintsugiGold(e) {
         if (!isPaintingKintsugi || kintsugiDone) return;
-        const rect = kintsugiCanvas.getBoundingClientRect();
-        const clientX = e.clientX || e.pageX;
-        const clientY = e.clientY || e.pageY;
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
+        keepCanvasGesture(e);
+        const { x, y } = getCanvasPoint(kintsugiCanvas, e);
         
         kintsugiCtx.beginPath();
         kintsugiCtx.arc(x, y, 4, 0, Math.PI*2);
@@ -3236,10 +3401,9 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
         
         bonsaiTree = generateBonsaiBranch(160, 280, -Math.PI / 2, 70, 7);
         
-        canvas.onclick = (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+        const pruneAt = (e) => {
+            keepCanvasGesture(e);
+            const { x, y } = getCanvasPoint(canvas, e);
             
             pruneBonsaiLeaf(bonsaiTree, x, y);
             renderBonsai(ctx, canvas.width, canvas.height);
@@ -3250,6 +3414,8 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
                 scoreEl.textContent = `tĩnh lặng: ${rating}%`;
             }
         };
+        canvas.onclick = pruneAt;
+        canvas.ontouchstart = pruneAt;
         renderBonsai(ctx, canvas.width, canvas.height);
     }
     function generateBonsaiBranch(x, y, angle, length, depth) {
@@ -3370,18 +3536,14 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
         
         let isDragging = false;
         canvas.onmousedown = (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const { x, y } = getCanvasPoint(canvas, e);
             if (Math.sqrt((x-step.pts[0].x)**2 + (y-step.pts[0].y)**2) < 25) {
                 isDragging = true;
             }
         };
         canvas.onmousemove = (e) => {
             if (!isDragging) return;
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const { x, y } = getCanvasPoint(canvas, e);
             
             if (Math.sqrt((x-step.pts[1].x)**2 + (y-step.pts[1].y)**2) < 25) {
                 isDragging = false;
@@ -3398,16 +3560,14 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
         canvas.onmouseup = () => isDragging = false;
         
         canvas.ontouchstart = (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.touches[0].clientX - rect.left;
-            const y = e.touches[0].clientY - rect.top;
+            keepCanvasGesture(e);
+            const { x, y } = getCanvasPoint(canvas, e);
             if (Math.sqrt((x-step.pts[0].x)**2 + (y-step.pts[0].y)**2) < 25) isDragging = true;
         };
         canvas.ontouchmove = (e) => {
             if (!isDragging) return;
-            const rect = canvas.getBoundingClientRect();
-            const x = e.touches[0].clientX - rect.left;
-            const y = e.touches[0].clientY - rect.top;
+            keepCanvasGesture(e);
+            const { x, y } = getCanvasPoint(canvas, e);
             if (Math.sqrt((x-step.pts[1].x)**2 + (y-step.pts[1].y)**2) < 25) {
                 isDragging = false;
                 triggerChimeSound(x);
@@ -3466,13 +3626,14 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
         calligraphyCtx = calligraphyCanvas.getContext('2d');
         clearCalligraphyCanvas();
         
-        calligraphyCanvas.onmousedown = (e) => { isDrawingCalligraphy = true; drawCalligraphyStroke(e); };
-        window.onmouseup = () => isDrawingCalligraphy = false;
-        calligraphyCanvas.onmousemove = drawCalligraphyStroke;
+        calligraphyCanvas.onpointerdown = (e) => { keepCanvasGesture(e); isDrawingCalligraphy = true; drawCalligraphyStroke(e); };
+        calligraphyCanvas.onpointerup = () => isDrawingCalligraphy = false;
+        calligraphyCanvas.onpointerleave = () => isDrawingCalligraphy = false;
+        calligraphyCanvas.onpointermove = drawCalligraphyStroke;
         
-        calligraphyCanvas.ontouchstart = (e) => { isDrawingCalligraphy = true; drawCalligraphyStroke(e.touches[0]); };
-        window.ontouchend = () => isDrawingCalligraphy = false;
-        calligraphyCanvas.ontouchmove = (e) => { if(isDrawingCalligraphy) drawCalligraphyStroke(e.touches[0]); };
+        calligraphyCanvas.ontouchstart = window.PointerEvent ? null : (e) => { keepCanvasGesture(e); isDrawingCalligraphy = true; drawCalligraphyStroke(e); };
+        calligraphyCanvas.ontouchend = window.PointerEvent ? null : () => isDrawingCalligraphy = false;
+        calligraphyCanvas.ontouchmove = window.PointerEvent ? null : (e) => { keepCanvasGesture(e); if(isDrawingCalligraphy) drawCalligraphyStroke(e); };
     }
     function clearCalligraphyCanvas() {
         if (!calligraphyCanvas) return;
@@ -3503,11 +3664,7 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
     }
     function drawCalligraphyStroke(e) {
         if (!isDrawingCalligraphy || !calligraphyCanvas) return;
-        const rect = calligraphyCanvas.getBoundingClientRect();
-        const clientX = e.clientX || e.pageX;
-        const clientY = e.clientY || e.pageY;
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
+        const { x, y } = getCanvasPoint(calligraphyCanvas, e);
         
         calligraphyCtx.strokeStyle = '#1e293b';
         calligraphyCtx.lineWidth = 6 + Math.random() * 4;
@@ -3742,25 +3899,32 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
             checkPebblesGravity();
         };
         
-        pebblesCanvas.onmousedown = (e) => {
-            const rect = pebblesCanvas.getBoundingClientRect();
-            onStart(e.clientX - rect.left, e.clientY - rect.top);
+        pebblesCanvas.onpointerdown = (e) => {
+            keepCanvasGesture(e);
+            const { x, y } = getCanvasPoint(pebblesCanvas, e);
+            onStart(x, y);
         };
-        pebblesCanvas.onmousemove = (e) => {
-            const rect = pebblesCanvas.getBoundingClientRect();
-            onMove(e.clientX - rect.left, e.clientY - rect.top);
+        pebblesCanvas.onpointermove = (e) => {
+            if (!pebblesActiveRock) return;
+            keepCanvasGesture(e);
+            const { x, y } = getCanvasPoint(pebblesCanvas, e);
+            onMove(x, y);
         };
-        window.onmouseup = onEnd;
+        pebblesCanvas.onpointerup = onEnd;
+        pebblesCanvas.onpointerleave = onEnd;
         
-        pebblesCanvas.ontouchstart = (e) => {
-            const rect = pebblesCanvas.getBoundingClientRect();
-            onStart(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
+        pebblesCanvas.ontouchstart = window.PointerEvent ? null : (e) => {
+            keepCanvasGesture(e);
+            const { x, y } = getCanvasPoint(pebblesCanvas, e);
+            onStart(x, y);
         };
-        pebblesCanvas.ontouchmove = (e) => {
-            const rect = pebblesCanvas.getBoundingClientRect();
-            onMove(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
+        pebblesCanvas.ontouchmove = window.PointerEvent ? null : (e) => {
+            if (!pebblesActiveRock) return;
+            keepCanvasGesture(e);
+            const { x, y } = getCanvasPoint(pebblesCanvas, e);
+            onMove(x, y);
         };
-        window.ontouchend = onEnd;
+        pebblesCanvas.ontouchend = window.PointerEvent ? null : onEnd;
     }
     function checkPebblesGravity() {
         let stack = [pebblesList[0]];
@@ -3856,17 +4020,85 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
             name: "chòm sao chim bồ câu",
             stars: [{x: 80, y: 80}, {x: 160, y: 120}, {x: 260, y: 80}, {x: 200, y: 180}, {x: 120, y: 220}],
             lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 1]]
+        },
+        {
+            name: "chòm sao mỏ neo",
+            stars: [{x: 160, y: 50}, {x: 160, y: 110}, {x: 110, y: 165}, {x: 210, y: 165}, {x: 160, y: 230}, {x: 95, y: 250}, {x: 225, y: 250}],
+            lines: [[0, 1], [1, 2], [1, 3], [2, 4], [3, 4], [4, 5], [4, 6]]
         }
     ];
     let constellationConnected = [];
+    let constellationStarscape = [];
+
+    function buildConstellationStarscape() {
+        constellationStarscape = Array.from({ length: 48 }, () => ({
+            x: Math.random() * 320,
+            y: Math.random() * 320,
+            r: 0.8 + Math.random() * 1.4,
+            a: 0.16 + Math.random() * 0.32
+        }));
+    }
+
     function startConstellation() {
+        const canvas = document.getElementById('constellation-canvas');
+        if (!canvas) return;
         constellationConnected = [];
+        buildConstellationStarscape();
         const btnNext = document.getElementById('next-constellation');
         if (btnNext) btnNext.style.display = 'none';
         const nameLbl = document.getElementById('constellation-name');
         if (nameLbl) nameLbl.textContent = `chòm sao: ?`;
+        const desc = document.getElementById('constellation-desc');
+        if (desc) desc.textContent = "chạm vào ngôi sao đang sáng, đi theo thứ tự 1 -> hết.";
+        canvas.onpointerdown = handleConstellationPick;
+        canvas.ontouchstart = window.PointerEvent ? null : handleConstellationPick;
         renderConstellation();
     }
+
+    function drawConstellationLine(ctx, a, b) {
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+    }
+
+    function handleConstellationPick(e) {
+        const canvas = document.getElementById('constellation-canvas');
+        if (!canvas) return;
+        keepCanvasGesture(e);
+        const data = constellations[constellationIndex];
+        const expectedNext = constellationConnected.length;
+        if (expectedNext >= data.stars.length) return;
+
+        const { x, y } = getCanvasPoint(canvas, e);
+        let pickedIdx = -1;
+        let pickedDist = Infinity;
+        data.stars.forEach((s, idx) => {
+            const dist = Math.sqrt((x - s.x) ** 2 + (y - s.y) ** 2);
+            if (dist < pickedDist) {
+                pickedIdx = idx;
+                pickedDist = dist;
+            }
+        });
+
+        if (pickedIdx !== expectedNext || pickedDist > 30) return;
+
+        constellationConnected.push(pickedIdx);
+        triggerChimeSound(data.stars[pickedIdx].x);
+        renderConstellation();
+
+        const desc = document.getElementById('constellation-desc');
+        if (constellationConnected.length === data.stars.length) {
+            const nameLbl = document.getElementById('constellation-name');
+            const nextBtn = document.getElementById('next-constellation');
+            if (nameLbl) nameLbl.textContent = `chòm sao: ${data.name}`;
+            if (nextBtn) nextBtn.style.display = 'inline-block';
+            if (desc) desc.textContent = "hoàn tất. bạn có thể vẽ chòm sao tiếp theo.";
+        } else if (desc) {
+            desc.textContent = `ngôi sao tiếp theo: ${constellationConnected.length + 1}`;
+        }
+    }
+
     function renderConstellation() {
         const canvas = document.getElementById('constellation-canvas');
         if (!canvas) return;
@@ -3874,55 +4106,48 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         const data = constellations[constellationIndex];
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-        for (let i = 0; i < 40; i++) {
-            ctx.fillRect((Math.random() * 320), (Math.random() * 320), 1.5, 1.5);
-        }
+        if (!constellationStarscape.length) buildConstellationStarscape();
+        constellationStarscape.forEach(star => {
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${star.a})`;
+            ctx.fill();
+        });
+
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.24)';
+        ctx.lineWidth = 1;
+        data.lines.forEach(([from, to]) => drawConstellationLine(ctx, data.stars[from], data.stars[to]));
         
         ctx.strokeStyle = '#60a5fa';
         ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        for (let i = 0; i < constellationConnected.length - 1; i++) {
-            const s1 = data.stars[constellationConnected[i]];
-            const s2 = data.stars[constellationConnected[i+1]];
-            ctx.moveTo(s1.x, s1.y);
-            ctx.lineTo(s2.x, s2.y);
+        if (constellationConnected.length === data.stars.length) {
+            data.lines.forEach(([from, to]) => drawConstellationLine(ctx, data.stars[from], data.stars[to]));
+        } else {
+            for (let i = 0; i < constellationConnected.length - 1; i++) {
+                const s1 = data.stars[constellationConnected[i]];
+                const s2 = data.stars[constellationConnected[i+1]];
+                drawConstellationLine(ctx, s1, s2);
+            }
         }
-        ctx.stroke();
         
         data.stars.forEach((s, idx) => {
+            if (idx === constellationConnected.length) {
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, 16, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(251, 191, 36, 0.7)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            }
+
             ctx.beginPath();
-            ctx.arc(s.x, s.y, 6, 0, Math.PI * 2);
+            ctx.arc(s.x, s.y, 7, 0, Math.PI * 2);
             ctx.fillStyle = constellationConnected.includes(idx) ? '#60a5fa' : '#f8fafc';
             ctx.fill();
             
             ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-            ctx.font = '10px monospace';
+            ctx.font = '11px monospace';
             ctx.fillText(idx + 1, s.x + 8, s.y - 4);
         });
-        
-        canvas.onclick = (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            data.stars.forEach((s, idx) => {
-                const dist = Math.sqrt((x-s.x)**2 + (y-s.y)**2);
-                if (dist < 15) {
-                    const expectedNext = constellationConnected.length;
-                    if (idx === expectedNext) {
-                        constellationConnected.push(idx);
-                        triggerChimeSound(s.x);
-                        renderConstellation();
-                        
-                        if (constellationConnected.length === data.stars.length) {
-                            document.getElementById('constellation-name').textContent = `chòm sao: ${data.name}`;
-                            document.getElementById('next-constellation').style.display = 'inline-block';
-                        }
-                    }
-                }
-            });
-        };
     }
     document.getElementById('next-constellation')?.addEventListener('click', () => {
         constellationIndex = (constellationIndex + 1) % constellations.length;
@@ -4234,60 +4459,64 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
             return -1;
         };
         let isDragging = false;
+        let moved = false;
         
-        tangramCanvas.onmousedown = (e) => {
-            const rect = tangramCanvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+        tangramCanvas.onpointerdown = (e) => {
+            keepCanvasGesture(e);
+            const { x, y } = getCanvasPoint(tangramCanvas, e);
             
             const idx = getPieceAt(x, y);
             if (idx !== -1) {
                 tangramSelectedIdx = idx;
                 isDragging = true;
+                moved = false;
                 renderTangram();
             }
         };
-        tangramCanvas.onmousemove = (e) => {
+        tangramCanvas.onpointermove = (e) => {
             if (!isDragging || tangramSelectedIdx === -1) return;
-            const rect = tangramCanvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            keepCanvasGesture(e);
+            const { x, y } = getCanvasPoint(tangramCanvas, e);
             
+            if (Math.abs(tangramPieces[tangramSelectedIdx].x - x) > 2 || Math.abs(tangramPieces[tangramSelectedIdx].y - y) > 2) {
+                moved = true;
+            }
             tangramPieces[tangramSelectedIdx].x = x;
             tangramPieces[tangramSelectedIdx].y = y;
             renderTangram();
         };
-        window.onmouseup = () => { isDragging = false; };
+        tangramCanvas.onpointerup = () => { isDragging = false; };
+        tangramCanvas.onpointerleave = () => { isDragging = false; };
         
-        tangramCanvas.ontouchstart = (e) => {
-            const rect = tangramCanvas.getBoundingClientRect();
-            const x = e.touches[0].clientX - rect.left;
-            const y = e.touches[0].clientY - rect.top;
+        tangramCanvas.ontouchstart = window.PointerEvent ? null : (e) => {
+            keepCanvasGesture(e);
+            const { x, y } = getCanvasPoint(tangramCanvas, e);
             
             const idx = getPieceAt(x, y);
             if (idx !== -1) {
                 tangramSelectedIdx = idx;
                 isDragging = true;
+                moved = false;
                 renderTangram();
             }
         };
-        tangramCanvas.ontouchmove = (e) => {
+        tangramCanvas.ontouchmove = window.PointerEvent ? null : (e) => {
             if (!isDragging || tangramSelectedIdx === -1) return;
-            const rect = tangramCanvas.getBoundingClientRect();
-            const x = e.touches[0].clientX - rect.left;
-            const y = e.touches[0].clientY - rect.top;
+            keepCanvasGesture(e);
+            const { x, y } = getCanvasPoint(tangramCanvas, e);
             
+            if (Math.abs(tangramPieces[tangramSelectedIdx].x - x) > 2 || Math.abs(tangramPieces[tangramSelectedIdx].y - y) > 2) {
+                moved = true;
+            }
             tangramPieces[tangramSelectedIdx].x = x;
             tangramPieces[tangramSelectedIdx].y = y;
             renderTangram();
         };
-        window.ontouchend = () => { isDragging = false; };
+        tangramCanvas.ontouchend = window.PointerEvent ? null : () => { isDragging = false; };
         
-        tangramCanvas.addEventListener('click', (e) => {
-            if (isDragging || tangramSelectedIdx === -1) return;
-            const rect = tangramCanvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+        tangramCanvas.onclick = (e) => {
+            if (moved || tangramSelectedIdx === -1) return;
+            const { x, y } = getCanvasPoint(tangramCanvas, e);
             
             const idx = getPieceAt(x, y);
             if (idx === tangramSelectedIdx) {
@@ -4295,7 +4524,7 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
                 triggerChimeSound(x);
                 renderTangram();
             }
-        });
+        };
     }
     function renderTangram() {
         if (!tangramCanvas) return;
@@ -4363,11 +4592,13 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
         mahjongSelectedIdx = -1;
         
         const symbols = ['🌸', '🍃', '💧', '🌙', '☀️', '⛰️'];
-        let pool = [];
-        symbols.forEach(s => {
-            for(let i=0; i<4; i++) pool.push(s);
-        });
-        pool.sort(() => Math.random() - 0.5);
+        const rowPairs = [
+            [symbols[0], symbols[1], symbols[2]],
+            [symbols[3], symbols[4], symbols[5]],
+            [symbols[1], symbols[3], symbols[0]],
+            [symbols[5], symbols[2], symbols[4]]
+        ].sort(() => Math.random() - 0.5);
+        const pool = rowPairs.flatMap(([a, b, c]) => [a, b, c, c, b, a]);
         
         mahjongTiles = [];
         pool.forEach((s, idx) => {
@@ -4400,8 +4631,8 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
             el.textContent = tile.symbol;
             
             const col = idx % 6;
-            const leftClear = (col === 0) || mahjongTiles[idx - 1].cleared;
-            const rightClear = (col === 5) || mahjongTiles[idx + 1].cleared;
+            const leftClear = (col === 0) || mahjongTiles[idx - 1]?.cleared;
+            const rightClear = (col === 5) || mahjongTiles[idx + 1]?.cleared;
             const free = leftClear || rightClear;
             
             if (!free) el.classList.add('blocked');
@@ -4433,7 +4664,7 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
             board.appendChild(el);
         });
         const statusEl = document.getElementById('mahjong-status');
-        if(statusEl) statusEl.textContent = `thẻ còn lại: ${remaining}`;
+        if(statusEl) statusEl.textContent = remaining === 0 ? 'hoàn tất' : `thẻ còn lại: ${remaining}`;
     }
     document.getElementById('reset-mahjong')?.addEventListener('click', startMahjong);
 
@@ -4484,6 +4715,7 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
         keypad.appendChild(delBtn);
         
         renderSudoku();
+        updateSudokuStatus();
     }
     function renderSudoku() {
         const grid = document.getElementById('sudoku-grid');
@@ -4501,35 +4733,65 @@ const observer = new MutationObserver((mutations) => { mutations.forEach((mutati
             cellDiv.onclick = () => {
                 if (cell.fixed) return;
                 sudokuSelectedCellIdx = idx;
+                updateSudokuStatus();
                 renderSudoku();
             };
             grid.appendChild(cellDiv);
         });
     }
+
+    function isSudokuConflict(idx, num) {
+        if (num === 0) return false;
+        const row = Math.floor(idx / 9);
+        const col = idx % 9;
+        const boxRow = Math.floor(row / 3) * 3;
+        const boxCol = Math.floor(col / 3) * 3;
+
+        for (let c = 0; c < 9; c++) {
+            const otherIdx = row * 9 + c;
+            if (otherIdx !== idx && sudokuBoard[otherIdx].val === num) return true;
+        }
+        for (let r = 0; r < 9; r++) {
+            const otherIdx = r * 9 + col;
+            if (otherIdx !== idx && sudokuBoard[otherIdx].val === num) return true;
+        }
+        for (let r = boxRow; r < boxRow + 3; r++) {
+            for (let c = boxCol; c < boxCol + 3; c++) {
+                const otherIdx = r * 9 + c;
+                if (otherIdx !== idx && sudokuBoard[otherIdx].val === num) return true;
+            }
+        }
+        return false;
+    }
+
+    function updateSudokuStatus() {
+        const statusEl = document.getElementById('sudoku-status');
+        if (!statusEl || !sudokuBoard.length) return;
+
+        const hasWrong = sudokuBoard.some(cell => cell.wrong);
+        const isComplete = sudokuBoard.every(cell => cell.val !== 0) && !hasWrong;
+        if (isComplete) {
+            statusEl.textContent = "hoàn tất";
+        } else if (hasWrong) {
+            statusEl.textContent = "có số đang trùng hàng, cột hoặc ô 3x3";
+        } else if (sudokuSelectedCellIdx === -1) {
+            statusEl.textContent = "chọn một ô trống để bắt đầu";
+        } else {
+            statusEl.textContent = "điền số cho ô đang chọn";
+        }
+    }
+
     function fillSudokuNumber(num) {
         if (sudokuSelectedCellIdx === -1) return;
         const cell = sudokuBoard[sudokuSelectedCellIdx];
         if (cell.fixed) return;
         
         cell.val = num;
-        cell.wrong = false;
-        if (num !== 0) {
-            const row = Math.floor(sudokuSelectedCellIdx / 9);
-            const col = sudokuSelectedCellIdx % 9;
-            for (let c = 0; c < 9; c++) {
-                const otherIdx = row * 9 + c;
-                if (otherIdx !== sudokuSelectedCellIdx && sudokuBoard[otherIdx].val === num) {
-                    cell.wrong = true;
-                }
-            }
-            for (let r = 0; r < 9; r++) {
-                const otherIdx = r * 9 + col;
-                if (otherIdx !== sudokuSelectedCellIdx && sudokuBoard[otherIdx].val === num) {
-                    cell.wrong = true;
-                }
-            }
-        }
+        sudokuBoard.forEach((entry, idx) => {
+            entry.wrong = !entry.fixed && isSudokuConflict(idx, entry.val);
+        });
         triggerChimeSound(160);
+        updateSudokuStatus();
         renderSudoku();
     }
     document.getElementById('reset-sudoku')?.addEventListener('click', startSudoku);
